@@ -1,0 +1,42 @@
+upstream kernel precomputation 13.59855504333973
+upstream queries 0 / 131072
+upstream queries 8192 / 131072
+upstream queries 16384 / 131072
+upstream queries 24576 / 131072
+upstream queries 32768 / 131072
+upstream queries 40960 / 131072
+upstream queries 49152 / 131072
+upstream queries 57344 / 131072
+upstream queries 65536 / 131072
+upstream queries 73728 / 131072
+upstream queries 81920 / 131072
+upstream queries 90112 / 131072
+upstream queries 98304 / 131072
+upstream queries 106496 / 131072
+upstream queries 114688 / 131072
+upstream queries 122880 / 131072
+upstream full slices 142.25645796209574
+{
+  "N": 1000000,
+  "M": 131072,
+  "scope": "mean cross-covariance action for both rendered slices, same solved weights; excludes training, variance, rendering",
+  "upstream_reference": "released poisson_cross_covariances + periodic_stationary_interpolator + batched sum, with solved weights supplied",
+  "pairwise_repetitions": 1,
+  "nufft_repetitions": 3,
+  "dtype": "float32, highest JAX matmul precision",
+  "cutoff": 50,
+  "interpolation_grid": 50,
+  "dense_training_matrix_bytes": 4000000000000,
+  "upstream_interpolation_setup_seconds": 13.59855504333973,
+  "upstream_pairwise_seconds": 142.25645796209574,
+  "nufft_aggregate_and_query_seconds": [
+    0.03542785346508026,
+    0.03871490806341171,
+    0.028628185391426086
+  ],
+  "nufft_median_seconds": 0.03542785346508026,
+  "speedup_mean_action": 4015.3846210951483,
+  "relative_l2_vs_upstream_interpolation": 0.010908355936408043,
+  "max_abs_difference": 0.004803389310836792,
+  "full_analytic_kernel_residual_64_rows": 0.06797897070646286
+}

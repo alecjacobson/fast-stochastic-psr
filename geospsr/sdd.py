@@ -19,9 +19,11 @@ def sdd_solve(
     """
     Implementation of Stochastic Dual Descent adapted from
     https://github.com/cambridge-mlg/sgd-gp
+
+    sigma is the observation noise variance, as in the Cholesky solver.
     """
     num_data = x_data.shape[0]
-    dim = x_data.shape[1]
+    dim = v_data.shape[1]
 
     alpha = jnp.zeros((num_data, dim))
     alpha_polyak = jnp.zeros((num_data, dim))
@@ -35,7 +37,7 @@ def sdd_solve(
         )
         grad = jnp.zeros((num_data, dim))
         grad = grad.at[idx].set(
-            K_batch @ params - v_data[idx] + (sigma**2) * params[idx]
+            K_batch @ params - v_data[idx] + sigma * params[idx]
         )
         return (num_data / bs) * grad
 

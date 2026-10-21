@@ -42,7 +42,8 @@ from geospsr.kernels import Matern32Kernel, ProductKernel
 from geospsr.utils import periodic_stationary_interpolator, trunc_Zd
 
 # %%
-v, _, _, f, _, _ = igl.read_obj("meshes/scorpion.obj")
+read_obj = getattr(igl, "read_obj", None) or igl.readOBJ
+v, _, _, f, _, _ = read_obj("meshes/scorpion.obj")
 v = normalize_points(v) * np.pi
 
 cam_pos = np.array([[0, -2, 0], [1, 1, 1]]) * np.pi
@@ -65,7 +66,8 @@ x_grid[:, 1] = -0.75
 plot_mesh_cloud_grid((v, f), (p, n), (x_grid, f_grid))
 
 # %%
-sigma = noise_level
+# The GP API uses a variance on the diagonal, not a standard deviation.
+sigma = noise_level**2
 lengthscale = 1e-2
 variance = 0.1
 truncation_n = 50
@@ -114,7 +116,8 @@ plot_variance("", x1_grid, x2_grid, var_cholesky, save=False)
 # %%
 sdd_params = {
     "key": random.key(0),
-    "lr": 1e-3,
+    # Validated for this scan and the product-kernel amplitude; retune for new data.
+    "lr": 1.0,
     "bs": 128,
     "verbose": True,
     "iterations": 1000,
@@ -160,6 +163,6 @@ samples = sample_pathwise_conditioning(
 
 # %%
 for i in range(4):
-    plot_mean("", x1_grid, x2_grid, samples[i], save=False)
+    plot_mean("", x1_grid, x2_grid, samples[i] - data_mean_cholesky.mean(), save=False)
 
 # %%

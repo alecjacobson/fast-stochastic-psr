@@ -1,6 +1,5 @@
 import gpytoolbox
 import numpy as np
-from meshplot import plot as plot_mesh
 import matplotlib.pyplot as plt
   
 
@@ -152,6 +151,8 @@ def plot_variance(name, x1, x2, f, save=True):
 
 
 def plot_mesh_cloud_grid(mesh, cloud=None, grid=None):
+    from meshplot import plot as plot_mesh
+
     v, f = mesh
     plot = plot_mesh(v, f)
 

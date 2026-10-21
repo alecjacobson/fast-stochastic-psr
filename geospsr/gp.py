@@ -115,6 +115,8 @@ def compute_mean(
     x_data: (nd, d)
     v_data: (nd, d)
 
+    sigma is the observation noise variance (not its standard deviation).
+
     returns: (nq,)
     """
     if not sdd_params:
@@ -158,7 +160,9 @@ def compute_variance(
     x_query: (nq, d)
     x_data: (nd, d)
 
-    returns: (nq, nq)
+    sigma is the observation noise variance (not its standard deviation).
+
+    returns: (nq,)
     """
     if not sdd_params:
         kv_dd = (
@@ -234,7 +238,7 @@ def compute_covariance(
 
     prior = bmap(prior_row, x_query, bs_kf, verbose, "Computing prior covariance")
 
-    return prior + update
+    return prior - update
 
 
 def sample_pathwise_conditioning(
@@ -255,6 +259,7 @@ def sample_pathwise_conditioning(
     bs_f,
     sdd_params=None,
     verbose=False,
+    noise_key=None,
 ):
     """
     Compute samples of f at x_query conditioned on the v observations of v_data
@@ -270,6 +275,10 @@ def sample_pathwise_conditioning(
     f_eigenvalues: (nf,)
 
     returns: (ns, nq)
+
+    sigma is the observation noise variance, consistent with compute_mean.
+    noise_key controls the observation-noise draw. Pass a key independent of the
+    key used for xi. The default is a reproducible, domain-separated noise key.
     """
 
     def vs(x):
@@ -281,7 +290,10 @@ def sample_pathwise_conditioning(
     v_prior = bmap(vs, x_data, bs_v, verbose, "Computing prior V samples").transpose(
         1, 0, 2
     )
-    v_residual = v_data - v_prior
+    if noise_key is None:
+        noise_key = jax.random.fold_in(jax.random.key(0), 0x4E4F4953)
+    noise = jax.random.normal(noise_key, v_prior.shape, dtype=v_prior.dtype)
+    v_residual = v_data - v_prior - jnp.sqrt(sigma) * noise
 
     if not sdd_params:
         kv_dd = (

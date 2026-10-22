@@ -4,6 +4,21 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Converged iterative conditioning baseline
+
+The [SDD comparison](reproduction/results/iterative_baseline/README.md) includes
+parameter tuning, full analytic checks on A/B, independent holdout analytic rows
+at 100k/1m observations, and separate first/warm fit timings. The compiled update
+loop is verified against the untouched upstream solver, with its noise argument
+mapped to the same variance. Existing GP `sdd_params` can enable it with
+`compiled_loop=True`; noise in the local API remains a variance.
+
+At one million points, both methods pass the sampled residual gate; first fits
+take 205.7 s for compiled SDD and 7.58 s for cutoff-200 NUFFT. SDD is feasible at
+this size and wins the warm A/B mean fits. This does not establish a complete
+application speedup or full posterior equivalence. See the report for commands,
+configuration failures, timing scope and remaining batched-sampling comparisons.
+
 ## Independent vector training bandwidth
 
 The [training-bandwidth report](reproduction/results/training_bandwidth/README.md)

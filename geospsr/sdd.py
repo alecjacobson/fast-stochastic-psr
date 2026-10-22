@@ -15,13 +15,24 @@ def sdd_solve(
     polyak=1e-2,
     iterations=1500,
     verbose=None,
+    compiled_loop=False,
 ):
     """
     Implementation of Stochastic Dual Descent adapted from
     https://github.com/cambridge-mlg/sgd-gp
 
     sigma is the observation noise variance, as in the Cholesky solver.
+    compiled_loop=True compiles the unchanged update sequence as one JAX loop.
+    It supports the existing vmap-based GP sampling/variance calls; progress
+    bars are available only in the default Python-loop mode.
     """
+    if compiled_loop:
+        from .iterative import StochasticDualDescent
+        solver = StochasticDualDescent(x_data, v_data, kernel_v, sigma, bs,
+                                       lr, momentum, polyak)
+        # Preserve the caller's random key and stay traceable under vmap/jit.
+        solver.state = (solver.state[0], key, *solver.state[2:])
+        return solver.advance_jit(solver.state, solver.x, solver.y, iterations)[3]
     num_data = x_data.shape[0]
     dim = v_data.shape[1]
 

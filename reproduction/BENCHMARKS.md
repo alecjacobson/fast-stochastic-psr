@@ -90,8 +90,8 @@ noise levels, and uncertainty regions where sign decisions are sensitive.
 | Collision probability (Fig. 7) | Paired uncertain probes, two B seeds; cached query acceleration | Geometry/sample convergence and complete preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Ray transmittance and next-view scores (Fig. 9) | Paired moving queries; cached query acceleration; reference-grid convergence | Broader decision/ray/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Sequential scanning (Fig. 8) | One seed, approximate sampler | Multi-seed acquisition/refit benchmark [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7) |
-| Input/output scaling and solver convergence (Figs. 11–13, 15) | Independent training-bandwidth overlap audit; analytic mean and conditional residuals | Analytic-model iterative baselines [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) |
-| Massive-scale applications | Million-point conditioning/coherent-sampling pilot with sampled analytic residuals | Full application quality bridge [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
+| Input/output scaling and solver convergence (Figs. 11–13, 15) | Training-bandwidth audit and converged compiled SDD mean fits through 1m observations | Batched conditional-solve/parameter coverage [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6), [#15](https://github.com/alecjacobson/fast-stochastic-psr/issues/15) |
+| Massive-scale applications | Million-point conditioning/sampling pilot; independent SDD/NUFFT residual holdout | Complete application quality bridge and larger impractical-upstream cases [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
 
 Scenes not present in the release remain labeled reconstructed task scenarios.
 Audit additional supplementary examples as they are incorporated; file new
@@ -122,3 +122,13 @@ Include the released iterative solver: a 4 TB dense matrix does not establish
 that every upstream algorithm is infeasible. Extrapolations must state their
 assumptions and cannot be labeled measured speedups. Sampled analytic residuals
 and overlap checks support, but do not prove, full-model fidelity at larger N.
+
+The [iterative conditioning report](results/iterative_baseline/README.md) now
+confirms a tuned, compiled SDD baseline at one million observations. It is
+feasible within a 240-second update budget. The confirmation uses 1,024 analytic
+rows independent of the 512 tuning/stopping rows. Both methods pass the sampled
+residual gate, but this does not certify full-model posterior covariance or
+joint-event accuracy. The 27.2× first-fit ratio is one confirmation measurement,
+not a complete-application result. Three warm fit repetitions cover A/B/100k;
+the million-point fit is not repeated. Batched sampling must reuse analytic
+kernel rows across right-hand sides before any sampling-speedup claim.

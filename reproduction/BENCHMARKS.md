@@ -45,6 +45,12 @@ worst-case marginal probability standard error is 4.42 percentage points;
 sharing draws can resolve much smaller *backend differences*. Independent
 sample-count/seed studies remain necessary for absolute application accuracy.
 
+The [ContactFusion replay plan](CONTACTFUSION.md) extends the scope to physical
+robotics data when released. Its geometry, uncertainty and decision gates need
+reference repeatability measurements before timing selection. The existing
+scorpion gates do not establish ContactFusion quality. Separate faithful
+sequential-prior replay from a new GeoSPSR model and label synthetic proxies.
+
 **Gate revision 2:** the initial A/B runs used only the RMS ray threshold. B's
 direct-Fourier diagnostic passed that threshold but differed by 17.19 percentage
 points at one ray location. The maximum-error gate above was added after this
@@ -164,6 +170,17 @@ Subsequent batching runs record periodic GPU-process ownership and an explicit
 sampled-isolation status. Monitoring errors or observed overlap invalidate a
 timing comparison; absence of a sampled foreign process is not a guarantee
 against short-lived work. Earlier runs were not continuously monitored.
+
+The [centered-hybrid experiment](results/centered_hybrid/README.md) keeps its
+prior and mean fixed while narrowing only the fluctuation inverse. It preserves
+all declared output and analytic-residual gates. The faster cutoff-100 trial
+fails, while cutoff 150 passes eight- and 128-draw overlap checks. Exact dense
+moments independently check the law on the existing 16-query panel, including
+the retained short-scale failure. The 1.54× eight-draw ratio compares our two
+centered solvers; it is not an upstream or full-application speedup. The new
+128-draw SDD numerical check passes, but transient GPU overlap excludes its
+timing again. Both the common finite prior and absolute task accuracy need
+further validation.
 
 Optimized exact sampler preparation is a separate same-method result. CPU/GPU
 randomness shares a posterior law but not realizations; independent moment tests

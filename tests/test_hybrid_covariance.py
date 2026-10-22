@@ -24,6 +24,9 @@ def test_noncommuting_hybrid_covariance_and_omitted_tail_bound():
         q = np.linalg.solve(lower,c)
         second_order = q.T @ x @ x @ np.linalg.solve(np.eye(13)+x,q)
         np.testing.assert_allclose(hybrid-vp,second_order,atol=1e-12,rtol=1e-11)
+        difference=a-z
+        np.testing.assert_allclose(second_order,difference.T@(b+d)@difference,atol=1e-12,rtol=1e-11)
+        np.testing.assert_allclose((c.T-z.T@(b+d))@difference,0,atol=1e-12)
         assert np.linalg.eigvalsh(second_order).min() >= -1e-12
         error = hybrid-vf
         assert np.linalg.eigvalsh(second_order-error).min() >= -1e-12

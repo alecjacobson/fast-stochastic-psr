@@ -4,6 +4,26 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Centered fluctuation solves and practical robotics target
+
+The [centered hybrid report](reproduction/results/centered_hybrid/README.md)
+keeps the vector prior and fitted mean at cutoff 200 while applying a smaller
+inverse to zero-mean fluctuations. It includes exact dense A/B moments, retained
+stress failures, fixed-RHS million-point comparisons and separate timing scopes.
+`SpectralPosterior.draw(..., solve_cutoff=150)` exposes this experimental path;
+it is not an exact posterior at either bandwidth. The default is unchanged.
+
+A separate [positive spectral block design audit](reproduction/results/spectral_blocks/README.md)
+checks disjoint frequency coverage and prior mass for a core cube plus six
+slabs. It provides a possible route to wider spectra with fewer modes, but has
+no GPU backend, posterior-quality validation or measured speedup yet.
+
+The [ContactFusion assessment](reproduction/CONTACTFUSION.md) checks the practical
+robotics use case against the paper and author project repository. Its
+sequential scalar-prior update is not implemented here, and no ContactFusion
+speedup is measured. The project page marks code coming soon; the replay plan
+separates preserving its update from switching to a different geometric GP.
+
 ## Conditioning at larger posterior sample counts
 
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)

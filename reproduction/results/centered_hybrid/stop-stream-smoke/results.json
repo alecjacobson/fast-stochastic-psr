@@ -1,0 +1,328 @@
+{
+  "args": {
+    "mode": "sdd",
+    "scratch": "/opt/geospsr-runtime/common-rhs-smoke",
+    "dataset": "B",
+    "samples": 4,
+    "batch": 1,
+    "repeats": 1,
+    "seed": 42,
+    "rtol": 1e-05,
+    "initial_mean": false,
+    "solve_cutoff": 200,
+    "centered_fluctuations": false,
+    "time_budget": 1800,
+    "chunk": 256,
+    "sdd_row_batch": 512,
+    "eta": 5.0,
+    "stop_tolerance": 0.0005,
+    "stop_rows": 257,
+    "stream_stop_rows": true,
+    "holdout_rows": 129,
+    "holdout_seed": 991,
+    "retain_weights": false,
+    "audit_analytic": false,
+    "reference": "reproduction/results/centered_hybrid/stop-cache-smoke",
+    "output": "reproduction/results/centered_hybrid/stop-stream-smoke"
+  },
+  "complete": true,
+  "seconds": {
+    "rhs_transfer": 0.002038218080997467,
+    "sdd_setup": 1.6605942957103252,
+    "sdd_updates": 0.2913029044866562,
+    "sdd_stopping_checks": 0.416859719902277,
+    "analytic_holdout": 0.016429685056209564,
+    "scalar_aggregation": 0.10972568020224571,
+    "probe_fields": 0.014048811048269272,
+    "rays": 0.014451190829277039,
+    "collision": 0.029080305248498917
+  },
+  "device_used_bytes_at_stage": {
+    "rhs_transfer": 456196096,
+    "sdd_setup": 466681856,
+    "analytic_holdout": 573636608,
+    "scalar_aggregation": 854654976,
+    "probe_fields": 854654976,
+    "rays": 854654976,
+    "collision": 854654976
+  },
+  "scope": "common finite-vector/cutoff50-scalar priors; conditional solve batching only",
+  "device": "NVIDIA L40",
+  "source_manifest": {
+    "args": {
+      "mode": "prepare",
+      "scratch": "/opt/geospsr-runtime/common-rhs-smoke",
+      "dataset": "B",
+      "samples": 4,
+      "batch": 1,
+      "repeats": 3,
+      "seed": 42,
+      "rtol": 1e-05,
+      "time_budget": 1800,
+      "chunk": 512,
+      "audit_analytic": false,
+      "reference": null,
+      "output": "/opt/geospsr-runtime/batch-smoke-prepare"
+    },
+    "complete": true,
+    "seconds": {
+      "mean_fit": 1.1281424388289452,
+      "uncertain_geometry": 0.10041394829750061
+    },
+    "device_used_bytes_at_stage": {
+      "mean_fit": 10346364928,
+      "uncertain_geometry": 11120214016
+    },
+    "scope": "common finite-vector/cutoff50-scalar priors; conditional solve batching only",
+    "device": "NVIDIA L40",
+    "N": 17419,
+    "hashes": {
+      "points": "be16fe0a787a27a1e58cdac5170f8157469fc02f246484435f3b1f0be4688ccc",
+      "normals": "c1ef9b5e299443ae0260580af8e8dd097242790a5d596b313059ba3efe29c47d",
+      "all_rhs": "850e5ee9649a8b0fdccd2e58f6ab5c87781d6d0d82297793822e6e1cbc349df9"
+    },
+    "prior_generation_seconds": [
+      0.05917879939079285,
+      0.05504627153277397,
+      0.0552772656083107,
+      0.05515264347195625
+    ]
+  },
+  "geometry_sha256": "7225e1274a32753c356b93d588f45f47641a03f7157131e146e21bbd86c1cf66",
+  "N": 17419,
+  "sdd_parameters": {
+    "seed": 0,
+    "row_batch": 512,
+    "eta": 5.0,
+    "momentum": 0.9,
+    "polyak": 0.01,
+    "stop_max_bootstrap_upper": 0.0005,
+    "stream_stop_rows": true
+  },
+  "sdd_history": [
+    {
+      "iterations": 256,
+      "update_seconds": 0.13619884103536606,
+      "stopping_check_seconds": 0.32459545880556107,
+      "analytic_residual": {
+        "per_draw_relative_rms": [
+          0.11256150080719948,
+          0.11602561331695255,
+          0.11464309919002029,
+          0.10877447366376496
+        ],
+        "max_relative_rms": 0.11602561331695255,
+        "all_rows": false,
+        "per_draw_bootstrap_95_percent_intervals": [
+          [
+            0.10000297724158896,
+            0.1257053388284075
+          ],
+          [
+            0.10029975789819792,
+            0.13443722973008124
+          ],
+          [
+            0.10153292506135782,
+            0.12871519744695614
+          ],
+          [
+            0.09954515376466043,
+            0.11899484788901908
+          ]
+        ],
+        "max_upper_endpoint": 0.13443722973008124,
+        "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+      }
+    },
+    {
+      "iterations": 512,
+      "update_seconds": 0.1881985440850258,
+      "stopping_check_seconds": 0.030341729521751404,
+      "analytic_residual": {
+        "per_draw_relative_rms": [
+          0.008604505578138612,
+          0.008881446507962572,
+          0.008818307720621626,
+          0.008360879932059341
+        ],
+        "max_relative_rms": 0.008881446507962572,
+        "all_rows": false,
+        "per_draw_bootstrap_95_percent_intervals": [
+          [
+            0.007648202527617523,
+            0.009609980690614726
+          ],
+          [
+            0.007690673789135344,
+            0.010280962983221486
+          ],
+          [
+            0.007814173718149145,
+            0.009901374351763899
+          ],
+          [
+            0.00765431378839651,
+            0.009172785441281014
+          ]
+        ],
+        "max_upper_endpoint": 0.010280962983221486,
+        "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+      }
+    },
+    {
+      "iterations": 768,
+      "update_seconds": 0.24009697511792183,
+      "stopping_check_seconds": 0.031165942549705505,
+      "analytic_residual": {
+        "per_draw_relative_rms": [
+          0.0006562778476175104,
+          0.0006779983203892452,
+          0.0006725711758304416,
+          0.000638593831541615
+        ],
+        "max_relative_rms": 0.0006779983203892452,
+        "all_rows": false,
+        "per_draw_bootstrap_95_percent_intervals": [
+          [
+            0.0005835499936313696,
+            0.0007331560015391543
+          ],
+          [
+            0.0005863513769020213,
+            0.0007855925250439041
+          ],
+          [
+            0.0005962790677810131,
+            0.0007553470201859349
+          ],
+          [
+            0.0005850028107654344,
+            0.0007005181812718223
+          ]
+        ],
+        "max_upper_endpoint": 0.0007855925250439041,
+        "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+      }
+    },
+    {
+      "iterations": 1024,
+      "update_seconds": 0.2913029044866562,
+      "stopping_check_seconds": 0.030756589025259018,
+      "analytic_residual": {
+        "per_draw_relative_rms": [
+          4.953891016141908e-05,
+          5.119328817493326e-05,
+          5.0797785446142725e-05,
+          4.81893823604963e-05
+        ],
+        "max_relative_rms": 5.119328817493326e-05,
+        "all_rows": false,
+        "per_draw_bootstrap_95_percent_intervals": [
+          [
+            4.389601257402647e-05,
+            5.5470509643597814e-05
+          ],
+          [
+            4.419710415124303e-05,
+            5.939939646325131e-05
+          ],
+          [
+            4.486343243332993e-05,
+            5.719098783216411e-05
+          ],
+          [
+            4.400318224260185e-05,
+            5.297447681846327e-05
+          ]
+        ],
+        "max_upper_endpoint": 5.939939646325131e-05,
+        "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+      }
+    }
+  ],
+  "sdd_converged": true,
+  "holdout_excludes_stopping_rows": true,
+  "holdout_indices_sha256": "c3421ee96bdebd92691ef9e2f415eae3456ca106f7fb1181b04fe316e3caaefb",
+  "analytic_holdout": {
+    "per_draw_relative_rms": [
+      4.366963122030766e-05,
+      4.501045184189366e-05,
+      4.554907421354946e-05,
+      4.340473587611054e-05
+    ],
+    "max_relative_rms": 4.554907421354946e-05,
+    "all_rows": false,
+    "per_draw_bootstrap_95_percent_intervals": [
+      [
+        3.9745537455336786e-05,
+        4.808349549664101e-05
+      ],
+      [
+        4.096872395414467e-05,
+        4.944258942361198e-05
+      ],
+      [
+        4.074516968239872e-05,
+        5.100051062319133e-05
+      ],
+      [
+        3.98996307256124e-05,
+        4.716021735440173e-05
+      ]
+    ],
+    "max_upper_endpoint": 5.100051062319133e-05,
+    "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+  },
+  "quality": {
+    "fields": {
+      "field_relative_l2": 3.0160133945855705e-08,
+      "error_over_fluctuation_l2": 6.353774324452388e-07,
+      "empirical_variance_relative_l2": 5.050501385994721e-07,
+      "empirical_covariance_relative_l2": 8.751275679010184e-07,
+      "queries": 257,
+      "covariance_queries": 32,
+      "pass": true
+    },
+    "events": {
+      "rays": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 11,
+        "candidate_best": 11,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0
+      },
+      "compatibility_pass": true,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": true,
+      "application_validation_complete": false
+    },
+    "comparison_kind": "same model numerical comparison",
+    "field_gates": {
+      "error_over_fluctuation_l2": 0.0005,
+      "empirical_variance_relative_l2": 0.0001,
+      "empirical_covariance_relative_l2": 0.0001
+    }
+  },
+  "benchmark_work_wall_seconds": 3.1693969927728176,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 4,
+    "foreign_process_samples": [],
+    "errors": [],
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

@@ -13,6 +13,23 @@ from geospsr.training_spectrum import FourierCovariance
 from reproduction.posterior import Posterior, sync
 
 
+def solve_centered_fluctuations(kernel, rhs, normals, mean_alpha, rtol=1e-5, maxiter=1000):
+    """Apply an experimental inverse only to zero-mean prior/noise fluctuations.
+
+    rhs contains observed normals minus the joint vector prior and noise.
+    The supplied wider-band mean is added independently of this inverse.
+    The solve tolerance is relative to the centered RHS; the returned total
+    weights need not solve the original wider or analytic training system.
+    """
+    if rhs.ndim != 2 or rhs.shape[1] < 3 or rhs.shape[1] % 3 or normals.shape != (rhs.shape[0],3) or mean_alpha.shape != normals.shape:
+        raise ValueError('expected RHS (N,3P), normals (N,3), and mean weights (N,3)')
+    count = rhs.shape[1] // 3
+    centered = rhs-cp.tile(normals,(1,count))
+    fluctuation,info = kernel.solve(centered,rtol=rtol,maxiter=maxiter)
+    info = {**info,'centered_fluctuations':True,'residual_normalization':'centered prior-plus-noise RHS'}
+    return fluctuation+cp.tile(mean_alpha,(1,count)),info
+
+
 class SpectralPosterior(Posterior):
     def __init__(self, x, normals, training_cutoff=100, cutoff=50, lengthscale=.01,
                  variance=.1, noise_variance=.02, rtol=1e-5, eps=1e-6):
@@ -21,6 +38,7 @@ class SpectralPosterior(Posterior):
         self.x = cp.asarray(x, dtype='f')
         self.normals = cp.asarray(normals, dtype='f')
         self.noise_variance = noise_variance
+        self.lengthscale,self.variance = lengthscale,variance
         self.rtol = rtol
         self.op = FourierPoisson(cutoff, lengthscale, variance, eps=eps)
         self.training = FourierCovariance(training_cutoff, lengthscale, variance, eps=eps)
@@ -46,7 +64,7 @@ class SpectralPosterior(Posterior):
         return result
 
     def draw(self, count=64, seed=0, batch=1, retain_components=False, progress=None,
-             validation_rows=None, retain_rhs=False, initial_mean=False):
+             validation_rows=None, retain_rhs=False, initial_mean=False, solve_cutoff=None):
         """Draw the joint finite-scalar / larger-finite-vector posterior.
 
         GPU Gaussian vector coefficients cover the complete training band.
@@ -57,9 +75,21 @@ class SpectralPosterior(Posterior):
         law, not equality to another sampler's seed alone.
         initial_mean reuses the already fitted mean as the CG starting point;
         the stopping tolerance remains relative to each original sample RHS.
+        Explicit solve_cutoff enables an experimental hybrid: keep this model's
+        prior and mean, but use that bandwidth's inverse on centered fluctuations.
+        It must cover the scalar band and not exceed the prior bandwidth.
+        When the bands differ, this is not an exact posterior at either bandwidth. Its numerical
+        solve residual is for the centered, narrower system only.
         """
         if count < 1 or batch < 1:
             raise ValueError('count and batch must be positive')
+        if solve_cutoff is not None and (solve_cutoff != int(solve_cutoff) or
+                not self.op.shape[0]//2 <= solve_cutoff <= self.training.cutoff):
+            raise ValueError('solve cutoff must lie between scalar and prior cutoffs')
+        if solve_cutoff is not None and initial_mean:
+            raise ValueError('centered fluctuations use a zero start; mean is added separately')
+        solve_spectrum = None if solve_cutoff is None else FourierCovariance(
+            int(solve_cutoff),self.lengthscale,self.variance,eps=self.training.eps)
         ids = None if validation_rows is None else cp.asarray(validation_rows, dtype=cp.int64)
         if ids is not None and (ids.ndim != 1 or bool(cp.any((ids < 0) | (ids >= len(self.x))))):
             raise ValueError('validation_rows must be a vector of source indices')
@@ -74,6 +104,7 @@ class SpectralPosterior(Posterior):
         coefficients, retained_weights, retained_prior = [], [], []
         records, validation_rhs, retained_rhs = [], [], []
         kernel, last_size = self.K, 1
+        fluctuation_kernel,fluctuation_size = None,None
         for start in range(0, count, batch):
             sync()
             begin = time.perf_counter()
@@ -100,9 +131,18 @@ class SpectralPosterior(Posterior):
             del low, vector, values, noise
             sync()
             prior_end = time.perf_counter()
-            initial = cp.tile(self.alpha, (1,p)) if initial_mean else None
-            weights, info = kernel.solve(rhs, rtol=self.rtol, maxiter=1000, x0=initial)
-            del initial
+            if solve_spectrum is not None:
+                if fluctuation_size != p:
+                    del fluctuation_kernel
+                    cp.get_default_memory_pool().free_all_blocks()
+                    fluctuation_kernel = FourierKernel(self.x,solve_spectrum,self.noise_variance,rhs_count=3*p)
+                    fluctuation_size = p
+                weights,info = solve_centered_fluctuations(
+                    fluctuation_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
+            else:
+                initial = cp.tile(self.alpha, (1,p)) if initial_mean else None
+                weights, info = kernel.solve(rhs, rtol=self.rtol, maxiter=1000, x0=initial)
+                del initial
             sync()
             solve_end = time.perf_counter()
             if not info['converged']:
@@ -117,6 +157,8 @@ class SpectralPosterior(Posterior):
             end = time.perf_counter()
             records.append({**info, 'samples_done': start + p, 'seconds': end - begin,
                             'initial_mean': bool(initial_mean),
+                            'solve_cutoff':self.training.cutoff if solve_cutoff is None else int(solve_cutoff),
+                            'prior_cutoff':self.training.cutoff,
                             'prior_seconds': prior_end - begin, 'solve_seconds': solve_end - prior_end,
                             'aggregation_seconds': end - solve_end})
             if progress:

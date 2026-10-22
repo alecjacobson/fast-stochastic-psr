@@ -17,7 +17,7 @@ import numpy as np
 
 from geospsr.spectral import FourierKernel, FourierPoisson
 from geospsr.training_spectrum import FourierCovariance
-from reproduction.spectral_posterior import SpectralPosterior
+from reproduction.spectral_posterior import SpectralPosterior, solve_centered_fluctuations
 from reproduction.gpu_audit import GpuProcessAudit
 from reproduction.paired_applications import (application_geometry, uncertain_objects,
                                              events, field_quality, quality)
@@ -57,12 +57,15 @@ def main():
     p.add_argument('--seed', type=int, default=42)
     p.add_argument('--rtol', type=float, default=1e-5, help='NUFFT-CG relative residual tolerance')
     p.add_argument('--initial-mean', action='store_true', help='start either solver from the common finite posterior mean weights')
+    p.add_argument('--solve-cutoff',type=int,default=200)
+    p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
     p.add_argument('--time-budget', type=float, default=1800, help='SDD update budget, seconds')
     p.add_argument('--chunk', type=int, default=512, help='SDD steps between residual checks')
     p.add_argument('--sdd-row-batch', type=int, default=512)
     p.add_argument('--eta', type=float, default=5.)
     p.add_argument('--stop-tolerance', type=float, default=.0005)
     p.add_argument('--stop-rows', type=int, default=512)
+    p.add_argument('--stream-stop-rows',action='store_true',help='SDD: regenerate small analytic validation blocks instead of retaining an N-by-stop_rows matrix')
     p.add_argument('--holdout-rows', type=int, default=1024)
     p.add_argument('--holdout-seed', type=int, default=917)
     p.add_argument('--retain-weights', action='store_true', help='save final weights under scratch for independent diagnostics')
@@ -70,6 +73,10 @@ def main():
     p.add_argument('--reference', type=Path, help='compact output from a common-RHS reference run')
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
+    if not 50 <= a.solve_cutoff <= 200 or (a.solve_cutoff != 200 and not a.centered_fluctuations):
+        p.error('a narrower solve cutoff requires centered fluctuations and must cover scalar cutoff50')
+    if a.centered_fluctuations and (a.mode != 'solve' or a.initial_mean):
+        p.error('centered fluctuations require solve mode without --initial-mean')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -78,6 +85,9 @@ def main():
                        'output': str(a.output)}, 'complete': False, 'seconds': {}, 'device_used_bytes_at_stage': {},
               'scope': 'common finite-vector/cutoff50-scalar priors; conditional solve batching only',
               'device': cp.cuda.runtime.getDeviceProperties(0)['name'].decode()}
+    if a.centered_fluctuations:
+        record['scope'] = ('experimental centered sampler: cutoff200 prior/mean and '
+                           f'cutoff{a.solve_cutoff} fluctuation inverse; not an analytic posterior sampler')
     def save():
         (a.output / 'results.json').write_text(json.dumps(record, indent=2)+'\n')
     def timed(name, fn):
@@ -167,13 +177,20 @@ def main():
                 def analytic_rows(ids):
                     return cp.concatenate([own_jax_array(exact_rows(jnp.asarray(x[ids[i:i+64]]),xj))
                                            for i in range(0,len(ids),64)])
+                def analytic_residual(ids,weights):
+                    residual=[]
+                    for i in range(0,len(ids),64):
+                        block=ids[i:i+64]
+                        residual.append(analytic_rows(block)@weights+.02*weights[block]-rhs[block])
+                    return residual_panel(cp.concatenate(residual),rhs[ids])
             if a.mode == 'sdd':
                 if a.repeats != 1:
                     raise ValueError('SDD confirmation currently requires --repeats 1')
                 record['sdd_parameters'] = {'seed':0,'row_batch':a.sdd_row_batch,'eta':a.eta,'momentum':.9,
-                                            'polyak':.01,'stop_max_bootstrap_upper':a.stop_tolerance}
+                                            'polyak':.01,'stop_max_bootstrap_upper':a.stop_tolerance,
+                                            'stream_stop_rows':a.stream_stop_rows}
                 ids = np.random.default_rng(73).choice(len(x),a.stop_rows,replace=False)
-                stop = timed('analytic_stop_rows', lambda: analytic_rows(ids))
+                stop = None if a.stream_stop_rows else timed('analytic_stop_rows', lambda: analytic_rows(ids))
                 # Release temporary concatenation blocks before JAX allocates
                 # its update workspace; the retained stopping matrix stays live.
                 gc.collect(); cp.get_default_memory_pool().free_all_blocks()
@@ -188,13 +205,18 @@ def main():
                     sdd.compile()
                     return sdd
                 sdd = timed('sdd_setup',setup)
-                elapsed, history = 0., []
+                elapsed, validation_elapsed, history = 0., 0., []
                 while elapsed < a.time_budget:
                     value, duration = measure(lambda: sdd.advance(a.chunk))
                     elapsed += duration
                     weights = own_jax_array(value)
-                    stats = residual_panel(stop @ weights + .02*weights[ids] - rhs[ids],rhs[ids])
-                    history.append({'iterations':sdd.iterations,'update_seconds':elapsed,'analytic_residual':stats})
+                    check_started=time.perf_counter()
+                    stats = analytic_residual(ids,weights) if stop is None else residual_panel(
+                        stop @ weights + .02*weights[ids] - rhs[ids],rhs[ids])
+                    check_elapsed=time.perf_counter()-check_started
+                    validation_elapsed+=check_elapsed
+                    history.append({'iterations':sdd.iterations,'update_seconds':elapsed,
+                                    'stopping_check_seconds':check_elapsed,'analytic_residual':stats})
                     record['sdd_history'] = history
                     save()
                     print('SDD',sdd.iterations,elapsed,stats['max_upper_endpoint'],flush=True)
@@ -202,16 +224,22 @@ def main():
                         break
                 record['sdd_converged'] = stats['max_upper_endpoint'] < a.stop_tolerance
                 record['seconds']['sdd_updates'] = elapsed
+                record['seconds']['sdd_stopping_checks'] = validation_elapsed
                 del sdd,value,stop
             else:
-                vector = timed('spectrum', lambda: FourierCovariance(200))
+                vector = timed('spectrum', lambda: FourierCovariance(a.solve_cutoff))
                 sizes = sorted(set(min(a.batch,a.samples-i) for i in range(0,a.samples,a.batch)))
                 kernels = timed('plans', lambda: {size: FourierKernel(x,vector,.02,rhs_count=3*size) for size in sizes})
                 initial = None
-                if a.initial_mean:
+                if a.initial_mean or a.centered_fluctuations:
                     alpha = np.load(a.scratch / 'mean_alpha.npy')
-                    record['initial_mean_sha256'] = hashlib.sha256(alpha.tobytes()).hexdigest()
+                    key = 'held_mean_sha256' if a.centered_fluctuations else 'initial_mean_sha256'
+                    record[key] = hashlib.sha256(alpha.tobytes()).hexdigest()
+                if a.initial_mean:
                     initial = {size:cp.tile(cp.asarray(alpha),(1,size)) for size in sizes}
+                if a.centered_fluctuations:
+                    normals = cp.asarray(np.load(a.scratch / 'normals.npy'))
+                    mean_alpha = cp.asarray(alpha)
                 record['iterations'] = []
                 def solve_all():
                     result = cp.empty_like(rhs)
@@ -219,8 +247,12 @@ def main():
                     for start in range(0,a.samples,a.batch):
                         size = min(a.batch,a.samples-start)
                         sl = slice(3*start,3*(start+size))
-                        value, stats = kernels[size].solve(rhs[:,sl],rtol=a.rtol,maxiter=1000,
-                                                          x0=None if initial is None else initial[size])
+                        if a.centered_fluctuations:
+                            value,stats = solve_centered_fluctuations(
+                                kernels[size],rhs[:,sl],normals,mean_alpha,rtol=a.rtol)
+                        else:
+                            value, stats = kernels[size].solve(rhs[:,sl],rtol=a.rtol,maxiter=1000,
+                                                              x0=None if initial is None else initial[size])
                         if not stats['converged']:
                             raise RuntimeError(stats)
                         result[:,sl] = value
@@ -232,6 +264,8 @@ def main():
                     weights = timed(f'solve_{repeat}', solve_all)
                 record['median_solve_seconds'] = float(np.median([record['seconds'][f'solve_{r}'] for r in range(a.repeats)]))
                 del kernels, vector, initial
+                if a.centered_fluctuations:
+                    del normals,mean_alpha
             gc.collect(); cp.get_default_memory_pool().free_all_blocks()
             if a.mode == 'sdd' or a.audit_analytic:
                 # Draw from a fresh seed and exclude the fixed stopping panel.
@@ -241,13 +275,7 @@ def main():
                 ids = np.random.default_rng(a.holdout_seed).choice(pool,a.holdout_rows,replace=False)
                 record['holdout_excludes_stopping_rows'] = True
                 record['holdout_indices_sha256'] = hashlib.sha256(ids.tobytes()).hexdigest()
-                def holdout():
-                    residual = []
-                    for i in range(0,len(ids),64):
-                        block = ids[i:i+64]
-                        residual.append(analytic_rows(block) @ weights + .02*weights[block] - rhs[block])
-                    return residual_panel(cp.concatenate(residual),rhs[ids])
-                record['analytic_holdout'] = timed('analytic_holdout',holdout)
+                record['analytic_holdout'] = timed('analytic_holdout',lambda:analytic_residual(ids,weights))
             if a.retain_weights:
                 target = a.scratch / (a.output.name + '-weights.npy')
                 np.save(target,cp.asnumpy(weights))
@@ -275,10 +303,12 @@ def main():
                     raise ValueError('reference sample/query count differs')
                 record['quality'] = {'fields': field_quality(cp.asarray(ref['fields']),cp.asarray(fields)),
                                      'events': quality({k:ref[k] for k in outputs},outputs,geometry['distance'])}
-                analytic_comparison = (a.mode == 'sdd') != (ref_record['args']['mode'] == 'sdd')
-                gates = {'error_over_fluctuation_l2':.002 if analytic_comparison else 5e-4,
-                         'empirical_variance_relative_l2':.0002 if analytic_comparison else 1e-4,
-                         'empirical_covariance_relative_l2':.0002 if analytic_comparison else 1e-4}
+                model_comparison = ((a.mode == 'sdd') != (ref_record['args']['mode'] == 'sdd')
+                                    or a.solve_cutoff != ref_record['args'].get('solve_cutoff',200))
+                record['quality']['comparison_kind'] = 'different inverse models' if model_comparison else 'same model numerical comparison'
+                gates = {'error_over_fluctuation_l2':.002 if model_comparison else 5e-4,
+                         'empirical_variance_relative_l2':.0002 if model_comparison else 1e-4,
+                         'empirical_covariance_relative_l2':.0002 if model_comparison else 1e-4}
                 f = record['quality']['fields']
                 f['pass'] = all(f[key] < value for key,value in gates.items())
                 record['quality']['field_gates'] = gates

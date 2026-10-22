@@ -1,0 +1,2461 @@
+{
+  "args": {
+    "mode": "solve",
+    "scratch": "/opt/geospsr-runtime/common-rhs-128",
+    "dataset": "1000000",
+    "samples": 128,
+    "batch": 1,
+    "repeats": 1,
+    "seed": 42,
+    "rtol": 1e-05,
+    "initial_mean": false,
+    "solve_cutoff": 150,
+    "centered_fluctuations": true,
+    "time_budget": 1800,
+    "chunk": 512,
+    "sdd_row_batch": 512,
+    "eta": 5.0,
+    "stop_tolerance": 0.0005,
+    "stop_rows": 2048,
+    "holdout_rows": 4096,
+    "holdout_seed": 2711,
+    "retain_weights": true,
+    "audit_analytic": true,
+    "reference": "reproduction/results/nufft_batches/nufft128",
+    "output": "reproduction/results/centered_hybrid/million-150-128"
+  },
+  "complete": true,
+  "seconds": {
+    "rhs_transfer": 2.471504148095846,
+    "spectrum": 0.017648521810770035,
+    "plans": 0.10278978943824768,
+    "solve_0": 616.2910090200603,
+    "analytic_holdout": 1.1170697174966335,
+    "scalar_aggregation": 2.7862004078924656,
+    "probe_fields": 0.11580531671643257,
+    "rays": 0.12527045235037804,
+    "collision": 0.14075026661157608
+  },
+  "device_used_bytes_at_stage": {
+    "rhs_transfer": 1995505664,
+    "spectrum": 2131820544,
+    "plans": 4929421312,
+    "solve_0": 8536522752,
+    "analytic_holdout": 4635820032,
+    "scalar_aggregation": 4874895360,
+    "probe_fields": 4874895360,
+    "rays": 4874895360,
+    "collision": 4874895360
+  },
+  "scope": "experimental centered sampler: cutoff200 prior/mean and cutoff150 fluctuation inverse; not an analytic posterior sampler",
+  "device": "NVIDIA L40",
+  "source_manifest": {
+    "args": {
+      "mode": "prepare",
+      "scratch": "/opt/geospsr-runtime/common-rhs-128",
+      "dataset": "1000000",
+      "samples": 128,
+      "batch": 1,
+      "repeats": 3,
+      "seed": 42,
+      "reference": null,
+      "output": "reproduction/results/nufft_batches/prepare"
+    },
+    "complete": true,
+    "seconds": {
+      "mean_fit": 7.675920877605677,
+      "uncertain_geometry": 0.06353888660669327
+    },
+    "device_used_bytes_at_stage": {
+      "mean_fit": 11998920704,
+      "uncertain_geometry": 11998920704
+    },
+    "scope": "common finite-vector/cutoff50-scalar priors; conditional solve batching only",
+    "device": "NVIDIA L40",
+    "N": 1000000,
+    "hashes": {
+      "points": "88966848d5764040a4ecaadbc5381722827f6d929a1c740d2725ce46af1c5e47",
+      "normals": "bf5853403d2d0c3bc78a93ceddfa4c5914b1a31b69efa4ce35920f4d1fa85228",
+      "all_rhs": "8c4dc738cac5acc53b5821dd55084d74ade34746a48660e0f4786f7e165844ff"
+    },
+    "prior_generation_seconds": [
+      0.06175113469362259,
+      0.05769198760390282,
+      0.05718110874295235,
+      0.05733455345034599,
+      0.05729145184159279,
+      0.05772169679403305,
+      0.05776001140475273,
+      0.057247672230005264,
+      0.057453304529190063,
+      0.05769168585538864,
+      0.05765233561396599,
+      0.05757027864456177,
+      0.057776596397161484,
+      0.05745192617177963,
+      0.05785422772169113,
+      0.057701677083969116,
+      0.057691339403390884,
+      0.057730671018362045,
+      0.0577327162027359,
+      0.05760320648550987,
+      0.057233814150094986,
+      0.057655204087495804,
+      0.05781112238764763,
+      0.057670313864946365,
+      0.05765116959810257,
+      0.05780703201889992,
+      0.05769974738359451,
+      0.05762060359120369,
+      0.057672739028930664,
+      0.057818640023469925,
+      0.057266782969236374,
+      0.05775201693177223,
+      0.057671673595905304,
+      0.057587750256061554,
+      0.05752051621675491,
+      0.057433612644672394,
+      0.05722443759441376,
+      0.057669755071401596,
+      0.05771457403898239,
+      0.057716161012649536,
+      0.057620689272880554,
+      0.057514894753694534,
+      0.05792519822716713,
+      0.05759701877832413,
+      0.057662270963191986,
+      0.05774816498160362,
+      0.057687487453222275,
+      0.05756452679634094,
+      0.057850271463394165,
+      0.05758428946137428,
+      0.05753646790981293,
+      0.05719051510095596,
+      0.05734606459736824,
+      0.057767897844314575,
+      0.05753312259912491,
+      0.05762563645839691,
+      0.05767928063869476,
+      0.05772458016872406,
+      0.05767286941409111,
+      0.05776195600628853,
+      0.0576450489461422,
+      0.05763626471161842,
+      0.05767378583550453,
+      0.05767681077122688,
+      0.05768400803208351,
+      0.05773424729704857,
+      0.05755150690674782,
+      0.05764425918459892,
+      0.05791318416595459,
+      0.05768350884318352,
+      0.05769018456339836,
+      0.0575750432908535,
+      0.05753987655043602,
+      0.057807791978120804,
+      0.05786420404911041,
+      0.05786832422018051,
+      0.05780121684074402,
+      0.05778694525361061,
+      0.05761800333857536,
+      0.06258779019117355,
+      0.057744100689888,
+      0.05777270346879959,
+      0.0576985627412796,
+      0.057526081800460815,
+      0.05767045542597771,
+      0.05765648931264877,
+      0.05769825726747513,
+      0.0575871542096138,
+      0.05723130702972412,
+      0.057216446846723557,
+      0.057285092771053314,
+      0.0576559342443943,
+      0.057623378932476044,
+      0.05781641602516174,
+      0.05763956531882286,
+      0.0577368400990963,
+      0.05776648223400116,
+      0.05766710266470909,
+      0.05761222168803215,
+      0.057227637618780136,
+      0.057256363332271576,
+      0.05777489021420479,
+      0.057745810598134995,
+      0.05769294127821922,
+      0.05755387991666794,
+      0.05761859193444252,
+      0.05753432214260101,
+      0.057557083666324615,
+      0.057675816118717194,
+      0.05766403302550316,
+      0.05780870467424393,
+      0.057722605764865875,
+      0.057605158537626266,
+      0.05761568993330002,
+      0.05758848041296005,
+      0.0576590858399868,
+      0.05782682076096535,
+      0.0576888844370842,
+      0.05760807543992996,
+      0.057740870863199234,
+      0.057621102780103683,
+      0.05756884440779686,
+      0.05770508944988251,
+      0.057696014642715454,
+      0.057656437158584595,
+      0.05771741643548012,
+      0.057443033903837204,
+      0.05766312777996063
+    ]
+  },
+  "geometry_sha256": "61863bcee206d4a18d5e8ffc2fea48dc826ec0201c6078f5cfc4a1e87bf051c0",
+  "N": 1000000,
+  "held_mean_sha256": "02dd8b79548c812f6511b231d5c3e88d33ca371c430e513e37b85d9eca5edd0a",
+  "iterations": [
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.974215572583489e-06,
+          9.565576874592807e-06,
+          9.834999218583107e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.798226528801024e-06,
+          9.648297236708459e-06,
+          9.985793440137058e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.821648745855782e-06,
+          9.94887432170799e-06,
+          9.53635299083544e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.758709893503692e-06,
+          9.521210813545622e-06,
+          9.634935850044712e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.890943147183862e-06,
+          9.718154615256935e-06,
+          9.791605407372117e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.406215212948155e-06,
+          9.61002388066845e-06,
+          9.548332855047192e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.827260328165721e-06,
+          9.828806469158735e-06,
+          9.727151336846873e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.946327736543026e-06,
+          9.951505489880219e-06,
+          9.645048521633726e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.825523193285335e-06,
+          9.576360753271729e-06,
+          9.799305189517327e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.449482604395598e-06,
+          9.461473382543772e-06,
+          9.817540558287874e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.542769475956447e-06,
+          9.485045666224323e-06,
+          9.470744771533646e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.848320587479975e-06,
+          9.451814548810944e-06,
+          9.828674592426978e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.610334018361755e-06,
+          9.618902367947157e-06,
+          9.89859108813107e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.836290701059625e-06,
+          9.84389589575585e-06,
+          9.838762707659043e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.801965461520012e-06,
+          9.998739187722094e-06,
+          9.9640637927223e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.772230441740248e-06,
+          9.995352229452692e-06,
+          9.487266652286053e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.523653716314584e-06,
+          9.21698574529728e-06,
+          9.545045941194985e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.833140211412683e-06,
+          9.832700015977025e-06,
+          9.722222785057966e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.578997378412168e-06,
+          9.584388863004278e-06,
+          9.271165254176594e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.42935366765596e-06,
+          9.761634828464594e-06,
+          9.853624760580715e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.805860827327706e-06,
+          9.860736099653877e-06,
+          9.505480193183757e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0004380783357192e-05,
+          9.770485121407546e-06,
+          9.61356818152126e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.683164535090327e-06,
+          9.517042599327397e-06,
+          9.740128916746471e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.813781616685446e-06,
+          9.909839718602598e-06,
+          9.755341125128325e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.008090748655377e-05,
+          9.875010618998203e-06,
+          9.664015124144498e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.844363376032561e-06,
+          9.810538358578924e-06,
+          1.0101131010742392e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.502713510300964e-06,
+          9.822603715292644e-06,
+          9.636694812797941e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.868915185506921e-06,
+          9.585189218341839e-06,
+          9.778996172826737e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.560931175656151e-06,
+          9.362918717670254e-06,
+          9.873699127638247e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.699384463601746e-06,
+          9.79979904514039e-06,
+          9.526604117127135e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.836373465077486e-06,
+          9.980592949432321e-06,
+          9.82310939434683e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.474306352785788e-06,
+          9.642060831538402e-06,
+          9.84744565357687e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.374657565786038e-06,
+          9.667906851973385e-06,
+          9.606524145056028e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.813184988161083e-06,
+          9.71647932601627e-06,
+          1.0003908755606972e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.751258403412066e-06,
+          9.573886927682906e-06,
+          9.59586031967774e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.835572200245224e-06,
+          9.662653610575944e-06,
+          9.997672350436915e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.604917067917995e-06,
+          9.756879080669023e-06,
+          9.544583917886484e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.298601071350276e-06,
+          9.855082680587657e-06,
+          9.898580174194649e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.778787898540031e-06,
+          9.739572305988986e-06,
+          9.87331077340059e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.327286534244195e-06,
+          9.622993275115732e-06,
+          9.489499461778905e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.783210771274753e-06,
+          9.884583960229065e-06,
+          9.890487490338273e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.450444849790074e-06,
+          9.822220818023197e-06,
+          9.46962336456636e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0068287338071968e-05,
+          9.639181371312588e-06,
+          9.791254342417233e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.362509445054457e-06,
+          9.638544725021347e-06,
+          9.816565579967573e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.743747796164826e-06,
+          9.904354556056205e-06,
+          9.767576557351276e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.503411092737224e-06,
+          9.605081686459016e-06,
+          9.33905721467454e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.670639883552212e-06,
+          9.958690498024225e-06,
+          9.410413440491538e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.483476787863765e-06,
+          9.523132575850468e-06,
+          9.788146599021275e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.363215212943032e-06,
+          9.32393413677346e-06,
+          9.491264790995046e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.55894029175397e-06,
+          9.35552907321835e-06,
+          9.29915677261306e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.466067240282428e-06,
+          9.614691407477949e-06,
+          9.544422027829569e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.750282515597064e-06,
+          1.0041100722446572e-05,
+          9.861792932497337e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.64548689807998e-06,
+          9.971935469366144e-06,
+          9.678863534645643e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.50016146816779e-06,
+          9.493106517766137e-06,
+          9.701463568489999e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.641122233006172e-06,
+          9.677438356447965e-06,
+          9.381177733303048e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.187922842102125e-06,
+          9.647310434957035e-06,
+          9.86273335001897e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.91214437817689e-06,
+          9.68007771007251e-06,
+          9.630001841287594e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.436231266590767e-06,
+          9.65833169175312e-06,
+          9.500970008957665e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.855649295786861e-06,
+          9.676783520262688e-06,
+          9.757449333847035e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.47030548559269e-06,
+          9.798171049624216e-06,
+          9.83698100753827e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.625022357795388e-06,
+          9.941746611730196e-06,
+          9.466722985962406e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.87929706752766e-06,
+          9.617288924346212e-06,
+          9.886087354971096e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.658261660661083e-06,
+          9.445832802157383e-06,
+          9.129591489909217e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.697879249870311e-06,
+          9.887790838547517e-06,
+          9.62646026891889e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.771330951480195e-06,
+          9.560262697050348e-06,
+          9.810523806663696e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.822844731388614e-06,
+          9.669072824181058e-06,
+          9.913414942275267e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.6561670943629e-06,
+          9.876780495687854e-06,
+          9.426027645531576e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.571099326421972e-06,
+          9.71388362813741e-06,
+          9.266976121580228e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.633755325921811e-06,
+          9.864318599284161e-06,
+          9.936907190422062e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.538583981338888e-06,
+          9.5951727416832e-06,
+          9.880792276817374e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.741307621879969e-06,
+          9.739038432599045e-06,
+          9.5970708571258e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.971222425519954e-06,
+          1.0041141649708152e-05,
+          9.749003766046371e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.636257345846388e-06,
+          9.771107215783559e-06,
+          9.633488843974192e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.510191375738941e-06,
+          9.758520718605723e-06,
+          9.626175597077236e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.353650057164486e-06,
+          9.410093298356514e-06,
+          9.722184586280491e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.580413461662829e-06,
+          9.835940545599442e-06,
+          9.747024705575313e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.573745956004132e-06,
+          9.596627933206037e-06,
+          9.922746357915457e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.534950550005306e-06,
+          9.767433766683098e-06,
+          9.596962627256289e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.82270466920454e-06,
+          9.79716241999995e-06,
+          9.3938242571312e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.325615792477038e-06,
+          9.706443961476907e-06,
+          9.691008926893119e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.391179446538445e-06,
+          9.439952918910421e-06,
+          9.780038453754969e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.611288078303915e-06,
+          9.498755389358848e-06,
+          9.86424674920272e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.68440235737944e-06,
+          9.823973414313514e-06,
+          9.346370461571496e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.748702723300084e-06,
+          9.45513693295652e-06,
+          9.871572729025502e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.721607057144865e-06,
+          9.834608135861345e-06,
+          9.769309144758154e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.91810520645231e-06,
+          9.652339031163137e-06,
+          9.740632776811253e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0058579391625244e-05,
+          9.504962690698449e-06,
+          9.689942089607939e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.306168976763729e-06,
+          9.70255223364802e-06,
+          9.675658475316595e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.723947187012527e-06,
+          9.623155165172648e-06,
+          9.45317151490599e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.342958946945146e-06,
+          9.256920748157427e-06,
+          9.582111488271039e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0103829481522553e-05,
+          9.7979573183693e-06,
+          9.668449820310343e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.615490853320807e-06,
+          9.690900697023608e-06,
+          9.885023246170022e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.492868230154272e-06,
+          9.54902952798875e-06,
+          9.466105439059902e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.750761819304898e-06,
+          9.803858119994402e-06,
+          9.61748264671769e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.971447980205994e-06,
+          9.503502042207401e-06,
+          9.78134175966261e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.623762707633432e-06,
+          9.658754606789444e-06,
+          9.820039849728346e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0004814612329938e-05,
+          9.961476280295756e-06,
+          9.870457688521128e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.779406354937237e-06,
+          9.587074600858614e-06,
+          1.005666854325682e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.768779818841722e-06,
+          9.560272701492067e-06,
+          9.545654393150471e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.491180207987782e-06,
+          9.951055290002842e-06,
+          9.739746928971726e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.884117389447056e-06,
+          9.530569514026865e-06,
+          9.476711966271978e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.714647603686899e-06,
+          9.507789400231559e-06,
+          9.771463737706654e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.753857739269733e-06,
+          9.485475857218262e-06,
+          9.631900866224896e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.737478649185505e-06,
+          9.862369552138261e-06,
+          9.83428799372632e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.461131412535906e-06,
+          9.702551324153319e-06,
+          9.65894741966622e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.879613571683876e-06,
+          9.572207090968732e-06,
+          9.911418601404876e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.54850111156702e-06,
+          9.503996807325166e-06,
+          9.572776434652042e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.54329880187288e-06,
+          9.680381481302902e-06,
+          9.5008335847524e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.524673259875271e-06,
+          9.781725566426758e-06,
+          9.642436452850234e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.81454286375083e-06,
+          9.777540071809199e-06,
+          9.584398867445998e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.651621439843439e-06,
+          9.835732271312736e-06,
+          1.0004598152590916e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.783369023352861e-06,
+          9.799759936868213e-06,
+          9.533723641652614e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.976451110560447e-06,
+          9.635356946091633e-06,
+          9.58094278757926e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.41066082305042e-06,
+          9.786133887246251e-06,
+          9.844757187238429e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.835396667767782e-06,
+          9.997565939556807e-06,
+          9.410261554876342e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.410231541551184e-06,
+          9.83799691312015e-06,
+          9.735797902976628e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.411208338860888e-06,
+          9.796199265110772e-06,
+          9.790674994292203e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.795828191272449e-06,
+          1.009042352961842e-05,
+          9.862157639872748e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.475766091782134e-06,
+          9.656801921664737e-06,
+          9.800591215025634e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.582605343894102e-06,
+          9.590231456968468e-06,
+          9.97435472527286e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.860834325081669e-06,
+          9.65320214163512e-06,
+          9.846827197179664e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.331775800092146e-06,
+          9.922199751599692e-06,
+          9.548954949423205e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.554264579492155e-06,
+          9.702301213110331e-06,
+          9.981827133742627e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.67124378803419e-06,
+          1.002107728709234e-05,
+          9.757602128956933e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.696973393147346e-06,
+          9.544548447593115e-06,
+          9.976092769647948e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.771158147486858e-06,
+          9.573036550136749e-06,
+          9.488357136433478e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.0011430276790634e-05,
+          9.559301361150574e-06,
+          9.943149962055031e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.797184247872792e-06,
+          9.891195077216253e-06,
+          9.42171573115047e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ]
+  ],
+  "median_solve_seconds": 616.2910090200603,
+  "holdout_excludes_stopping_rows": true,
+  "holdout_indices_sha256": "b7a936e7cb6a0a8dbe8b2cc25379ae4163f63a56accd3eabdbb45ffb2da3b989",
+  "analytic_holdout": {
+    "per_draw_relative_rms": [
+      0.0007655919277259604,
+      0.0007669506862520986,
+      0.0007667542506557304,
+      0.0007658321102844465,
+      0.0007691412011021259,
+      0.0007567438238904165,
+      0.0007758468064424293,
+      0.0007639743202125268,
+      0.0007688169324417681,
+      0.000764154176498889,
+      0.0007667080250122735,
+      0.0007569598813104523,
+      0.0007768629111148422,
+      0.0007501409961243693,
+      0.0007553919297847711,
+      0.0007665758973200476,
+      0.0007612202449113151,
+      0.0007635768906763384,
+      0.0007463863065194969,
+      0.0007587326273863596,
+      0.0007691680312037377,
+      0.0007670618858720517,
+      0.0007566956409474606,
+      0.0007640305783414875,
+      0.0007592560722722635,
+      0.0007663718006034932,
+      0.0007574248403622533,
+      0.0007638155175687939,
+      0.0007693518306380482,
+      0.0007662810504205008,
+      0.0007595308162324685,
+      0.0007625982003893768,
+      0.0007468821565627697,
+      0.0007563256078564828,
+      0.0007608008377888907,
+      0.0007722575514336955,
+      0.0007511954616050862,
+      0.00075948955194448,
+      0.0007619952911177782,
+      0.0007550298665758744,
+      0.0007585791818878117,
+      0.0007584953390675363,
+      0.0007515372815165081,
+      0.0007693918739732173,
+      0.0007589201581279121,
+      0.0007729205578242416,
+      0.0007650241362293555,
+      0.0007567466563495395,
+      0.0007755319964481219,
+      0.0007557587986812944,
+      0.0007687367691045203,
+      0.0007715077944513999,
+      0.0007614840945361109,
+      0.0007736033108105366,
+      0.0007734594590435409,
+      0.000777463528888718,
+      0.0007690251826348967,
+      0.0007587440060317991,
+      0.000755079838516407,
+      0.0007634532214746553,
+      0.0007703724747774014,
+      0.0007653783274560166,
+      0.0007481230861939324,
+      0.0007563883518946683,
+      0.0007645086702232524,
+      0.0007572800080928282,
+      0.0007670386939816985,
+      0.000756882655873501,
+      0.0007754020469014794,
+      0.0007549758706631407,
+      0.0007686412660577892,
+      0.0007656160794471649,
+      0.0007655258502260423,
+      0.0007610650674046379,
+      0.0007601770307993764,
+      0.0007628833594766555,
+      0.0007509194543573871,
+      0.0007627352903733648,
+      0.0007581158074686032,
+      0.0007704309968701945,
+      0.0007672331567390558,
+      0.0007582712596393198,
+      0.0007550596261350078,
+      0.0007629779994435596,
+      0.0007765544439666913,
+      0.0007734920084469714,
+      0.0007617204727998477,
+      0.0007649755389580752,
+      0.0007626496381399002,
+      0.0007587065567267749,
+      0.0007576897147031698,
+      0.0007615231794273925,
+      0.000767311530532306,
+      0.0007730109361348536,
+      0.0007631683707507101,
+      0.0007642797806432843,
+      0.0007648916290064413,
+      0.0007686611959282993,
+      0.0007551037877650742,
+      0.0007551537491780587,
+      0.0007645586890515874,
+      0.0007559546192527483,
+      0.0007654445365746799,
+      0.0007646886396899874,
+      0.0007614227241785233,
+      0.0007619775195142137,
+      0.0007547882358867726,
+      0.000775565913193917,
+      0.0007703668436849538,
+      0.0007646482270256547,
+      0.000765611511400597,
+      0.0007649039712323226,
+      0.0007596191717458251,
+      0.0007537053137953495,
+      0.0007541814268817807,
+      0.0007599574499719939,
+      0.0007570301699902432,
+      0.0007679631402046037,
+      0.0007453791423986652,
+      0.0007658936649114254,
+      0.0007515617922523947,
+      0.0007558769386171154,
+      0.0007583440393859951,
+      0.0007508679822927081,
+      0.0007646063729058678,
+      0.0007603788236145173,
+      0.0007653644129133016,
+      0.0007661949441352676
+    ],
+    "max_relative_rms": 0.000777463528888718,
+    "all_rows": false,
+    "per_draw_bootstrap_95_percent_intervals": [
+      [
+        0.0007538511050872559,
+        0.0007774923089651483
+      ],
+      [
+        0.0007546706122741624,
+        0.0007793742463742889
+      ],
+      [
+        0.0007543120444557509,
+        0.0007785851797216457
+      ],
+      [
+        0.0007543823802060211,
+        0.0007780598320464619
+      ],
+      [
+        0.0007572457507560983,
+        0.0007816171264393887
+      ],
+      [
+        0.0007443506774575593,
+        0.0007689274000155332
+      ],
+      [
+        0.0007633670094900091,
+        0.0007884363014100462
+      ],
+      [
+        0.0007525323107215962,
+        0.0007755108468255411
+      ],
+      [
+        0.0007573336619245613,
+        0.0007807264250292859
+      ],
+      [
+        0.0007526888816619158,
+        0.0007764965918294704
+      ],
+      [
+        0.0007547447422273522,
+        0.0007786973520635603
+      ],
+      [
+        0.0007447042613361468,
+        0.0007685373838760826
+      ],
+      [
+        0.0007654705510131978,
+        0.0007888527344206564
+      ],
+      [
+        0.0007383900961323534,
+        0.0007619848939506204
+      ],
+      [
+        0.0007440110498493286,
+        0.0007669869838666929
+      ],
+      [
+        0.0007547964135244986,
+        0.0007790954326320316
+      ],
+      [
+        0.0007487896787809242,
+        0.000773175463139122
+      ],
+      [
+        0.0007513219233441748,
+        0.0007756386984085246
+      ],
+      [
+        0.0007352820267774496,
+        0.0007578117545703814
+      ],
+      [
+        0.0007466399007248698,
+        0.000770735214136082
+      ],
+      [
+        0.000757201857847641,
+        0.0007814178287680569
+      ],
+      [
+        0.000755883299282942,
+        0.000779151446533663
+      ],
+      [
+        0.0007445404960539864,
+        0.0007685737791945879
+      ],
+      [
+        0.0007519127387690749,
+        0.0007766876246467588
+      ],
+      [
+        0.0007474522896358074,
+        0.0007716367023982646
+      ],
+      [
+        0.0007537577378527133,
+        0.0007785357943754887
+      ],
+      [
+        0.0007457695546766697,
+        0.0007700891357398022
+      ],
+      [
+        0.0007512031798480726,
+        0.0007757563547035468
+      ],
+      [
+        0.0007576649158817587,
+        0.000780609826200467
+      ],
+      [
+        0.0007540753855052575,
+        0.0007788135197723218
+      ],
+      [
+        0.000747742741709938,
+        0.0007721901544216893
+      ],
+      [
+        0.0007505106582858002,
+        0.0007749772422594939
+      ],
+      [
+        0.0007356017939679092,
+        0.0007588736110259774
+      ],
+      [
+        0.0007444229778100187,
+        0.0007690464355087881
+      ],
+      [
+        0.0007486200926021743,
+        0.0007734821146260671
+      ],
+      [
+        0.0007596577428032154,
+        0.0007853452636903292
+      ],
+      [
+        0.0007393730203605697,
+        0.0007634119943016358
+      ],
+      [
+        0.0007477130170651222,
+        0.0007721905486950862
+      ],
+      [
+        0.0007498149090079365,
+        0.0007744812804781373
+      ],
+      [
+        0.0007428419771617327,
+        0.0007666625133753997
+      ],
+      [
+        0.0007463169145073078,
+        0.0007703582280772319
+      ],
+      [
+        0.0007463257721079166,
+        0.0007703404251485362
+      ],
+      [
+        0.0007400081588762042,
+        0.0007639348847123831
+      ],
+      [
+        0.0007563328843605198,
+        0.0007814899140188323
+      ],
+      [
+        0.0007476144683254315,
+        0.0007705510986188206
+      ],
+      [
+        0.0007602837797942841,
+        0.0007852473684478078
+      ],
+      [
+        0.0007527972827834941,
+        0.0007772199351660807
+      ],
+      [
+        0.0007451284460532533,
+        0.0007697135517256224
+      ],
+      [
+        0.000763379746019822,
+        0.0007878945885653438
+      ],
+      [
+        0.0007444924914039964,
+        0.0007675691442021311
+      ],
+      [
+        0.0007563259193872351,
+        0.0007811024906510013
+      ],
+      [
+        0.0007595370600619199,
+        0.0007832802879790636
+      ],
+      [
+        0.0007499443948013844,
+        0.0007739115149270419
+      ],
+      [
+        0.0007614438037423413,
+        0.0007855026202352118
+      ],
+      [
+        0.0007616595123522849,
+        0.0007849311237303181
+      ],
+      [
+        0.0007657976500518568,
+        0.0007896153266291314
+      ],
+      [
+        0.0007572651858422719,
+        0.0007813798308342653
+      ],
+      [
+        0.000746758404016433,
+        0.0007712605778590156
+      ],
+      [
+        0.0007429193085336845,
+        0.00076682146913643
+      ],
+      [
+        0.0007514514158357938,
+        0.0007752772545798128
+      ],
+      [
+        0.0007580329508834411,
+        0.0007826689006543934
+      ],
+      [
+        0.000753499923968078,
+        0.0007774722739528213
+      ],
+      [
+        0.0007372903838058746,
+        0.0007592478741987826
+      ],
+      [
+        0.000744261223160556,
+        0.000768359006323882
+      ],
+      [
+        0.0007521691646483364,
+        0.0007766491508903542
+      ],
+      [
+        0.000745764028306178,
+        0.0007689311875453665
+      ],
+      [
+        0.0007545200366511532,
+        0.0007795624368011912
+      ],
+      [
+        0.0007446620507355526,
+        0.000769378429399369
+      ],
+      [
+        0.0007628305090175292,
+        0.0007869781666242343
+      ],
+      [
+        0.0007429764803874066,
+        0.0007673977696967875
+      ],
+      [
+        0.0007559329918953512,
+        0.0007818719677446221
+      ],
+      [
+        0.0007541818758423706,
+        0.0007776758791676505
+      ],
+      [
+        0.0007537852075402981,
+        0.0007778555111025246
+      ],
+      [
+        0.0007495278219444971,
+        0.0007734122351085285
+      ],
+      [
+        0.0007487408830468647,
+        0.0007724879427768306
+      ],
+      [
+        0.0007510737879046567,
+        0.0007742928943588612
+      ],
+      [
+        0.0007390507897430847,
+        0.0007622683732964271
+      ],
+      [
+        0.0007501049909185522,
+        0.0007749566253772002
+      ],
+      [
+        0.0007465421045825082,
+        0.0007709772061236896
+      ],
+      [
+        0.0007580218101158657,
+        0.0007825917014920716
+      ],
+      [
+        0.000755348930820036,
+        0.0007792879734068519
+      ],
+      [
+        0.0007461955241154824,
+        0.000770892556316588
+      ],
+      [
+        0.0007436535207257836,
+        0.0007666848944830251
+      ],
+      [
+        0.0007513848495979739,
+        0.0007755098229363626
+      ],
+      [
+        0.0007644939334474014,
+        0.0007890037962440589
+      ],
+      [
+        0.0007620136536705553,
+        0.0007854153819657332
+      ],
+      [
+        0.0007500832996160731,
+        0.0007731915157853749
+      ],
+      [
+        0.0007521824923517735,
+        0.000777385746232039
+      ],
+      [
+        0.0007504199883113259,
+        0.0007752728360002581
+      ],
+      [
+        0.0007479254375042661,
+        0.0007702773667686734
+      ],
+      [
+        0.0007459697669755223,
+        0.0007696492411196846
+      ],
+      [
+        0.0007497456618602845,
+        0.0007729982398456284
+      ],
+      [
+        0.0007557395249848499,
+        0.0007796023966927795
+      ],
+      [
+        0.0007613870492499486,
+        0.0007843650655938751
+      ],
+      [
+        0.0007515056673279598,
+        0.0007752276048363165
+      ],
+      [
+        0.0007518117530345247,
+        0.0007774419798431211
+      ],
+      [
+        0.000752658156342748,
+        0.0007768076548101466
+      ],
+      [
+        0.0007563570783397865,
+        0.0007802530058083033
+      ],
+      [
+        0.0007429383803375448,
+        0.0007669199414327256
+      ],
+      [
+        0.0007433336163853623,
+        0.0007665421342254022
+      ],
+      [
+        0.0007526141845012287,
+        0.0007762533091965814
+      ],
+      [
+        0.0007449259160684738,
+        0.0007682511422515372
+      ],
+      [
+        0.0007534730347837957,
+        0.0007783456578278086
+      ],
+      [
+        0.0007525438412332858,
+        0.0007769697128422137
+      ],
+      [
+        0.0007494024571240244,
+        0.0007734765390395913
+      ],
+      [
+        0.0007505183669281534,
+        0.0007738324109748534
+      ],
+      [
+        0.0007434675441883533,
+        0.0007669456228244251
+      ],
+      [
+        0.0007634653293767752,
+        0.000788306929327714
+      ],
+      [
+        0.000758312785145754,
+        0.000782294284077691
+      ],
+      [
+        0.0007536910248539709,
+        0.0007761818160872573
+      ],
+      [
+        0.0007543812216402805,
+        0.0007770889868592425
+      ],
+      [
+        0.0007528838317709372,
+        0.0007772576326162229
+      ],
+      [
+        0.0007479433829431818,
+        0.0007719332039666469
+      ],
+      [
+        0.0007428800563343294,
+        0.0007653326431981091
+      ],
+      [
+        0.0007425465040537329,
+        0.0007662031645678797
+      ],
+      [
+        0.0007484946593944883,
+        0.0007718817350984035
+      ],
+      [
+        0.0007454311772930525,
+        0.0007684851446501921
+      ],
+      [
+        0.0007554848145919149,
+        0.0007807099946122255
+      ],
+      [
+        0.0007340834292893493,
+        0.000756894465674157
+      ],
+      [
+        0.0007548899605718624,
+        0.0007778130126230588
+      ],
+      [
+        0.0007393791204726785,
+        0.0007639914427804173
+      ],
+      [
+        0.0007440017018895245,
+        0.0007680362267840798
+      ],
+      [
+        0.0007462528486082534,
+        0.0007721843081736419
+      ],
+      [
+        0.0007393015656250887,
+        0.0007622944084630115
+      ],
+      [
+        0.0007525871981162827,
+        0.0007765765494569619
+      ],
+      [
+        0.0007486603184053245,
+        0.0007722160531102351
+      ],
+      [
+        0.0007522839694826068,
+        0.0007780163546689686
+      ],
+      [
+        0.0007543741452883671,
+        0.0007782107225652458
+      ]
+    ],
+    "max_upper_endpoint": 0.0007896153266291314,
+    "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+  },
+  "retained_weights": "/opt/geospsr-runtime/common-rhs-128/million-150-128-weights.npy",
+  "retained_weights_sha256": "a40d71cc1d6cada12effa9730f14b8a202607b39ce4da1c05cf057a97d4eca7d",
+  "quality": {
+    "fields": {
+      "field_relative_l2": 1.7549647282066871e-06,
+      "error_over_fluctuation_l2": 8.658776641823351e-05,
+      "empirical_variance_relative_l2": 8.376139703614172e-06,
+      "empirical_covariance_relative_l2": 6.572805901519237e-05,
+      "queries": 257,
+      "covariance_queries": 32,
+      "pass": true
+    },
+    "events": {
+      "rays": {
+        "rms_probability_difference": 9.966999641619623e-05,
+        "max_probability_difference": 0.0078125,
+        "max_paired_standard_error": 0.007812499866294757,
+        "event_disagreement_fraction": 1.2715657552083333e-06
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 14,
+        "candidate_best": 14,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0
+      },
+      "compatibility_pass": true,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": true,
+      "application_validation_complete": false
+    },
+    "comparison_kind": "different inverse models",
+    "field_gates": {
+      "error_over_fluctuation_l2": 0.002,
+      "empirical_variance_relative_l2": 0.0002,
+      "empirical_covariance_relative_l2": 0.0002
+    }
+  },
+  "benchmark_work_wall_seconds": 626.3877585865557,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 597,
+    "foreign_process_samples": [],
+    "errors": [],
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

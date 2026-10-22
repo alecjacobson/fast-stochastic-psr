@@ -109,6 +109,12 @@ per axis is `p`, these three disjoint cases have conditional weights
 - The theorem concerns exact solves and transforms. Floating-point,
   NUFFT and iterative errors remain separate; large-N estimates are not
   certified by the theorem alone.
+- A later [normalization audit](../spectral_blocks/README.md) found an inherited
+  Fourier/analytic Matérn scaling mismatch at long length scales. It is below
+  float64 resolution for the .01/.005 settings reported here. At larger scales
+  the in-band defect must also be included; the current outside-cube estimator
+  alone is insufficient. Correction is tracked in
+  [#24](https://github.com/alecjacobson/fast-stochastic-psr/issues/24).
 - Sixteen query probes do not establish complete ray/collision probabilities,
   mesh convergence, posterior mean agreement, or matching quality everywhere.
   Covariance error relative to a matrix norm also need not control every
@@ -120,7 +126,7 @@ clustered observations, high-frequency phases, an independent explicit finite
 Fourier sum, analytic normalization, the PSD bracket, and the hybrid-sampler
 covariance identity.
 
-## Separate prior and solve bandwidths (proposed experiment)
+## Separate prior and solve bandwidths
 
 For issue #19, let `B` include the narrow training band and observation noise,
 `D >= 0` contain the additional modes in a wider coherent prior, and `E >= 0`
@@ -144,6 +150,16 @@ analytic posterior, the remaining tail gives the two-sided matrix bound
 R_D - Z.T E Z <= V_hybrid - V_full <= R_D.
 ```
 
+For dense audits, a stable positive-semidefinite expression is
+`R_D=(A-Z).T (B+D) (A-Z)`. It avoids subtracting two nearly equal posterior
+covariances. With the same wider joint prior and held mean, `R_D` is also the
+covariance of the **difference between paired hybrid and wider-posterior
+draws**. That difference is independent of the wider posterior fluctuation:
+its cross covariance vanishes because `C.T-Z.T(B+D)=0`.
+Thus exact-law covariance error is second order even though paired field error
+scales as the square root of that excess. Finite-ensemble paired covariance
+differences also contain sampling cross terms; they need not equal `R_D`.
+
 Mean error does not enjoy that second-order cancellation. To hold the mean
 fixed while testing a cheaper inverse, generate centered fluctuations
 `f_prior - C.T B^-1 (vector_prior + noise)` and then add the independently
@@ -153,6 +169,9 @@ query coverage still require validation. These identities motivate a trial;
 they are not measured speedups or a claim of an exact full-posterior sampler.
 An independent NumPy test checks noncommuting positive-definite matrices,
 the joint-sampling covariance and the two-sided tail bound.
+The [centered-hybrid report](../centered_hybrid/README.md) now tests this design
+with exact dense A/B moments and paired million-point draws, retaining a
+short-scale/low-noise failure and rejected cutoff-100 trial.
 
 ## A separate bound for posterior mean error
 

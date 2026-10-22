@@ -9,10 +9,15 @@ import numpy as np
 from mathutils import Vector
 from bpy_extras.object_utils import world_to_camera_view
 
-p=argparse.ArgumentParser();p.add_argument('--preview',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--preview',action='store_true')
+p.add_argument('--input',type=Path);p.add_argument('--radius',type=float,default=.0025);a=p.parse_args()
 root=Path(__file__).resolve().parents[1];out=root/'reproduction/results/teaser'
-data=np.load(out/'cloud_1000000.npz');points=data['points']
-fields=np.load(out/'fields.npz');heights=fields['heights'];extent=float(fields['axis'][-1])
+if a.input:
+    out=a.input.parent
+    data=np.load(a.input);fields=data
+else:
+    data=np.load(out/'cloud_1000000.npz');fields=np.load(out/'fields.npz')
+points=data['points'];heights=fields['heights'];extent=float(fields['axis'][-1])
 # Original geometry is Y-up. Blender geometry is Z-up.
 def transform(v):return np.stack([v[...,0],-v[...,2],v[...,1]],axis=-1)
 xyz=transform(points).astype(np.float32)
@@ -39,9 +44,9 @@ bsdf=mat.node_tree.nodes.get('Principled BSDF')
 bsdf.inputs['Base Color'].default_value=(.20,.21,.12,1)
 bsdf.inputs['Roughness'].default_value=.82
 bsdf.inputs['Specular IOR Level'].default_value=.15
-mesh=bpy.data.meshes.new('One million measured positions')
+mesh=bpy.data.meshes.new('Measured positions')
 mesh.vertices.add(len(xyz));mesh.vertices.foreach_set('co',xyz.ravel());mesh.update()
-obj=bpy.data.objects.new('Input — 1,000,000 observations',mesh);scene.collection.objects.link(obj)
+obj=bpy.data.objects.new(f'Input — {len(points):,} observations',mesh);scene.collection.objects.link(obj)
 mod=obj.modifiers.new('Actual measured points','NODES')
 group=bpy.data.node_groups.new('Point cloud, no subsampling','GeometryNodeTree')
 group.interface.new_socket(name='Geometry',in_out='INPUT',socket_type='NodeSocketGeometry')
@@ -49,7 +54,7 @@ group.interface.new_socket(name='Geometry',in_out='OUTPUT',socket_type='NodeSock
 mod.node_group=group
 nodes=group.nodes;links=group.links
 src=nodes.new('NodeGroupInput');dst=nodes.new('NodeGroupOutput')
-pts=nodes.new('GeometryNodeMeshToPoints');pts.mode='VERTICES';pts.inputs['Radius'].default_value=.0025
+pts=nodes.new('GeometryNodeMeshToPoints');pts.mode='VERTICES';pts.inputs['Radius'].default_value=a.radius
 setmat=nodes.new('GeometryNodeSetMaterial');setmat.inputs['Material'].default_value=mat
 links.new(src.outputs['Geometry'],pts.inputs['Mesh']);links.new(pts.outputs['Points'],setmat.inputs['Geometry']);links.new(setmat.outputs['Geometry'],dst.inputs['Geometry'])
 
@@ -84,7 +89,7 @@ for h in heights:
     projected=[world_to_camera_view(scene,cam,Vector(c)) for c in corners]
     anchor=max(projected,key=lambda p:p.x)
     anchors.append([float(anchor.x),float(anchor.y)])
-(out/'cloud_projection.json').write_text(json.dumps({'anchors':anchors,'rendered_points':len(points),'camera':list(cam.location),'radius':.0025,'blender':bpy.app.version_string},indent=2))
+(out/'cloud_projection.json').write_text(json.dumps({'anchors':anchors,'rendered_points':len(points),'camera':list(cam.location),'radius':a.radius,'blender':bpy.app.version_string},indent=2))
 scene.render.filepath=str(out/('cloud_preview.png' if a.preview else 'cloud_render.png'))
 bpy.ops.render.render(write_still=True)
 print('Rendered',len(points),'observations to',scene.render.filepath)

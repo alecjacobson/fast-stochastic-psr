@@ -1,0 +1,18 @@
+2026-10-22 01:12:39.411852: E external/xla/xla/service/slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %reduce.14 = s32[1030301]{0} reduce(%constant.15, %constant.6), dimensions={1}, to_apply=%region_0.13, metadata={op_name="jit(poisson_cross_covariances)/jit(main)/reduce_sum" source_file="/opt/geospsr-runtime/upstream/geospsr/gp.py" source_line=20}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+2026-10-22 01:12:41.830208: E external/xla/xla/service/slow_operation_alarm.cc:140] The operation took 3.517669381s
+Constant folding an instruction is taking > 1s:
+
+  %reduce.14 = s32[1030301]{0} reduce(%constant.15, %constant.6), dimensions={1}, to_apply=%region_0.13, metadata={op_name="jit(poisson_cross_covariances)/jit(main)/reduce_sum" source_file="/opt/geospsr-runtime/upstream/geospsr/gp.py" source_line=20}
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+A matched fields, literal API agreement, and input hashes passed
+B matched fields, literal API agreement, and input hashes passed
+Direct Fourier validation {'pairs': 64, 'relative_l2': 3.6567062124959193e-06, 'max_abs': 3.637978807091713e-11}

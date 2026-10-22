@@ -36,8 +36,17 @@ uses a core cube plus conjugate-paired slabs for GPU actions and coherent
 finite-posterior draws. Independent direct sums and dense moments validate
 the implementation. Core 150 / extent 800 passes the previously failing
 short-scale, low-noise B panel, including the analytic residual gate; narrower
-failures are retained. Full application quality, massive-input validation,
-omitted-spectrum diagnostics and competitive timings remain open.
+failures are retained. Full application quality and competitive timings remain
+open.
+
+The [stratified block-tail report](reproduction/results/block_tail/README.md)
+now includes omitted inside-cube corners and the infinite outer tail. Dense
+controls validate their covariance contributions separately; the million-point
+panel and a three-probe float64 control provide limited large-input evidence.
+Centered block-inverse pilots keep the prior/mean and stored RHS fixed and
+retain rejected configurations. A CPU corner-refinement screen uses the old
+inverse weights only; it predicts neither new posterior error nor runtime.
+Full application coverage and competitive performance remain open.
 
 The [ContactFusion assessment](reproduction/CONTACTFUSION.md) checks the practical
 robotics use case against the paper and author project repository. Its

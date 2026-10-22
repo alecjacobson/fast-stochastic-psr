@@ -58,6 +58,7 @@ def main():
     p.add_argument('--rtol', type=float, default=1e-5, help='NUFFT-CG relative residual tolerance')
     p.add_argument('--initial-mean', action='store_true', help='start either solver from the common finite posterior mean weights')
     p.add_argument('--solve-cutoff',type=int,default=200)
+    p.add_argument('--block-core',type=int,help='experimental positive-block core for centered inverse; solve-cutoff is its extent')
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
     p.add_argument('--time-budget', type=float, default=1800, help='SDD update budget, seconds')
     p.add_argument('--chunk', type=int, default=512, help='SDD steps between residual checks')
@@ -77,6 +78,8 @@ def main():
         p.error('a narrower solve cutoff requires centered fluctuations and must cover scalar cutoff50')
     if a.centered_fluctuations and (a.mode != 'solve' or a.initial_mean):
         p.error('centered fluctuations require solve mode without --initial-mean')
+    if a.block_core is not None and (not a.centered_fluctuations or not 50 <= a.block_core <= a.solve_cutoff):
+        p.error('block core requires centered fluctuations and 50 <= core <= solve cutoff <= 200')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -88,6 +91,8 @@ def main():
     if a.centered_fluctuations:
         record['scope'] = ('experimental centered sampler: cutoff200 prior/mean and '
                            f'cutoff{a.solve_cutoff} fluctuation inverse; not an analytic posterior sampler')
+        if a.block_core is not None:
+            record['scope'] += f'; inverse retains only core{a.block_core} plus one-high-axis slabs'
     def save():
         (a.output / 'results.json').write_text(json.dumps(record, indent=2)+'\n')
     def timed(name, fn):
@@ -227,9 +232,15 @@ def main():
                 record['seconds']['sdd_stopping_checks'] = validation_elapsed
                 del sdd,value,stop
             else:
-                vector = timed('spectrum', lambda: FourierCovariance(a.solve_cutoff))
+                if a.block_core is None:
+                    vector = timed('spectrum', lambda: FourierCovariance(a.solve_cutoff))
+                    kernel_type = FourierKernel
+                else:
+                    from geospsr.block_spectral import BlockSpectrum,BlockKernel
+                    vector = timed('spectrum',lambda:BlockSpectrum(a.block_core,a.solve_cutoff))
+                    kernel_type = BlockKernel
                 sizes = sorted(set(min(a.batch,a.samples-i) for i in range(0,a.samples,a.batch)))
-                kernels = timed('plans', lambda: {size: FourierKernel(x,vector,.02,rhs_count=3*size) for size in sizes})
+                kernels = timed('plans', lambda: {size: kernel_type(x,vector,.02,rhs_count=3*size) for size in sizes})
                 initial = None
                 if a.initial_mean or a.centered_fluctuations:
                     alpha = np.load(a.scratch / 'mean_alpha.npy')
@@ -303,8 +314,15 @@ def main():
                     raise ValueError('reference sample/query count differs')
                 record['quality'] = {'fields': field_quality(cp.asarray(ref['fields']),cp.asarray(fields)),
                                      'events': quality({k:ref[k] for k in outputs},outputs,geometry['distance'])}
+                # A core equal to its extent is the complete cube, so it
+                # requires the stricter same-model numerical gates.
+                candidate_core = a.block_core if a.block_core is not None and a.block_core<a.solve_cutoff else None
+                reference_core = ref_record['args'].get('block_core')
+                if reference_core == ref_record['args'].get('solve_cutoff',200):
+                    reference_core = None
                 model_comparison = ((a.mode == 'sdd') != (ref_record['args']['mode'] == 'sdd')
-                                    or a.solve_cutoff != ref_record['args'].get('solve_cutoff',200))
+                                    or a.solve_cutoff != ref_record['args'].get('solve_cutoff',200)
+                                    or candidate_core != reference_core)
                 record['quality']['comparison_kind'] = 'different inverse models' if model_comparison else 'same model numerical comparison'
                 gates = {'error_over_fluctuation_l2':.002 if model_comparison else 5e-4,
                          'empirical_variance_relative_l2':.0002 if model_comparison else 1e-4,

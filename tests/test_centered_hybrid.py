@@ -59,3 +59,24 @@ def test_centered_hybrid_sampler_moments_match_independent_joint_covariance():
     se = np.sqrt(np.diag(expected_cov)/len(samples))
     assert np.all(np.abs(samples.mean(0)-expected_mean) < 5*se+2e-6)
     assert np.linalg.norm(np.cov(samples.T)-expected_cov)/np.linalg.norm(expected_cov) < .09
+
+
+def test_centered_block_inverse_on_fixed_cube_prior_rhs():
+    from geospsr.block_spectral import BlockSpectrum,BlockKernel
+    from reproduction.block_reference import block_covariance_rows
+    from reproduction.spectral_posterior import solve_centered_fluctuations
+    rng = np.random.default_rng(52)
+    x = rng.normal(0,.2,(17,3)).astype('f')
+    y = rng.normal(size=x.shape).astype('f')
+    model = SpectralPosterior(x,y,training_cutoff=4,cutoff=2,lengthscale=.1,noise_variance=.0004)
+    model.draw(3,seed=71,batch=1,retain_components=True,retain_rhs=True)
+    rhs = model.sample_rhs.transpose(1,0,2).reshape(len(x),9)
+    saved = rhs.copy()
+    kernel = BlockKernel(x,BlockSpectrum(2,4,lengthscale=.1),.0004,rhs_count=9)
+    weights,info = solve_centered_fluctuations(kernel,rhs,model.normals,model.alpha)
+    assert info['converged'] and info['centered_fluctuations']
+    matrix = block_covariance_rows(x,x,2,4,.1)+.0004*cp.eye(len(x))
+    centered = rhs-cp.tile(model.normals,(1,3))
+    exact = cp.linalg.solve(matrix,centered.astype('d'))+cp.tile(model.alpha,(1,3))
+    assert float(cp.linalg.norm(weights-exact)/cp.linalg.norm(exact))<3e-5
+    np.testing.assert_array_equal(cp.asnumpy(saved),cp.asnumpy(rhs))

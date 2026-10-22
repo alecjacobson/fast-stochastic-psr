@@ -6,6 +6,7 @@ Blocks include the complete core cube and at most one high-frequency axis.
 Bounds are inclusive; paired positive/negative slabs preserve symmetry.
 """
 import numpy as np
+from itertools import combinations,product
 
 
 def axis_weights(frequencies, lengthscale=.01, variance=.1):
@@ -40,6 +41,29 @@ def one_high_axis_blocks(core, extent):
                 block = [(-core, core)]*3
                 block[axis] = interval
                 blocks.append(tuple(block))
+    return blocks
+
+
+def two_high_axis_refinement_blocks(core,edge,extent):
+    """CPU candidate: add two-high-axis boxes up to `edge` to the base blocks.
+
+    This is a disjoint positive partition for design/screening. The current
+    GPU BlockSpectrum still implements only the one-high-axis partition.
+    Triple-high modes remain omitted. No new posterior error is implied.
+    """
+    blocks = one_high_axis_blocks(core,extent)
+    if edge != int(edge) or not core <= edge <= extent:
+        raise ValueError('require integer core <= edge <= extent')
+    core,edge = int(core),int(edge)
+    if edge == core:
+        return blocks
+    intervals = [(-edge,-core-1),(core+1,edge)]
+    for axes in combinations(range(3),2):
+        for pair in product(intervals,repeat=2):
+            box = [(-core,core)]*3
+            for d,interval in zip(axes,pair):
+                box[d] = interval
+            blocks.append(tuple(box))
     return blocks
 
 

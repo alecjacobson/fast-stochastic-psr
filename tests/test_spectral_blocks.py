@@ -5,6 +5,24 @@ import pytest
 from geospsr.spectral_blocks import axis_weights, block_audit, one_high_axis_blocks
 
 
+def test_two_high_axis_refinement_partition_by_independent_membership():
+    from geospsr.spectral_blocks import two_high_axis_refinement_blocks
+    for core,edge,extent in [(0,0,3),(0,1,3),(1,2,3),(1,3,3),(3,3,3)]:
+        blocks = two_high_axis_refinement_blocks(core,edge,extent)
+        modes = [f for box in blocks for f in itertools.product(*(range(lo,hi+1) for lo,hi in box))]
+        unique = set(modes)
+        assert len(unique)==len(modes)
+        expected = {f for f in itertools.product(range(-extent,extent+1),repeat=3)
+                    if sum(abs(n)>core for n in f)<=1 or
+                    (sum(abs(n)>core for n in f)==2 and max(abs(n) for n in f)<=edge)}
+        assert unique==expected
+        assert all(tuple(-n for n in f) in unique for f in unique)
+        assert len(unique)==block_audit(core,extent)['retained_modes']+12*(edge-core)**2*(2*core+1)
+    for edge in [0,4,1.5]:
+        with pytest.raises(ValueError):
+            two_high_axis_refinement_blocks(1,edge,3)
+
+
 def test_positive_block_partition_and_explicit_mass():
     for core, extent in [(0, 3), (1, 4), (3, 3)]:
         frequencies = []

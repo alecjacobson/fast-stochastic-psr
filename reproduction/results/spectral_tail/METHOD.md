@@ -127,6 +127,54 @@ clustered observations, high-frequency phases, an independent explicit finite
 Fourier sum, analytic normalization, the PSD bracket, and the hybrid-sampler
 covariance identity.
 
+## Positive blocks: corners and the infinite outer tail
+
+The same PSD bracket applies when the retained spectrum is a complete core
+cube plus the disjoint slabs with exactly one coordinate outside the core.
+Let the extent be `e`, core be `c`, and define one-dimensional masses
+
+```
+L = sum_{|n| <= c} rho_1(n)
+H = sum_{c < |n| <= e} rho_1(n).
+```
+
+The omitted spectrum splits into two disjoint positive pieces:
+
+1. Inside-cube corners: at least two high coordinates, total mass
+   `3*L*H^2 + H^3`.
+2. Outside-cube modes: at least one coordinate beyond `e`, with infinite mass
+   `variance^3 - (L+H)^3`, evaluated with the stable complement formula above.
+
+For the corners, sample the patterns `HHL`, `HLH`, `LHH`, `HHH` with weights
+proportional to `[L,L,L,H]`, then sample each coordinate from its conditional
+finite spectral law. The outer sampler is the existing infinite-tail sampler
+at cutoff `e`. Independent RNG streams give stratified estimates
+
+```
+H_total_hat = H_corners_hat + H_outside_hat
+SE_total^2 = SE_corners^2 + SE_outside^2
+```
+
+for each scalar statistic such as a diagonal or trace. Each stratum carries
+its **own** covariance mass. Averaging the two estimates instead of adding
+them would be incorrect. If `c=e`, the corners are exactly empty. An outer
+mass unresolved at float64 precision raises an error instead of returning a
+false zero. The implementation requires analytic spectral normalization.
+
+The dense reference uses `K_cube-K_blocks` and `K_analytic-K_cube` separately;
+both are PSD in exact arithmetic. Cube rows are evaluated from 1D sums, without
+allocating the enormous enclosing Fourier cube. Tests check the corner law by
+enumeration, stratum masses, independent quadratic expectations and the full
+posterior bracket. Source: `geospsr/block_tail.py`; executable:
+`reproduction/audit_block_tail.py`. Empirical standard errors remain diagnostics,
+not simultaneous or rigorous certificates.
+
+This block-tail audit concerns a consistently finite block prior and inverse.
+A benchmark that holds a wider cube prior/mean while using a block inverse
+is a different, centered hybrid model. Its error requires the separate
+identities below and paired output checks; the block-tail estimate alone
+does not validate that hybrid.
+
 ## Separate prior and solve bandwidths
 
 For issue #19, let `B` include the narrow training band and observation noise,

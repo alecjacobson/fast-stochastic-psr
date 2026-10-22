@@ -33,10 +33,13 @@ def main():
     p.add_argument('--lengthscale',type=float,default=.01)
     p.add_argument('--noise',type=float,default=.02)
     p.add_argument('--cutoffs',type=int,nargs='+',default=[100,150,200])
+    p.add_argument('--block-core',type=int,help='optional positive-block inverse core; cutoffs specify extents')
     p.add_argument('--output',type=Path,required=True)
     args=p.parse_args()
     if not all(50 <= c <= 200 for c in args.cutoffs):
         p.error('inverse cutoffs must cover scalar50 and not exceed prior200')
+    if args.block_core is not None and not 50 <= args.block_core <= min(args.cutoffs):
+        p.error('block core must cover scalar50 and not exceed any extent')
     args.output.mkdir(parents=True,exist_ok=True)
     data=np.load(ROOT/f'reproduction/results/matched/{args.case}/input.npz')
     panel=np.load(ROOT/f'reproduction/results/spectral_tail/{args.case}/fields.npz')
@@ -96,12 +99,16 @@ def main():
                        'analytic_probability':full_probability})
         record['analytic_offset'],record['held_offset']=float(full_offset),float(offset)
         for cutoff in args.cutoffs:
-            if cutoff==200:
+            if cutoff==200 and args.block_core is None:
                 a=z
             else:
-                spectrum=FourierCovariance(cutoff,args.lengthscale,dtype='float64')
-                narrow=timed(f'{cutoff}_matrix',lambda:finite_covariance_rows(x,x,spectrum,dtype='d'))
-                del spectrum
+                if args.block_core is None:
+                    spectrum=FourierCovariance(cutoff,args.lengthscale,dtype='float64')
+                    narrow=timed(f'{cutoff}_matrix',lambda:finite_covariance_rows(x,x,spectrum,dtype='d'))
+                    del spectrum
+                else:
+                    from reproduction.block_reference import block_covariance_rows
+                    narrow=timed(f'{cutoff}_matrix',lambda:block_covariance_rows(x,x,args.block_core,cutoff,args.lengthscale))
                 narrow.flat[::n+1]+=args.noise
                 ln=timed(f'{cutoff}_cholesky',lambda:cp.linalg.cholesky(narrow))
                 a=timed(f'{cutoff}_cross_weights',lambda:chol_solve(ln,c)).reshape(n,count,3)
@@ -120,6 +127,7 @@ def main():
                     'probability_rms':float(np.sqrt(np.mean((probability-full_probability)**2))),
                     'probability_max':float(np.max(np.abs(probability-full_probability)))}
             row={'solve_cutoff':cutoff,'prior_cutoff':200,'mean_cutoff':200,'errors_vs_analytic':errors,
+                 'block_core':args.block_core,
                  'covariance_excess_over_prior200_relative_l2':relative(delta,vwide),
                  'largest_variance_excess_fraction':float(cp.max(cp.diag(delta)/cp.diag(vwide))),
                  'minimum_excess_eigenvalue':float(cp.linalg.eigvalsh((delta+delta.T)/2).min()),

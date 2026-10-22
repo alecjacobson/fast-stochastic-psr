@@ -112,8 +112,15 @@ Lower mode storage does not prove lower NUFFT workspace or faster solves:
 the GPU algorithm repeats source spreading across blocks, with padded
 FFT grids and plan overhead. It also needs coherent prior sampling and an
 omitted-spectrum estimator that includes the excluded corners, not just the
-outside-cube tail. Coherent finite-block sampling is now implemented; the
-complete omitted-spectrum estimator and matched performance study remain open.
+outside-cube tail. Coherent finite-block sampling is implemented; the matched
+performance study remains open.
+
+Follow-up: the [stratified tail audit](../block_tail/README.md) now covers both
+omitted regions, validates their separate covariance contributions against
+dense references, and evaluates a million-point panel. It also retains centered
+block-inverse pilot failures and screens possible corner refinements using
+fixed old weights. Full application validation and competitive speedups remain
+open; the initial mode-count table alone provides neither.
 
 The normalization check also exposed an inherited mismatch at longer scales:
 the released spectrum is smaller than the variance-normalized analytic

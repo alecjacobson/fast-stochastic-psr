@@ -66,3 +66,14 @@ def test_psd_posterior_bracket_and_analytic_normalization():
     prior = np.eye(4)*np.linalg.norm(cross.T@a)*2
     hybrid = prior - cross.T@a - a.T@cross + a.T@full@a
     np.testing.assert_allclose(hybrid, prior-cross.T@a+h, rtol=1e-12)
+    # Conversely, a finite joint prior with the full inverse understates the
+    # full covariance, but lies above the consistently finite posterior.
+    full_weights = np.linalg.solve(full,cross)
+    shared_prior_full_solve = (prior-cross.T@full_weights-full_weights.T@cross
+                              +full_weights.T@b@full_weights)
+    vfull = prior-cross.T@full_weights
+    vfinite = prior-cross.T@a
+    hfull = full_weights.T@delta@full_weights
+    np.testing.assert_allclose(shared_prior_full_solve,vfull-hfull,rtol=1e-12)
+    assert np.linalg.eigvalsh(shared_prior_full_solve-vfinite).min() > -1e-12*scale
+    assert np.linalg.eigvalsh(vfull-shared_prior_full_solve).min() > -1e-12*scale

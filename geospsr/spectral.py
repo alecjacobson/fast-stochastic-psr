@@ -122,12 +122,25 @@ class FourierKernel:
         values=self.backward.execute(cp.ascontiguousarray(modes*self.op.rho[None]))
         return values.real.T+self.noise_variance*weights
 
-    def solve(self, rhs, rtol=1e-5, maxiter=500):
-        """Independent CG recurrences, batched over RHS; true residual reported."""
+    def solve(self, rhs, rtol=1e-5, maxiter=500, x0=None):
+        """Independent CG recurrences, batched over RHS; true residual reported.
+
+        An optional starting solution preserves the tolerance relative to the
+        original RHS, not the smaller initial residual. x0 is never mutated.
+        """
         rhs=cp.asarray(rhs,dtype=self.op.dtype)
-        x=cp.zeros_like(rhs);r=rhs.copy();p=r.copy()
-        rr=(r*r).sum(0);bnorm=cp.sqrt(rr)
-        threshold=rtol**2*rr
+        if x0 is None:
+            x=cp.zeros_like(rhs);r=rhs.copy()
+        else:
+            x=cp.array(x0,dtype=self.op.dtype,copy=True)
+            if x.shape != rhs.shape:
+                raise ValueError('x0 must have the same shape as rhs')
+            r=rhs-self(x)
+        p=r.copy()
+        rr=(r*r).sum(0)
+        bnorm2=rr if x0 is None else (rhs*rhs).sum(0)
+        bnorm=cp.sqrt(bnorm2)
+        threshold=rtol**2*bnorm2
         converged=False
         for iteration in range(maxiter):
             ap=self(p);denom=(p*ap).sum(0)

@@ -10,13 +10,18 @@ import jax.numpy as jnp
 
 class StochasticDualDescent:
     def __init__(self, x, y, kernel, noise_variance=.02, batch=128, lr=.001,
-                 momentum=.9, polyak=.01, seed=0):
+                 momentum=.9, polyak=.01, seed=0, initial=None):
         self.x, self.y = jnp.asarray(x), jnp.asarray(y)
         n = len(x)
         if not 1 <= batch <= n:
             raise ValueError('batch must be between one and the observation count')
         zero = jnp.zeros_like(self.y)
-        self.state = (jnp.asarray(0, dtype=jnp.int32), jax.random.key(seed), zero, zero, zero)
+        initial = zero if initial is None else jnp.asarray(initial,dtype=self.y.dtype)
+        if initial.shape != self.y.shape:
+            raise ValueError('initial solution must have the same shape as y')
+        # Starting the iterate AND its Polyak average at initial is equivalent
+        # to solving for a correction to that fixed solution, with zero velocity.
+        self.state = (jnp.asarray(0, dtype=jnp.int32), jax.random.key(seed), initial, initial, zero)
 
         def advance(state, x, y, steps):
             def step(_, state):

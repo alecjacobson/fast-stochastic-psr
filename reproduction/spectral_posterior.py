@@ -46,7 +46,7 @@ class SpectralPosterior(Posterior):
         return result
 
     def draw(self, count=64, seed=0, batch=1, retain_components=False, progress=None,
-             validation_rows=None, retain_rhs=False):
+             validation_rows=None, retain_rhs=False, initial_mean=False):
         """Draw the joint finite-scalar / larger-finite-vector posterior.
 
         GPU Gaussian vector coefficients cover the complete training band.
@@ -55,6 +55,8 @@ class SpectralPosterior(Posterior):
         sampled at every source. No dense omitted-spectrum factor is needed.
         Random realizations depend on bandwidth and batching; validate their
         law, not equality to another sampler's seed alone.
+        initial_mean reuses the already fitted mean as the CG starting point;
+        the stopping tolerance remains relative to each original sample RHS.
         """
         if count < 1 or batch < 1:
             raise ValueError('count and batch must be positive')
@@ -98,7 +100,9 @@ class SpectralPosterior(Posterior):
             del low, vector, values, noise
             sync()
             prior_end = time.perf_counter()
-            weights, info = kernel.solve(rhs, rtol=self.rtol, maxiter=1000)
+            initial = cp.tile(self.alpha, (1,p)) if initial_mean else None
+            weights, info = kernel.solve(rhs, rtol=self.rtol, maxiter=1000, x0=initial)
+            del initial
             sync()
             solve_end = time.perf_counter()
             if not info['converged']:
@@ -112,6 +116,7 @@ class SpectralPosterior(Posterior):
             sync()
             end = time.perf_counter()
             records.append({**info, 'samples_done': start + p, 'seconds': end - begin,
+                            'initial_mean': bool(initial_mean),
                             'prior_seconds': prior_end - begin, 'solve_seconds': solve_end - prior_end,
                             'aggregation_seconds': end - solve_end})
             if progress:

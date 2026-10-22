@@ -4,6 +4,26 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Conditioning at larger posterior sample counts
+
+The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)
+tests one million observations with eight and 128 common conditional draws.
+The eight-draw sweep has three timing repetitions: batching two or four draws
+does not improve the solve; starting from the fitted mean gives a modest 1.07×
+improvement at unchanged tolerance. A looser tolerance passes event checks but
+fails covariance gates and is rejected. `FourierKernel.solve(..., x0=...)` and
+`SpectralPosterior.draw(..., initial_mean=True)` expose mean reuse explicitly;
+the default behavior is unchanged.
+
+The larger comparison shares analytic SDD rows over all 384 scalar RHS and
+checks conditional fields, covariance and local events. The first SDD stopping
+pilot fails its independent residual holdout and is retained as a failure.
+See the report for stricter confirmation, actual 128-draw timings and their
+limits. Another GPU job contaminated the larger-panel SDD timing, which is
+retained as a numerical check and excluded from new speed-ratio claims.
+This experiment must not extrapolate the earlier eight-draw 4.39× ratio
+to larger sample counts or claim full-analytic posterior equivalence.
+
 ## Posterior covariance error from the omitted spectrum
 
 The [covariance-tail report](reproduction/results/spectral_tail/README.md)

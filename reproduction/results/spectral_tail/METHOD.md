@@ -42,6 +42,22 @@ produce `V_full`. It provides the upper side of this covariance bracket.
 Its mean still uses the finite inverse. This identity does not authorize a
 claim that Gaussian mixtures from random-feature sampling are exact GP draws.
 
+Conversely, the conditional-solve benchmarks share a **finite** joint prior
+between finite-inverse NUFFT and full-analytic-inverse SDD. With an exact full
+inverse, the latter has covariance `V_shared = V_full - H_full`.
+Write `Z_d=(B+D)^-1 C_d`; then `H_full=sum_d Z_d.T D Z_d`.
+Whitening shows `0 <= x/(1+x)^2 <= x/(1+x)` for each omitted-tail eigenvalue,
+and therefore
+
+```
+V_finite <= V_shared <= V_full <= V_finite + H.
+```
+
+This explains why the common-prior experiment still does not sample the full
+analytic posterior. The bracket can support a separate error assessment; it
+does not remove the need to check numerical solves, means and application
+query coverage. Dense tests verify both hybrid covariance identities.
+
 ## Estimating H without an N-by-N matrix
 
 Let `tau = sum_{n outside cube} rho(n)` and sample iid integer frequencies
@@ -103,6 +119,75 @@ The source is `geospsr/spectral_tail.py`; the executable audit is
 clustered observations, high-frequency phases, an independent explicit finite
 Fourier sum, analytic normalization, the PSD bracket, and the hybrid-sampler
 covariance identity.
+
+## Separate prior and solve bandwidths (proposed experiment)
+
+For issue #19, let `B` include the narrow training band and observation noise,
+`D >= 0` contain the additional modes in a wider coherent prior, and `E >= 0`
+contain all modes above that prior. Both bands must cover the scalar/cross
+band. Define `A=B^-1 C`, `Z=(B+D)^-1 C`, with a sum over vector components
+understood below. The hybrid covariance is
+
+```
+V_hybrid = V_B + A.T D A
+V_prior  = P - C.T (B+D)^-1 C
+R_D      = V_hybrid - V_prior >= 0.
+```
+
+Writing `X=B^-1/2 D B^-1/2`, the whitened expression for `R_D` is
+`X^2 (I+X)^-1`, congruent by `B^-1/2 C`. Thus the covariance error relative to
+the wider finite model is second order in the whitened added covariance.
+This statement does **not** assume `B` and `D` commute. Relative to the full
+analytic posterior, the remaining tail gives the two-sided matrix bound
+
+```
+R_D - Z.T E Z <= V_hybrid - V_full <= R_D.
+```
+
+Mean error does not enjoy that second-order cancellation. To hold the mean
+fixed while testing a cheaper inverse, generate centered fluctuations
+`f_prior - C.T B^-1 (vector_prior + noise)` and then add the independently
+computed wider/full mean. Simply solving the observed-data RHS with the
+narrow inverse changes the mean. Large-scale full-mean error and application
+query coverage still require validation. These identities motivate a trial;
+they are not measured speedups or a claim of an exact full-posterior sampler.
+An independent NumPy test checks noncommuting positive-definite matrices,
+the joint-sampling covariance and the two-sided tail bound.
+
+## A separate bound for posterior mean error
+
+The same omitted covariance also bounds the mean discrepancy. Let
+`alpha_d=B^-1 y_d`, `A_d=B^-1 C_d`, and
+
+```
+h_y = sum_d alpha_d.T D alpha_d
+H   = sum_d A_d.T D A_d.
+```
+
+For exact solves and a fixed query panel, the vector difference
+`delta_mu = mu_finite - mu_full` satisfies the matrix inequality
+
+```
+delta_mu delta_mu.T <= h_y H.
+```
+
+Whiten by `B` and stack the three vector components. The resolvent difference
+has factor `X(I+X)^-1`. Cauchy–Schwarz in the `X` inner product bounds the
+outer product by `H` times the data quadratic with factor `X(I+X)^-2`, which
+is bounded by the quadratic with factor `X` defining `h_y`.
+This does not require the kernel matrices to commute.
+
+For a mean centered by a **fixed linear query functional**, replace each
+cross-covariance column by its centered column before computing this mean
+bound. This addresses the difference between each model's deterministic
+centering offsets; it does not center random posterior fluctuations or change
+their covariance. Query selection and the centering functional must be fixed.
+
+An independent dense NumPy test checks the matrix inequality for noncommuting
+covariances, three vector components and centered queries. No large-N mean
+bound is measured here yet. It may be loose, and substituting empirical tail
+estimates does not turn it into a rigorous certificate. Numerical solves and
+full application coverage remain separate requirements of issue #17.
 
 ## Connection to a finite joint event, with mean held fixed
 

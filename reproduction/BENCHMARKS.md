@@ -149,6 +149,22 @@ posterior accuracy. Paired field gates were declared as error/fluctuation norm
 Both solvers pass independent per-draw analytic residual checks. Bootstrap
 intervals are marginal, not simultaneous guarantees.
 
+The [128-draw conditioning report](results/nufft_batches/README.md) explicitly
+tests the sample-count dependence with fixed RHS/prior realizations. It retains
+an SDD pilot that passed 512 stopping rows but failed a 1,024-row holdout, then
+uses larger, disjoint stopping/holdout panels for confirmation. References that
+fail their independent analytic holdout are rejected. A separate loose-CG trial
+passes sampled residual and event checks but fails covariance gates. These
+failures demonstrate why no one check replaces the others; even a larger
+sampled residual panel is not a full-system certificate.
+
+Another GPU job overlapped the larger-panel SDD confirmation. Its numerical
+output is retained, but the contaminated runtime cannot establish a speedup.
+Subsequent batching runs record periodic GPU-process ownership and an explicit
+sampled-isolation status. Monitoring errors or observed overlap invalidate a
+timing comparison; absence of a sampled foreign process is not a guarantee
+against short-lived work. Earlier runs were not continuously monitored.
+
 Optimized exact sampler preparation is a separate same-method result. CPU/GPU
 randomness shares a posterior law but not realizations; independent moment tests
 and paired same-RNG controls validate it. The full application wall measurement

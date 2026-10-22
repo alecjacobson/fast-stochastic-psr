@@ -1,6 +1,7 @@
 """CPU design audit for positive anisotropic product-Matern spectra.
 
-No NUFFT backend, sampler or posterior-error guarantee is implemented here.
+The GPU backend and sampler live in block_spectral.py. This module only audits
+prior mass; it provides no posterior-error guarantee.
 Blocks include the complete core cube and at most one high-frequency axis.
 Bounds are inclusive; paired positive/negative slabs preserve symmetry.
 """

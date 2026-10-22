@@ -78,7 +78,11 @@ Compiled SDD wins the warm A/B fits in this comparison, motivating
 [method selection by workload (#15)](https://github.com/alecjacobson/fast-stochastic-psr/issues/15).
 The [training/sampling audit](reproduction/results/training_bandwidth/README.md)
 includes coherent million-point draws and retained failures. Short-scale, low-noise
-cases fail the current gates, motivating [local/FMM correction (#14)](https://github.com/alecjacobson/fast-stochastic-psr/issues/14).
+cases fail the earlier cube approximation. A new
+[spectral-block GPU implementation](reproduction/results/spectral_blocks/README.md)
+passes the fixed 16-query stress panel with a wider spectrum; full application
+validation and competitive timings remain open. [Local/FMM correction (#14)](https://github.com/alecjacobson/fast-stochastic-psr/issues/14)
+remains another avenue.
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

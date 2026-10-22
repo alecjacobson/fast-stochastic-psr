@@ -31,10 +31,13 @@ stress failures, fixed-RHS million-point comparisons and separate timing scopes.
 `SpectralPosterior.draw(..., solve_cutoff=150)` exposes this experimental path;
 it is not an exact posterior at either bandwidth. The default is unchanged.
 
-A separate [positive spectral block design audit](reproduction/results/spectral_blocks/README.md)
-checks disjoint frequency coverage and prior mass for a core cube plus six
-slabs. It provides a possible route to wider spectra with fewer modes, but has
-no GPU backend, posterior-quality validation or measured speedup yet.
+A separate [positive spectral block implementation and audit](reproduction/results/spectral_blocks/README.md)
+uses a core cube plus conjugate-paired slabs for GPU actions and coherent
+finite-posterior draws. Independent direct sums and dense moments validate
+the implementation. Core 150 / extent 800 passes the previously failing
+short-scale, low-noise B panel, including the analytic residual gate; narrower
+failures are retained. Full application quality, massive-input validation,
+omitted-spectrum diagnostics and competitive timings remain open.
 
 The [ContactFusion assessment](reproduction/CONTACTFUSION.md) checks the practical
 robotics use case against the paper and author project repository. Its

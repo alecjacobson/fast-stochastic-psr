@@ -1,0 +1,672 @@
+{
+  "args": {
+    "mode": "solve",
+    "scratch": "/opt/geospsr-runtime/common-rhs-128",
+    "dataset": "1000000",
+    "samples": 8,
+    "batch": 1,
+    "repeats": 3,
+    "seed": 42,
+    "rtol": 1e-05,
+    "initial_mean": false,
+    "solve_cutoff": 150,
+    "block_core": null,
+    "half_cube": false,
+    "fold_axis": 0,
+    "centered_fluctuations": true,
+    "time_budget": 1800,
+    "chunk": 512,
+    "sdd_row_batch": 512,
+    "eta": 5.0,
+    "stop_tolerance": 0.0005,
+    "stop_rows": 2048,
+    "stream_stop_rows": false,
+    "holdout_rows": 4096,
+    "holdout_seed": 2711,
+    "retain_weights": false,
+    "audit_analytic": true,
+    "reference": "reproduction/results/centered_hybrid/million-150",
+    "output": "/opt/geospsr-runtime/half-cube/full150"
+  },
+  "complete": true,
+  "seconds": {
+    "rhs_transfer": 0.11858242377638817,
+    "spectrum": 0.015376251190900803,
+    "plans": 0.06882475689053535,
+    "solve_0": 38.1484916433692,
+    "solve_1": 38.116678442806005,
+    "solve_2": 40.1429129242897,
+    "analytic_holdout": 0.8183596283197403,
+    "scalar_aggregation": 0.19817858934402466,
+    "probe_fields": 0.016902625560760498,
+    "rays": 0.01671605184674263,
+    "collision": 0.030225533992052078
+  },
+  "device_used_bytes_at_stage": {
+    "rhs_transfer": 550567936,
+    "spectrum": 686882816,
+    "plans": 3484483584,
+    "solve_0": 5650841600,
+    "solve_1": 5650841600,
+    "solve_2": 5650841600,
+    "analytic_holdout": 1750138880,
+    "scalar_aggregation": 1366360064,
+    "probe_fields": 1366360064,
+    "rays": 1366360064,
+    "collision": 1366360064
+  },
+  "scope": "experimental centered sampler: cutoff200 prior/mean and cutoff150 fluctuation inverse; not an analytic posterior sampler",
+  "device": "NVIDIA L40",
+  "source_manifest": {
+    "args": {
+      "mode": "prepare",
+      "scratch": "/opt/geospsr-runtime/common-rhs-128",
+      "dataset": "1000000",
+      "samples": 128,
+      "batch": 1,
+      "repeats": 3,
+      "seed": 42,
+      "reference": null,
+      "output": "reproduction/results/nufft_batches/prepare"
+    },
+    "complete": true,
+    "seconds": {
+      "mean_fit": 7.675920877605677,
+      "uncertain_geometry": 0.06353888660669327
+    },
+    "device_used_bytes_at_stage": {
+      "mean_fit": 11998920704,
+      "uncertain_geometry": 11998920704
+    },
+    "scope": "common finite-vector/cutoff50-scalar priors; conditional solve batching only",
+    "device": "NVIDIA L40",
+    "N": 1000000,
+    "hashes": {
+      "points": "88966848d5764040a4ecaadbc5381722827f6d929a1c740d2725ce46af1c5e47",
+      "normals": "bf5853403d2d0c3bc78a93ceddfa4c5914b1a31b69efa4ce35920f4d1fa85228",
+      "all_rhs": "8c4dc738cac5acc53b5821dd55084d74ade34746a48660e0f4786f7e165844ff"
+    },
+    "prior_generation_seconds": [
+      0.06175113469362259,
+      0.05769198760390282,
+      0.05718110874295235,
+      0.05733455345034599,
+      0.05729145184159279,
+      0.05772169679403305,
+      0.05776001140475273,
+      0.057247672230005264,
+      0.057453304529190063,
+      0.05769168585538864,
+      0.05765233561396599,
+      0.05757027864456177,
+      0.057776596397161484,
+      0.05745192617177963,
+      0.05785422772169113,
+      0.057701677083969116,
+      0.057691339403390884,
+      0.057730671018362045,
+      0.0577327162027359,
+      0.05760320648550987,
+      0.057233814150094986,
+      0.057655204087495804,
+      0.05781112238764763,
+      0.057670313864946365,
+      0.05765116959810257,
+      0.05780703201889992,
+      0.05769974738359451,
+      0.05762060359120369,
+      0.057672739028930664,
+      0.057818640023469925,
+      0.057266782969236374,
+      0.05775201693177223,
+      0.057671673595905304,
+      0.057587750256061554,
+      0.05752051621675491,
+      0.057433612644672394,
+      0.05722443759441376,
+      0.057669755071401596,
+      0.05771457403898239,
+      0.057716161012649536,
+      0.057620689272880554,
+      0.057514894753694534,
+      0.05792519822716713,
+      0.05759701877832413,
+      0.057662270963191986,
+      0.05774816498160362,
+      0.057687487453222275,
+      0.05756452679634094,
+      0.057850271463394165,
+      0.05758428946137428,
+      0.05753646790981293,
+      0.05719051510095596,
+      0.05734606459736824,
+      0.057767897844314575,
+      0.05753312259912491,
+      0.05762563645839691,
+      0.05767928063869476,
+      0.05772458016872406,
+      0.05767286941409111,
+      0.05776195600628853,
+      0.0576450489461422,
+      0.05763626471161842,
+      0.05767378583550453,
+      0.05767681077122688,
+      0.05768400803208351,
+      0.05773424729704857,
+      0.05755150690674782,
+      0.05764425918459892,
+      0.05791318416595459,
+      0.05768350884318352,
+      0.05769018456339836,
+      0.0575750432908535,
+      0.05753987655043602,
+      0.057807791978120804,
+      0.05786420404911041,
+      0.05786832422018051,
+      0.05780121684074402,
+      0.05778694525361061,
+      0.05761800333857536,
+      0.06258779019117355,
+      0.057744100689888,
+      0.05777270346879959,
+      0.0576985627412796,
+      0.057526081800460815,
+      0.05767045542597771,
+      0.05765648931264877,
+      0.05769825726747513,
+      0.0575871542096138,
+      0.05723130702972412,
+      0.057216446846723557,
+      0.057285092771053314,
+      0.0576559342443943,
+      0.057623378932476044,
+      0.05781641602516174,
+      0.05763956531882286,
+      0.0577368400990963,
+      0.05776648223400116,
+      0.05766710266470909,
+      0.05761222168803215,
+      0.057227637618780136,
+      0.057256363332271576,
+      0.05777489021420479,
+      0.057745810598134995,
+      0.05769294127821922,
+      0.05755387991666794,
+      0.05761859193444252,
+      0.05753432214260101,
+      0.057557083666324615,
+      0.057675816118717194,
+      0.05766403302550316,
+      0.05780870467424393,
+      0.057722605764865875,
+      0.057605158537626266,
+      0.05761568993330002,
+      0.05758848041296005,
+      0.0576590858399868,
+      0.05782682076096535,
+      0.0576888844370842,
+      0.05760807543992996,
+      0.057740870863199234,
+      0.057621102780103683,
+      0.05756884440779686,
+      0.05770508944988251,
+      0.057696014642715454,
+      0.057656437158584595,
+      0.05771741643548012,
+      0.057443033903837204,
+      0.05766312777996063
+    ]
+  },
+  "geometry_sha256": "61863bcee206d4a18d5e8ffc2fea48dc826ec0201c6078f5cfc4a1e87bf051c0",
+  "N": 1000000,
+  "held_mean_sha256": "02dd8b79548c812f6511b231d5c3e88d33ca371c430e513e37b85d9eca5edd0a",
+  "iterations": [
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.965958270186093e-06,
+          9.547198715154082e-06,
+          9.831685929384548e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.791009688342456e-06,
+          9.638989467930514e-06,
+          9.960849638446234e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.82711117103463e-06,
+          9.934868103300687e-06,
+          9.54606457526097e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.754954589880072e-06,
+          9.517019861959852e-06,
+          9.632039109419566e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.892651178233791e-06,
+          9.738504559209105e-06,
+          9.792815944820177e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.408153346157633e-06,
+          9.629525266063865e-06,
+          9.541070539853536e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.821023922995664e-06,
+          9.8299169621896e-06,
+          9.727107681101188e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.947260878107045e-06,
+          9.931834028975572e-06,
+          9.654821042204276e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.994630090659484e-06,
+          9.558351848681923e-06,
+          9.840213351708371e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.791669072001241e-06,
+          9.652399967308156e-06,
+          9.944717021426186e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.819592378335074e-06,
+          9.943872100848239e-06,
+          9.55063023866387e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.757726729731075e-06,
+          9.51405854721088e-06,
+          9.623998266761191e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.88462761597475e-06,
+          9.726389180286787e-06,
+          9.79484411800513e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.406678145751357e-06,
+          9.613033398636617e-06,
+          9.54811093833996e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.816224519454408e-06,
+          9.812899406824727e-06,
+          9.713666258903686e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.947133548848797e-06,
+          9.948003935278393e-06,
+          9.634472007746808e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.973517080652528e-06,
+          9.558537385601085e-06,
+          9.845729437074624e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.778083949640859e-06,
+          9.637640687287785e-06,
+          9.93717276287498e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.827390385908075e-06,
+          9.9637045423151e-06,
+          9.541193321638275e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.759573913470376e-06,
+          9.527286238153465e-06,
+          9.641023098083679e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.896399205899797e-06,
+          9.723822586238384e-06,
+          9.79509513854282e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.409796803083736e-06,
+          9.595564733899664e-06,
+          9.544158274366055e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.81433731794823e-06,
+          9.831121133174747e-06,
+          9.721889909997117e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          9.953658263839316e-06,
+          9.93602861854015e-06,
+          9.644941201258916e-06
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ]
+  ],
+  "median_solve_seconds": 38.1484916433692,
+  "holdout_excludes_stopping_rows": true,
+  "holdout_indices_sha256": "b7a936e7cb6a0a8dbe8b2cc25379ae4163f63a56accd3eabdbb45ffb2da3b989",
+  "analytic_holdout": {
+    "per_draw_relative_rms": [
+      0.0007655937532409992,
+      0.0007669571854211867,
+      0.0007667473011048717,
+      0.0007658365492869764,
+      0.0007691391602166823,
+      0.0007567567244171188,
+      0.0007758449312128532,
+      0.0007639799593752275
+    ],
+    "max_relative_rms": 0.0007758449312128532,
+    "all_rows": false,
+    "per_draw_bootstrap_95_percent_intervals": [
+      [
+        0.0007538501335630897,
+        0.0007774937025892437
+      ],
+      [
+        0.0007546860368506603,
+        0.0007793825121027472
+      ],
+      [
+        0.0007543060935035499,
+        0.000778576896167823
+      ],
+      [
+        0.0007543808719950417,
+        0.0007780650977414367
+      ],
+      [
+        0.0007572453086890412,
+        0.0007816157407449895
+      ],
+      [
+        0.0007443629698034536,
+        0.0007689359810221552
+      ],
+      [
+        0.0007633672127474315,
+        0.0007884466148049327
+      ],
+      [
+        0.0007525370367367209,
+        0.0007755184487548122
+      ]
+    ],
+    "max_upper_endpoint": 0.0007884466148049327,
+    "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+  },
+  "quality": {
+    "fields": {
+      "field_relative_l2": 2.950265454160217e-08,
+      "error_over_fluctuation_l2": 1.5407459841298987e-06,
+      "empirical_variance_relative_l2": 8.766819519223645e-07,
+      "empirical_covariance_relative_l2": 1.9942832736971427e-06,
+      "queries": 257,
+      "covariance_queries": 32,
+      "pass": true
+    },
+    "events": {
+      "rays": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 14,
+        "candidate_best": 14,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0
+      },
+      "compatibility_pass": true,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": true,
+      "application_validation_complete": false
+    },
+    "comparison_kind": "same model numerical comparison",
+    "field_gates": {
+      "error_over_fluctuation_l2": 0.0005,
+      "empirical_variance_relative_l2": 0.0001,
+      "empirical_covariance_relative_l2": 0.0001
+    }
+  },
+  "benchmark_work_wall_seconds": 118.400121293962,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 114,
+    "foreign_process_samples": [
+      {
+        "seconds": 104.44038861989975,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 105.48230688273907,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 106.56112649291754,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 107.59911261126399,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 108.63552420586348,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 109.67163490876555,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 110.71240719780326,
+        "pids": [
+          351148
+        ]
+      },
+      {
+        "seconds": 111.78137259185314,
+        "pids": [
+          351148
+        ]
+      }
+    ],
+    "errors": [],
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

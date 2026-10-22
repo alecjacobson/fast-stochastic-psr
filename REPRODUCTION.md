@@ -54,6 +54,25 @@ sequential scalar-prior update is not implemented here, and no ContactFusion
 speedup is measured. The project page marks code coming soon; the replay plan
 separates preserving its update from switching to a different geometric GP.
 
+## Exact finite-cube symmetry folding
+
+The [folded-cube report](reproduction/results/half_cube/README.md) retains every
+frequency in the existing finite training cube while evaluating a positive
+half and its zero-axis plane. At one million observations, eight conditional
+draws take 38.16 s with full-cube transforms and 31.38 s with folded transforms:
+a 1.22× improvement over our solver. These medians use every repetition passing
+the predeclared process-audit rule (four of six and five of six, respectively).
+Periodic process sampling does not establish exclusive hardware access.
+
+`HalfCubePosterior` supports coherent draws, prepared queries and the existing
+optional centered narrower inverse. Independent finite sums and dense moments
+validate actions and the posterior law; a cutoff200 million-point execution
+check covers coherent priors and independently checked covariance rows. The
+128-shared-draw comparison preserves sampled events and the selected view, with
+0.000596% empirical covariance error. Its contended timing is excluded.
+Folding preserves the finite model; it does not resolve spectral truncation,
+Monte Carlo convergence, complete application quality or ContactFusion replay.
+
 ## Conditioning at larger posterior sample counts
 
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)

@@ -38,6 +38,17 @@ class BlockPosterior(Posterior):
             raise RuntimeError(info)
         return result
 
+    def _make_kernel(self,rhs_count):
+        return BlockKernel(self.x,self.training,self.noise_variance,rhs_count)
+
+    def _spectrum_record(self):
+        return {'core':self.training.core,'extent':self.training.extent}
+
+    def _solve_draw(self,kernel,rhs,initial_mean):
+        p=rhs.shape[1]//3
+        initial=cp.tile(self.alpha,(1,p)) if initial_mean else None
+        return kernel.solve(rhs,rtol=self.rtol,maxiter=1000,x0=initial)
+
     def draw(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,initial_mean=False,progress=None):
         if count < 1 or batch < 1:
             raise ValueError('counts must be positive')
@@ -51,15 +62,14 @@ class BlockPosterior(Posterior):
                 if kernel is not self.K:
                     del kernel
                     cp.get_default_memory_pool().free_all_blocks()
-                kernel = BlockKernel(self.x,self.training,self.noise_variance,3*p)
+                kernel = self._make_kernel(3*p)
                 last_size = p
             sync();begin = time.perf_counter()
             vector,scalar = kernel.joint_prior(rng,self.op)
             noise = rng.standard_normal(vector.shape,dtype=self.training.dtype)*np.sqrt(self.noise_variance)
             rhs = cp.tile(self.normals,(1,p))-vector-noise
             del vector,noise
-            initial = cp.tile(self.alpha,(1,p)) if initial_mean else None
-            alpha,info = kernel.solve(rhs,rtol=self.rtol,maxiter=1000,x0=initial)
+            alpha,info = self._solve_draw(kernel,rhs,initial_mean)
             if not info['converged']:
                 raise RuntimeError(info)
             alpha = alpha.reshape(len(self.x),p,3).transpose(1,0,2)
@@ -70,8 +80,8 @@ class BlockPosterior(Posterior):
                 rhs_records.append(rhs.reshape(len(self.x),p,3).transpose(1,0,2).copy())
             sync()
             records.append({**info,'samples_done':start+p,'seconds':time.perf_counter()-begin,
-                            'core':self.training.core,'extent':self.training.extent,
-                            'normalization':'analytic','initial_mean':initial_mean})
+                            **self._spectrum_record(),
+                            'normalization':self.normalization,'initial_mean':initial_mean})
             if progress:
                 progress(start+p,count,records[-1])
         self.sample_coeff = cp.concatenate(coefficients)

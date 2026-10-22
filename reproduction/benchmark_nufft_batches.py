@@ -18,7 +18,7 @@ import numpy as np
 from geospsr.spectral import FourierKernel, FourierPoisson
 from geospsr.training_spectrum import FourierCovariance
 from reproduction.spectral_posterior import SpectralPosterior, solve_centered_fluctuations
-from reproduction.gpu_audit import GpuProcessAudit
+from reproduction.gpu_audit import GpuProcessAudit,assess_gpu_interval
 from reproduction.paired_applications import (application_geometry, uncertain_objects,
                                              events, field_quality, quality)
 
@@ -59,6 +59,8 @@ def main():
     p.add_argument('--initial-mean', action='store_true', help='start either solver from the common finite posterior mean weights')
     p.add_argument('--solve-cutoff',type=int,default=200)
     p.add_argument('--block-core',type=int,help='experimental positive-block core for centered inverse; solve-cutoff is its extent')
+    p.add_argument('--half-cube',action='store_true',help='same finite cube via positive half plus 2D zero-axis plane')
+    p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
     p.add_argument('--time-budget', type=float, default=1800, help='SDD update budget, seconds')
     p.add_argument('--chunk', type=int, default=512, help='SDD steps between residual checks')
@@ -80,6 +82,10 @@ def main():
         p.error('centered fluctuations require solve mode without --initial-mean')
     if a.block_core is not None and (not a.centered_fluctuations or not 50 <= a.block_core <= a.solve_cutoff):
         p.error('block core requires centered fluctuations and 50 <= core <= solve cutoff <= 200')
+    if a.half_cube and (a.mode!='solve' or a.block_core is not None):
+        p.error('half cube requires solve mode without block core')
+    if a.fold_axis!=0 and not a.half_cube:
+        p.error('fold axis requires half cube')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -96,7 +102,10 @@ def main():
     def save():
         (a.output / 'results.json').write_text(json.dumps(record, indent=2)+'\n')
     def timed(name, fn):
+        began=time.perf_counter()-audit.started
         value, elapsed = measure(fn)
+        ended=time.perf_counter()-audit.started
+        record.setdefault('timing_windows',{})[name]=[began,ended]
         record['seconds'][name] = elapsed
         free,total = cp.cuda.runtime.memGetInfo()
         record['device_used_bytes_at_stage'][name] = total-free
@@ -232,7 +241,11 @@ def main():
                 record['seconds']['sdd_stopping_checks'] = validation_elapsed
                 del sdd,value,stop
             else:
-                if a.block_core is None:
+                if a.half_cube:
+                    from geospsr.half_spectral import HalfCubeSpectrum,HalfCubeKernel
+                    vector = timed('spectrum',lambda:HalfCubeSpectrum(a.solve_cutoff))
+                    kernel_type = lambda *args,**kwargs: HalfCubeKernel(*args,axis=a.fold_axis,**kwargs)
+                elif a.block_core is None:
                     vector = timed('spectrum', lambda: FourierCovariance(a.solve_cutoff))
                     kernel_type = FourierKernel
                 else:
@@ -334,6 +347,8 @@ def main():
             record['complete'] = True
         record['benchmark_work_wall_seconds'] = time.perf_counter()-work_started
         record['gpu_process_audit'] = audit.stop()
+        record['timing_process_audits']={key:assess_gpu_interval(record['gpu_process_audit'],*window)
+                                        for key,window in record.get('timing_windows',{}).items()}
         save()
     except Exception as exc:
         record['failure'] = f'{type(exc).__name__}: {exc}'

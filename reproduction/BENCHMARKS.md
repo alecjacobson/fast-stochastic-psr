@@ -85,8 +85,8 @@ noise levels, and uncertainty regions where sign decisions are sensitive.
 | --- | --- | --- |
 | Scorpion mean, variance, statistical slices (Fig. 1) | Matched A/B; original API verification | Faster variance [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
 | Length-scale/detail and Fourier/grid convergence (Figs. 2–4, 14, 16) | Kernel checks, compatible interpolant | Controlled downstream accuracy sweeps [#5](https://github.com/alecjacobson/fast-stochastic-psr/issues/5) |
-| Posterior sampling and local evaluation (Figs. 6, 10) | Coherent corrected sampler; moment tests | Matched distribution and preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
-| Uncertainty-aware hitboxes (Fig. 5) | Scorpion meshes; clipping noted | Geometry/uncertainty gates [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
+| Posterior sampling and local evaluation (Figs. 6, 10) | Corrected CPU/GPU moment checks; optimized preparation and fairly batched solve comparisons | Full-model massive prior/covariance and sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3), [#13](https://github.com/alecjacobson/fast-stochastic-psr/issues/13) |
+| Uncertainty-aware hitboxes (Fig. 5) | Faster complete small demo preserves paired mesh connectivity; clipping noted | Geometry/uncertainty convergence and controlled upstream comparison [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
 | Collision probability (Fig. 7) | Paired uncertain probes, two B seeds; cached query acceleration | Geometry/sample convergence and complete preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Ray transmittance and next-view scores (Fig. 9) | Paired moving queries; cached query acceleration; reference-grid convergence | Broader decision/ray/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Sequential scanning (Fig. 8) | One seed, approximate sampler | Multi-seed acquisition/refit benchmark [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7) |
@@ -130,5 +130,20 @@ rows independent of the 512 tuning/stopping rows. Both methods pass the sampled
 residual gate, but this does not certify full-model posterior covariance or
 joint-event accuracy. The 27.2× first-fit ratio is one confirmation measurement,
 not a complete-application result. Three warm fit repetitions cover A/B/100k;
-the million-point fit is not repeated. Batched sampling must reuse analytic
-kernel rows across right-hand sides before any sampling-speedup claim.
+the million-point fit is not repeated.
+
+The [conditional-solve report](results/conditional_solves/README.md) shares analytic
+kernel rows across all SDD sample RHS. At B the cached dense solve wins; at one
+million points the eight-draw solve ratio is 4.39×, not the mean-fit ratio. The
+massive pilot's vector prior is truncated, so it does not certify full-model
+posterior accuracy. Paired field gates were declared as error/fluctuation norm
+<0.2%, variance/covariance errors <0.02%, alongside existing local event gates.
+Both solvers pass independent per-draw analytic residual checks. Bootstrap
+intervals are marginal, not simultaneous guarantees.
+
+Optimized exact sampler preparation is a separate same-method result. CPU/GPU
+randomness shares a posterior law but not realizations; independent moment tests
+and paired same-RNG controls validate it. The full application wall measurement
+includes fitting through mesh export and excludes process/data startup and
+plotting. It is a single run per variant, not a runtime confidence interval or
+proof of geometric/sample convergence.

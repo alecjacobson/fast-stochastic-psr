@@ -15,6 +15,8 @@ from posterior import Posterior, sync
 
 p=argparse.ArgumentParser(); p.add_argument('--samples',type=int,default=128); p.add_argument('--grid',type=int,default=48)
 p.add_argument('--cache-queries',action='store_true',help='prepare interpolation-only mean/sample caches')
+p.add_argument('--fast-sampling',action='store_true',help='GPU randomness, shared triangular solve and validated smaller FFT workspace; changes seeded draws')
+p.add_argument('--gpu-rng',action='store_true',help='GPU randomness only; used for common-randomness validation of fast sampling')
 p.add_argument('--output',type=Path,help='separate result directory; preserves existing measurements')
 a=p.parse_args(); source=Path(__file__).resolve().parent/'results'
 out=a.output or source; out.mkdir(parents=True,exist_ok=True)
@@ -23,8 +25,12 @@ result={'scene':'published scorpion scan; reconstructed application scenarios','
 def timed(name,fn):
     sync(); t=time.perf_counter(); z=fn(); sync(); result['seconds'][name]=time.perf_counter()-t
     print(name,result['seconds'][name],flush=True); return z
-model=timed('fit_first',lambda:Posterior(x,normals))
-timed('draw_coefficients_first',lambda:model.draw(a.samples,seed=42))
+result['fast_sampling']=a.fast_sampling
+result['rng_backend']='gpu' if a.fast_sampling or a.gpu_rng else 'cpu'
+sync(); computation_start=time.perf_counter()
+model=timed('fit_first',lambda:Posterior(x,normals,upsampfac=1.25 if a.fast_sampling else 2.))
+timed('draw_coefficients_first',lambda:model.draw(a.samples,seed=42,
+      rng_backend=result['rng_backend'],joint_solve=a.fast_sampling))
 if a.cache_queries:
     result['query_cache']=timed('query_cache_setup',model.prepare_query_cache)
 # One set of random functions is reused in every application, preserving joint events.
@@ -68,6 +74,9 @@ for eta in [0.,1.,2.]:
         name='hitbox_eta%d.obj'%eta; gpytoolbox.write_mesh(str(out/name),v,f)
         meshes.append((eta,v,f)); result.setdefault('hitboxes',[]).append({'eta':eta,'vertices':len(v),'triangles':len(f),'file':name,'touches_domain_boundary':bool(np.any(field[[0,-1]]<0) or np.any(field[:,[0,-1]]<0) or np.any(field[:,:,[0,-1]]<0))})
     else: result.setdefault('hitboxes',[]).append({'eta':eta,'status':'no zero crossing in volume'})
+sync()
+result['computation_wall_seconds']=time.perf_counter()-computation_start
+result['computation_wall_scope']='fit, coherent draws, queries/reductions, geometry, slice-array write and hitbox extraction/export; excludes process/data startup and plotting'
 fig,axes=plt.subplots(2,3,figsize=(14,8))
 ng=int(np.sqrt(len(q))); q1=q[:,0].reshape(ng,ng); q2=q[:,2].reshape(ng,ng)
 for ax,z,title in zip(axes[0],[cp.asnumpy(sm),cp.asnumpy(s.std(0)),cp.asnumpy(s[0])],['Mean (direct Fourier)','Monte Carlo standard deviation','Coherent posterior sample']):

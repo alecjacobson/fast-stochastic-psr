@@ -46,7 +46,7 @@ class SpectralPosterior(Posterior):
         return result
 
     def draw(self, count=64, seed=0, batch=1, retain_components=False, progress=None,
-             validation_rows=None):
+             validation_rows=None, retain_rhs=False):
         """Draw the joint finite-scalar / larger-finite-vector posterior.
 
         GPU Gaussian vector coefficients cover the complete training band.
@@ -70,7 +70,7 @@ class SpectralPosterior(Posterior):
         pad = (self.training.shape[0] - self.op.shape[0]) // 2
         sl = slice(pad, pad + self.op.shape[0])
         coefficients, retained_weights, retained_prior = [], [], []
-        records, validation_rhs = [], []
+        records, validation_rhs, retained_rhs = [], [], []
         kernel, last_size = self.K, 1
         for start in range(0, count, batch):
             sync()
@@ -91,10 +91,16 @@ class SpectralPosterior(Posterior):
             values = kernel.backward.execute(vector).real.T.reshape(len(self.x), p, 3)
             noise = rng.standard_normal(values.shape, dtype='f') * np.sqrt(self.noise_variance)
             rhs = (self.normals[:, None] - values - noise).reshape(len(self.x), 3 * p)
+            if retain_rhs:
+                retained_rhs.append(rhs.reshape(len(self.x), p, 3).transpose(1, 0, 2).copy())
             if ids is not None:
                 validation_rhs.append(rhs[ids].reshape(len(ids), p, 3).transpose(1, 0, 2).copy())
             del low, vector, values, noise
+            sync()
+            prior_end = time.perf_counter()
             weights, info = kernel.solve(rhs, rtol=self.rtol, maxiter=1000)
+            sync()
+            solve_end = time.perf_counter()
             if not info['converged']:
                 raise RuntimeError(('sample solve did not converge', start, info))
             weights = weights.reshape(len(self.x), p, 3).transpose(1, 0, 2)
@@ -104,7 +110,10 @@ class SpectralPosterior(Posterior):
                 retained_weights.append(weights)
                 retained_prior.append(scalar)
             sync()
-            records.append({**info, 'samples_done': start + p, 'seconds': time.perf_counter() - begin})
+            end = time.perf_counter()
+            records.append({**info, 'samples_done': start + p, 'seconds': end - begin,
+                            'prior_seconds': prior_end - begin, 'solve_seconds': solve_end - prior_end,
+                            'aggregation_seconds': end - solve_end})
             if progress:
                 progress(records)
         self.sample_coeff = cp.concatenate(coefficients)
@@ -112,5 +121,6 @@ class SpectralPosterior(Posterior):
         self.sample_prior_coeff = cp.concatenate(retained_prior) if retain_components else None
         self.sample_solve_records = records
         self.sample_validation_rhs = cp.concatenate(validation_rhs) if ids is not None else None
+        self.sample_rhs = cp.concatenate(retained_rhs) if retain_rhs else None
         sync()
         return records

@@ -12,7 +12,10 @@ def test_retained_draw_components_reconstruct_same_function():
     normals = rng.normal(size=x.shape).astype('f')
     q = rng.uniform(-1, 1, (9, 3)).astype('f')
     model = Posterior(x, normals, cutoff=2, prior_cutoff=2)
-    model.draw(7, seed=5, batch=3, retain_components=True)
+    model.draw(7, seed=5, batch=3, retain_components=True, retain_rhs=True)
+    weights = model.sample_weights.transpose(1, 0, 2).reshape(len(x), -1)
+    rhs = model.sample_rhs.transpose(1, 0, 2).reshape(len(x), -1)
+    assert float(cp.linalg.norm(model.K @ weights - rhs) / cp.linalg.norm(rhs)) < 2e-5
     reconstructed = model.op.aggregate(x, model.sample_weights) + model.sample_prior_coeff
     actual = model.op.evaluate(q, reconstructed) - model.offset
     np.testing.assert_allclose(cp.asnumpy(actual), cp.asnumpy(model.samples(q, batch=3)),
@@ -23,6 +26,19 @@ def test_retained_draw_components_reconstruct_same_function():
                                cp.asnumpy(expected), rtol=3e-5, atol=2e-8)
     model.draw(2, seed=6, batch=2)
     assert model.sample_weights is None and model.sample_prior_coeff is None
+
+
+def test_joint_draw_solve_preserves_common_random_functions():
+    rng = np.random.default_rng(52)
+    x = rng.uniform(-1, 1, (19, 3)).astype('f')
+    q = rng.uniform(-1, 1, (12, 3)).astype('f')
+    model = Posterior(x, rng.normal(size=x.shape).astype('f'), cutoff=3, upsampfac=1.25)
+    model.draw(11, seed=3, batch=4, rng_backend='gpu', retain_rhs=True)
+    original = model.samples(q).copy()
+    rhs = model.sample_rhs.copy()
+    model.draw(11, seed=3, batch=4, rng_backend='gpu', retain_rhs=True, joint_solve=True)
+    np.testing.assert_array_equal(cp.asnumpy(model.sample_rhs), cp.asnumpy(rhs))
+    np.testing.assert_allclose(cp.asnumpy(model.samples(q)), cp.asnumpy(original), rtol=2e-5, atol=2e-8)
 
 
 def test_posterior_query_cache_and_redraw_invalidation():

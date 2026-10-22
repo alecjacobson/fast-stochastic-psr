@@ -4,6 +4,35 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Batched conditional solves and optimized exact sampling
+
+The [conditional-solve report](reproduction/results/conditional_solves/README.md)
+compares shared-RHS dense, compiled SDD and cutoff-200 NUFFT conditioning. At B,
+the dense solve wins; at one million points, eight conditional solves favor
+NUFFT by 4.39× over shared-row SDD. This is not the 27.2× mean-fit ratio, and the
+large-input pilot's common prior omits the analytic high-frequency tail.
+
+`Posterior.draw(..., rng_backend='gpu', joint_solve=True)` enables GPU Gaussian
+generation and a shared triangular solve. `Posterior(..., upsampfac=1.25)` reduces
+source-transform workspace with validated numerical error. CPU RNG remains the
+default for historical realizations. The separable finite-vector covariance
+construction is now the default; `covariance_backend='nufft'` retains the earlier
+construction. Independent moment tests and common-randomness checks cover the
+new paths; CPU and GPU seeds do not produce the same draws.
+
+```bash
+./reproduction/run_env.sh reproduction/benchmark_sampler_setup.py
+./reproduction/run_env.sh reproduction/benchmark_conditional_solves.py --dataset B --samples 128
+./reproduction/run_env.sh reproduction/benchmark_conditional_solves.py --dataset 1000000 --samples 8 --chunk 512
+./reproduction/run_env.sh reproduction/applications.py --cache-queries --fast-sampling --output reproduction/results/conditional_solves/applications-optimized
+```
+
+The full small-scorpion computation through hitbox export takes 11.69 s with the
+earlier CPU pipeline and 1.77 s with fast preparation, excluding startup/plotting.
+This is a same-method improvement under the corrected posterior law, not a
+comparison against the untouched Holalkere stochastic API. The report contains
+the paired GPU-control output check, timing scopes and remaining accuracy work.
+
 ## Converged iterative conditioning baseline
 
 The [SDD comparison](reproduction/results/iterative_baseline/README.md) includes

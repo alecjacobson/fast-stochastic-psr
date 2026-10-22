@@ -39,9 +39,10 @@ def test_separate_bandwidth_sampler_has_correct_conditional_law():
     covariance = model.op.evaluate((q[:, None] - q[None]).reshape(-1, 3), rho_f)[0].reshape(len(q), len(q))
     for d in range(3):
         covariance -= cross[:, :, d] @ cp.linalg.solve(K, cross[:, :, d].T)
-    model.draw(4096, seed=91, batch=64, retain_components=True, validation_rows=[0, 3])
-    residual = cp.einsum('rn,pnd->prd', K[[0, 3]], model.sample_weights) - model.sample_validation_rhs
-    assert float(cp.linalg.norm(residual) / cp.linalg.norm(model.sample_validation_rhs)) < 2e-5
+    model.draw(4096, seed=91, batch=64, retain_components=True, validation_rows=[0, 3], retain_rhs=True)
+    residual = cp.einsum('rn,pnd->prd', K, model.sample_weights) - model.sample_rhs
+    assert float(cp.linalg.norm(residual) / cp.linalg.norm(model.sample_rhs)) < 2e-5
+    np.testing.assert_array_equal(cp.asnumpy(model.sample_rhs[:, [0, 3]]), cp.asnumpy(model.sample_validation_rhs))
     samples = cp.asnumpy(model.samples(q, batch=64))
     mean, covariance = cp.asnumpy(mean), cp.asnumpy(covariance)
     standard_error = np.sqrt(np.diag(covariance) / len(samples))

@@ -131,6 +131,7 @@ def main():
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--rebuild-plans', action='store_true', help='reproduce pre-optimization query plan construction')
     parser.add_argument('--cached-grids', action='store_true')
+    parser.add_argument('--fast-sampling', action='store_true', help='GPU RNG, shared triangular solve, validated 1.25 source FFT oversampling')
     parser.add_argument('--grid-query-batch', type=int, default=16, help='packed complex grids per interpolation batch')
     parser.add_argument('--uncertain-collisions', action='store_true')
     parser.add_argument('--seed', type=int, default=42)
@@ -179,9 +180,10 @@ def main():
         print(name, elapsed, flush=True)
         save()
         return value
-    model = timed('common_fit_and_direct_mean_setup', lambda: Posterior(x, normals))
+    model = timed('common_fit_and_direct_mean_setup', lambda: Posterior(x, normals, upsampfac=1.25 if args.fast_sampling else 2.))
     timed('common_corrected_draws_and_direct_aggregation', lambda:
-          model.draw(args.samples, seed=args.seed, batch=args.sample_batch, retain_components=True))
+          model.draw(args.samples, seed=args.seed, batch=args.sample_batch, retain_components=True,
+                     rng_backend='gpu' if args.fast_sampling else 'cpu', joint_solve=args.fast_sampling))
     k = Matern32Kernel(.01, .1)
     kv = ProductKernel(k, k, k)
     frequencies = trunc_Zd(50)

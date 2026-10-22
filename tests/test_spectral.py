@@ -2,6 +2,7 @@ import cupy as cp
 import jax
 import jax.numpy as jnp
 import numpy as np
+import pytest
 from geospsr.spectral import FourierPoisson
 from geospsr.gp import poisson_cross_covariances, evaluate_karhunen_loeve_sample, f_gamma_from_v_xi, f_eigenvalues_from_v_eigenvalues
 from geospsr.kernels import Matern32Kernel, ProductKernel
@@ -54,14 +55,15 @@ def test_fourier_training_matvec_and_solve():
     np.testing.assert_allclose(cp.asnumpy(dense@alpha),cp.asnumpy(b),rtol=1e-4,atol=2e-5)
 
 
-def test_full_vector_residual_sampler_moments():
+@pytest.mark.parametrize('rng_backend,upsampfac', [('cpu',2.0),('gpu',1.25)])
+def test_full_vector_residual_sampler_moments(rng_backend,upsampfac):
     from reproduction.posterior import Posterior
     from geospsr.gp import compute_covariance, compute_mean, evaluate_karhunen_loeve_kernel
     rng=np.random.default_rng(12)
     x=rng.uniform(-1,1,(8,3)).astype('f'); y=rng.normal(size=(8,3)).astype('f')
     q=rng.uniform(-1,1,(4,3)).astype('f')
-    model=Posterior(x,y,lengthscale=.1,variance=.1,noise_variance=.001,cutoff=2,prior_cutoff=1)
-    model.draw(4096,seed=46,batch=128,exact=True)
+    model=Posterior(x,y,lengthscale=.1,variance=.1,noise_variance=.001,cutoff=2,prior_cutoff=1,upsampfac=upsampfac)
+    model.draw(4096,seed=46,batch=128,exact=True,rng_backend=rng_backend)
     samples=cp.asnumpy(model.samples(q,batch=128))
     k=Matern32Kernel(.1,.1);kv=ProductKernel(k,k,k);freq=trunc_Zd(2)
     ev=jax.vmap(kv.spectral_density)(freq)**.5

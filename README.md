@@ -23,7 +23,7 @@ scopes; kernel-action timings are not complete-application speedups.
 | **Collision, rays, next-view queries** | Paired coherent samples, uncertain collision probes, moving queries and two seeds; numerical gates pass | At B: prepared ray queries **11.1–11.2× faster**, collisions **10.5× faster**. Setup excluded; [report and remaining validation](reproduction/results/cached_queries/README.md). |
 | **Uncertainty-aware hitboxes** | Cached sampled fields preserve all three demo meshes' connectivity; max vertex change <0.00011 | [Output check](reproduction/results/cached_queries/application_cache_check.json). Controlled upstream speed/quality comparison and exact variance remain open: [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4). |
 | **Sequential scanning** | Single-seed demonstration; multi-seed quality comparison pending | Training/update costs and decision stability open: [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7). |
-| **Million-point applications** | Exploratory finite-Fourier GP only; full-model equivalence unverified | Full-model conditioning [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) and massive-scale validation [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) open. |
+| **Million-point conditioning** | Wider training spectrum passes overlap field/covariance gates; sampled analytic residuals checked on mean and conditional draws | Cutoff 200: **7.5 s fit**, **61 s for eight coherent draws**. [Quality report and failing regimes](reproduction/results/training_bandwidth/README.md). Complete application speedups remain unverified. |
 
 Application query ratios use 128 shared **corrected** posterior draws and a strong
 reference that also caches prior evaluation. Shared preparation takes about 13 s;
@@ -66,11 +66,12 @@ coherent posterior samples at arbitrary queries. We retain a compatibility mode
 for the released interpolated kernel and investigate direct Fourier evaluation
 at controlled application error ([#5](https://github.com/alecjacobson/fast-stochastic-psr/issues/5)).
 
-Dense analytic conditioning and exact variance remain bottlenecks. Matrix-free
-Fourier experiments reach a million observations, but truncate the training
-covariance. FMM currently has compression diagnostics only, with no implemented
-backend or measured FMM speedup. A dense matrix's memory requirement alone does
-not establish that the authors' iterative method is intractable.
+Exact variance remains a bottleneck. Matrix-free conditioning now reaches a
+million observations with independently checked training-bandwidth convergence,
+but the full application quality bridge remains open. Short-scale, low-noise
+cases fail the current gates, motivating [local/FMM correction (#14)](https://github.com/alecjacobson/fast-stochastic-psr/issues/14).
+FMM has no implemented backend or measured speedup. A dense matrix's memory
+requirement alone does not establish that the authors' iterative method is intractable.
 
 The full paper application scenes and timing configurations were not released.
 Our application scenarios use the released scorpion and do not claim to recreate

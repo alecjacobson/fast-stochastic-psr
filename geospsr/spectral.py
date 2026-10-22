@@ -9,14 +9,20 @@ import cupy as cp
 import cufinufft
 
 
-def spectral_grid(cutoff, lengthscale=.01, variance=.1, dtype=np.float32):
-    """Match ProductKernel(Matern32Kernel(...), ...) in upstream normalization."""
+def spectral_axis(cutoff, lengthscale=.01, variance=.1):
+    """One-dimensional Matérn spectrum in the upstream normalization."""
     n = np.arange(-cutoff, cutoff+1, dtype=np.float64)
     rt3 = np.sqrt(3.)
     w = rt3 / 2
     first = 2 * lengthscale + rt3 / np.tanh(w / lengthscale)
     norm = (1 + np.exp(-2*w/lengthscale)) * (np.pi**2*lengthscale/3) * (first-2*w*np.tanh(w/lengthscale))
     rho1 = (2*rt3*np.tanh(w/lengthscale)/((2*np.pi)**-2*lengthscale)) * (3/lengthscale**2+4*np.pi**2*n**2)**-2 / norm * variance
+    return n, rho1
+
+
+def spectral_grid(cutoff, lengthscale=.01, variance=.1, dtype=np.float32):
+    """Match ProductKernel(Matern32Kernel(...), ...) in upstream normalization."""
+    n, rho1 = spectral_axis(cutoff, lengthscale, variance)
     rho = rho1[:,None,None]*rho1[None,:,None]*rho1[None,None,:]
     ns = np.stack(np.meshgrid(n,n,n,indexing='ij'))
     return cp.asarray(ns.astype(dtype)), cp.asarray(rho.astype(dtype))
@@ -28,10 +34,11 @@ class FourierPoisson:
     Source alpha layout is (P,N,3), output (P,M). The real cross kernel is
     sum_n rho(n) n_i/|n|^2 sin(n.(x-y)); zero mode is exactly zero.
     """
-    def __init__(self, cutoff=50, lengthscale=.01, variance=.1, eps=1e-6, dtype='float32'):
+    def __init__(self, cutoff=50, lengthscale=.01, variance=.1, eps=1e-6, dtype='float32', upsampfac=2.0):
         self.dtype = np.dtype(dtype)
         self.cdtype = np.dtype('complex64' if self.dtype == np.float32 else 'complex128')
         self.eps = eps
+        self.upsampfac = upsampfac
         self.ns, self.rho = spectral_grid(cutoff,lengthscale,variance,self.dtype)
         self.shape = self.rho.shape
         norm2 = (self.ns**2).sum(0)
@@ -41,7 +48,8 @@ class FourierPoisson:
         points = cp.asarray(points,dtype=self.dtype)
         coords = [cp.ascontiguousarray(points[:,i]) for i in range(3)]
         plan = cufinufft.Plan(kind,self.shape,n_trans=n_trans,eps=self.eps,
-                             isign=-1 if kind==1 else 1,dtype=self.cdtype.name)
+                             isign=-1 if kind==1 else 1,dtype=self.cdtype.name,
+                             upsampfac=self.upsampfac)
         plan.setpts(*coords)
         # Retain coordinate memory for the plan's lifetime.
         plan._geospsr_coords = coords

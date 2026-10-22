@@ -90,8 +90,8 @@ noise levels, and uncertainty regions where sign decisions are sensitive.
 | Collision probability (Fig. 7) | Paired uncertain probes, two B seeds; cached query acceleration | Geometry/sample convergence and complete preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Ray transmittance and next-view scores (Fig. 9) | Paired moving queries; cached query acceleration; reference-grid convergence | Broader decision/ray/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Sequential scanning (Fig. 8) | One seed, approximate sampler | Multi-seed acquisition/refit benchmark [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7) |
-| Input/output scaling and solver convergence (Figs. 11–13, 15) | Kernel scaling and solver audit | Analytic-model iterative baselines [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) |
-| Massive-scale applications | Exploratory million-point finite GP | Full quality bridge [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
+| Input/output scaling and solver convergence (Figs. 11–13, 15) | Independent training-bandwidth overlap audit; analytic mean and conditional residuals | Analytic-model iterative baselines [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) |
+| Massive-scale applications | Million-point conditioning/coherent-sampling pilot with sampled analytic residuals | Full application quality bridge [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
 
 Scenes not present in the release remain labeled reconstructed task scenarios.
 Audit additional supplementary examples as they are incorporated; file new
@@ -102,6 +102,17 @@ checks on 257 independent queries, including 32-point empirical covariance.
 Before those runs, numerical cache gates were set to error / fluctuation norm
 <5e-4 and empirical variance/covariance relative errors <1e-4. These isolate the
 cache approximation; they do not replace model or sample-count convergence.
+
+The [training-bandwidth report](results/training_bandwidth/README.md) declares
+additional overlap gates: full query covariance relative L2 ≤0.02% and full
+analytic training residual ≤0.1%, alongside the field/probability gates above.
+Its massive-input pilot requires the empirical bootstrap 95% upper endpoint for
+512 sampled analytic residual rows to be <0.1%, for both observed-normal and
+conditional-sampling right-hand sides. This sampling gate is not a global bound
+and does not certify full-model application quality. Training cutoff 150 passes
+the million-point mean check but fails the conditional-draw check; cutoff 200
+passes both in the eight-draw pilot. Short-scale/low-noise B fails all tested
+cutoffs, tracked in [#14](https://github.com/alecjacobson/fast-stochastic-psr/issues/14).
 
 ## Beyond feasible upstream runs
 

@@ -4,6 +4,28 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Independent vector training bandwidth
+
+The [training-bandwidth report](reproduction/results/training_bandwidth/README.md)
+compares direct finite-covariance references and NUFFT-CG with full analytic
+conditioning on matched A/B inputs, then tests distinct 100,000/million-point
+clouds using independent sampled analytic rows. It includes a coherent sampler
+whose vector prior covers the larger training spectrum while sharing scalar
+low-frequency modes. No dense omitted-spectrum factor is needed.
+
+```bash
+./reproduction/run_env.sh reproduction/training_bandwidth.py --case A
+./reproduction/run_env.sh reproduction/training_bandwidth.py --case B
+./reproduction/run_env.sh reproduction/scale_training_bandwidth.py
+./reproduction/run_env.sh reproduction/scale_spectral_sampling.py
+./reproduction/run_env.sh reproduction/summarize_training_bandwidth.py
+```
+
+The report retains a short-scale/low-noise failure, distinguishes observed-normal
+and conditional-sampling residuals, and documents the remaining application and
+upstream-iterative comparisons. These are conditioning/sampling measurements,
+not complete-application speedups or a proof of full-model equivalence at large N.
+
 ## Paired application benchmarks
 
 ```bash

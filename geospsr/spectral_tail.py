@@ -9,13 +9,17 @@ import numpy as np
 from geospsr.spectral import spectral_axis
 
 
-def sample_tail_frequencies(count, cutoff, lengthscale=.01, variance=.1, seed=0):
+def sample_tail_frequencies(count, cutoff, lengthscale=.01, variance=.1, seed=0, normalization='analytic'):
     """Sample iid integer frequencies from rho(n) outside [-cutoff,cutoff]^3.
 
     Partition the complement by its first out-of-band axis. The 1D tail uses
     rejection from rounded Pareto(shape=3, minimum=cutoff+1/2). Convexity of
     x^-4 gives q(n) >= 3*(cutoff+1/2)^3*n^-4, hence acceptance <= 1.
+    Requires analytically normalized coefficients. The released spectrum has
+    an additional in-band defect, which this outside-cube sampler cannot cover.
     """
+    if normalization != 'analytic':
+        raise ValueError('outside-cube tail sampling requires analytic normalization; released coefficients also have an in-band defect')
     if count < 1 or cutoff < 0 or lengthscale <= 0 or variance <= 0:
         raise ValueError('need positive count, lengthscale, variance and nonnegative cutoff')
     axis, rho = spectral_axis(cutoff, lengthscale, variance)

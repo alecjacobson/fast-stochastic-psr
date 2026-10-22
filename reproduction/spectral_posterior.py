@@ -31,17 +31,19 @@ def solve_centered_fluctuations(kernel, rhs, normals, mean_alpha, rtol=1e-5, max
 
 
 class SpectralPosterior(Posterior):
+    """Consistently select analytic or released normalization across all bands."""
     def __init__(self, x, normals, training_cutoff=100, cutoff=50, lengthscale=.01,
-                 variance=.1, noise_variance=.02, rtol=1e-5, eps=1e-6):
+                 variance=.1, noise_variance=.02, rtol=1e-5, eps=1e-6, normalization='analytic'):
         if training_cutoff < cutoff:
             raise ValueError('vector bandwidth must cover every scalar mode')
         self.x = cp.asarray(x, dtype='f')
         self.normals = cp.asarray(normals, dtype='f')
         self.noise_variance = noise_variance
         self.lengthscale,self.variance = lengthscale,variance
+        self.normalization = normalization
         self.rtol = rtol
-        self.op = FourierPoisson(cutoff, lengthscale, variance, eps=eps)
-        self.training = FourierCovariance(training_cutoff, lengthscale, variance, eps=eps)
+        self.op = FourierPoisson(cutoff, lengthscale, variance, eps=eps, normalization=normalization)
+        self.training = FourierCovariance(training_cutoff, lengthscale, variance, eps=eps, normalization=normalization)
         self.K = FourierKernel(self.x, self.training, noise_variance)
         self.alpha, self.mean_solve = self.K.solve(self.normals, rtol=rtol, maxiter=1000)
         if not self.mean_solve['converged']:
@@ -89,7 +91,7 @@ class SpectralPosterior(Posterior):
         if solve_cutoff is not None and initial_mean:
             raise ValueError('centered fluctuations use a zero start; mean is added separately')
         solve_spectrum = None if solve_cutoff is None else FourierCovariance(
-            int(solve_cutoff),self.lengthscale,self.variance,eps=self.training.eps)
+            int(solve_cutoff),self.lengthscale,self.variance,eps=self.training.eps,normalization=self.normalization)
         ids = None if validation_rows is None else cp.asarray(validation_rows, dtype=cp.int64)
         if ids is not None and (ids.ndim != 1 or bool(cp.any((ids < 0) | (ids >= len(self.x))))):
             raise ValueError('validation_rows must be a vector of source indices')

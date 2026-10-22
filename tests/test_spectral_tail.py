@@ -1,22 +1,24 @@
 import cupy as cp
 import numpy as np
+import pytest
 from geospsr.spectral import spectral_axis
 from geospsr.spectral_tail import (sample_tail_frequencies, tail_quadratic_samples,
                                    analytic_covariance_rows64)
 from geospsr.training_spectrum import FourierCovariance, finite_covariance_rows
 
 
-def test_tail_sampler_and_quadratic_against_infinite_analytic_kernel():
+@pytest.mark.parametrize('ell,cutoff', [(.04,20),(1.,2),(10.,1)])
+def test_tail_sampler_and_quadratic_against_infinite_analytic_kernel(ell,cutoff):
     rng = np.random.default_rng(42)
     x = rng.uniform(-1, 1, (13, 3)).astype('f')
     # Clustered points exercise off-diagonal tail covariance too.
     x[1:5] = x[0] + rng.normal(0, .003, (4, 3))
     a = rng.normal(size=(13, 3, 3)).astype('f')
-    cutoff, ell = 20, .04
     n, mass = sample_tail_frequencies(65536, cutoff, ell, seed=20)
     assert np.all(np.max(np.abs(n), axis=1) > cutoff)
     p = spectral_axis(cutoff, ell)[1].sum() / .1
-    np.testing.assert_allclose(mass, .001 * (1 - p ** 3), rtol=1e-12)
+    # Factor the complement: 1-p**3 loses relative precision for tiny tails.
+    np.testing.assert_allclose(mass, .001 * (1-p)*(1+p+p*p), rtol=1e-12)
     first = (np.abs(n) > cutoff).argmax(1)
     expected = np.array([1, p, p*p]) / (1+p+p*p)
     np.testing.assert_allclose(np.bincount(first, minlength=3)/len(n), expected, atol=.007)
@@ -33,6 +35,8 @@ def test_tail_sampler_and_quadratic_against_infinite_analytic_kernel():
     expected = mass * np.einsum('rqd,rkd->rqk', f.conj(), f).real
     actual = tail_quadratic_samples(x, a, n, mass, source_batch=5, frequency_batch=2)
     np.testing.assert_allclose(actual, expected, rtol=2e-6, atol=2e-10)
+    with pytest.raises(ValueError,match='in-band defect'):
+        sample_tail_frequencies(100,cutoff,ell,normalization='released')
 
 
 def test_psd_posterior_bracket_and_analytic_normalization():

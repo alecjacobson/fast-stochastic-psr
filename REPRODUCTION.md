@@ -4,6 +4,24 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Spectral normalization across length scales
+
+The default periodic Matérn Fourier coefficients now agree with the analytic
+kernel variance. The inherited coefficients lacked a factor
+`1+exp(-sqrt(3)/lengthscale)` per axis. This matters at large length scales;
+the .01/.005 flagship coefficients are bitwise unchanged. The
+[normalization report](reproduction/results/normalization/README.md) compares
+against the pinned upstream implementation and an independent formula, audits
+all 20,000 released-A slice queries at five scales, and checks long-scale
+coherent samples and tail estimates.
+
+Use `normalization='released'` on `Matern32Kernel`, `FourierPoisson`,
+`FourierCovariance`, `Posterior` or `SpectralPosterior` to reproduce the original
+coefficients. This is coefficient compatibility; it does not undo the earlier
+noise, covariance or sampler corrections. The outside-cube tail sampler rejects
+this mode because the released spectrum also has an in-band normalization
+defect. Numerical covariance differences below roundoff are labeled unresolved.
+
 ## Centered fluctuation solves and practical robotics target
 
 The [centered hybrid report](reproduction/results/centered_hybrid/README.md)

@@ -71,7 +71,8 @@ def main():
               'hashes': {key: hashlib.sha256(value.tobytes()).hexdigest() for key, value in [('points', x), ('queries', q)]},
               'scope': 'training-tail posterior covariance diagnostic at a fixed finite scalar/cross cutoff50; not posterior event or geometry convergence',
               'query_selection': 'seed993; half from 256 smallest absolute default-parameter mean slice values, half from remaining slice positions',
-              'dense_reference': small, 'complete': False, 'seconds': {}, 'seeds': []}
+              'dense_reference': small, 'normalization':'analytic',
+              'complete': False, 'seconds': {}, 'seeds': []}
     result['training_nufft_effective_eps'] = max(args.eps, float(np.finfo(args.precision).eps)) if not small else None
     arrays = {'query': q, 'query_ids': ids}
     def save():
@@ -153,7 +154,12 @@ def main():
         if min(result['exact']['min_gap_eigenvalue'],
                result['exact']['min_bound_minus_gap_eigenvalue']) < -1e-10 * scale:
             raise ArithmeticError('dense posterior covariance bracket failed')
-        result['exact']['bracket_numerically_verified'] = True
+        # A permissive roundoff test must not certify a gap too small to
+        # resolve by subtracting the two posterior covariance matrices.
+        result['exact']['bracket_within_numerical_tolerance'] = True
+        result['exact']['gap_roundoff_indicator'] = 64*np.finfo(float).eps
+        result['exact']['covariance_gap_resolved_above_roundoff'] = bool(
+            result['exact']['covariance_gap_relative_frobenius'] > 64*np.finfo(float).eps)
         arrays.update(analytic_covariance=cp.asnumpy(full_cov), exact_bound=cp.asnumpy(exact_h))
         print('exact', json.dumps(result['exact']), flush=True)
     # A is fixed before frequency sampling. This is a stochastic estimate of H,

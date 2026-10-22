@@ -137,6 +137,13 @@ that every upstream algorithm is infeasible. Extrapolations must state their
 assumptions and cannot be labeled measured speedups. Sampled analytic residuals
 and overlap checks support, but do not prove, full-model fidelity at larger N.
 
+The [normalization audit](results/normalization/README.md) distinguishes the
+corrected analytic spectrum from the released coefficients. Record this choice
+when comparing length scales: using the same Fourier cutoff does not imply the
+same covariance normalization. The released option reproduces coefficients,
+not every original statistical behavior. Full-slice checks cover five scales
+on A; they do not establish complete application accuracy at those parameters.
+
 The [iterative conditioning report](results/iterative_baseline/README.md) now
 confirms a tuned, compiled SDD baseline at one million observations. It is
 feasible within a 240-second update budget. The confirmation uses 1,024 analytic

@@ -13,8 +13,8 @@ def axis_weights(frequencies, lengthscale=.01, variance=.1):
     sum_n (n*n+a*a)^-2 = pi*coth(pi*a)/(2*a^3)
                            + pi^2*csch(pi*a)^2/(2*a^2).
     This closed sum normalizes the infinite discrete law, not a finite cube.
-    At long scales it differs from the inherited production spectrum's known
-    normalization defect (issue #24); it does not change that implementation.
+    This independent formula also detects the inherited released spectrum's
+    normalization defect (issue #24); the current default corrects that defect.
     """
     if lengthscale <= 0 or variance <= 0:
         raise ValueError('lengthscale and variance must be positive')

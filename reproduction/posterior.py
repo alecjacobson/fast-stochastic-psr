@@ -20,12 +20,18 @@ def kernel_matrix(x, lengthscale=.01, variance=.1):
 
 
 class Posterior:
-    def __init__(self,x,normals,lengthscale=.01,variance=.1,noise_variance=.02,cutoff=50,prior_cutoff=20,upsampfac=2.0):
+    """Dense analytic training with selectable scalar/cross spectral normalization.
+
+    'released' changes Fourier coefficients only; it retains this class's
+    corrected conditioning/noise/sampling algebra, not every upstream behavior.
+    """
+    def __init__(self,x,normals,lengthscale=.01,variance=.1,noise_variance=.02,cutoff=50,prior_cutoff=20,upsampfac=2.0,normalization='analytic'):
         self.x=cp.asarray(x,dtype='f'); self.normals=cp.asarray(normals,dtype='f')
         self.noise_variance=noise_variance
         self.lengthscale, self.variance, self.cutoff = lengthscale, variance, cutoff
-        self.op=FourierPoisson(cutoff,lengthscale,variance,upsampfac=upsampfac)
-        self.prior=FourierPoisson(prior_cutoff,lengthscale,variance,upsampfac=upsampfac)
+        self.normalization=normalization
+        self.op=FourierPoisson(cutoff,lengthscale,variance,upsampfac=upsampfac,normalization=normalization)
+        self.prior=FourierPoisson(prior_cutoff,lengthscale,variance,upsampfac=upsampfac,normalization=normalization)
         K=kernel_matrix(x,lengthscale,variance)
         K.block_until_ready()
         self.K=cp.asarray(np.asarray(K))+noise_variance*cp.eye(len(x),dtype='f')
@@ -103,7 +109,7 @@ class Posterior:
         if exact:
             if covariance_backend == 'separable':
                 from geospsr.training_spectrum import FourierCovariance, finite_covariance_rows
-                spectrum=FourierCovariance(self.cutoff,self.lengthscale,self.variance)
+                spectrum=FourierCovariance(self.cutoff,self.lengthscale,self.variance,normalization=self.normalization)
                 low=finite_covariance_rows(self.x,self.x,spectrum)
             elif covariance_backend == 'nufft':
                 rows=[]

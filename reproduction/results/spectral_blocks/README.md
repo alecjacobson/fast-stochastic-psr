@@ -30,13 +30,14 @@ FFT grids and plan overhead. It also needs coherent prior sampling and an
 omitted-spectrum estimator that includes the excluded corners, not just the
 outside-cube tail. No GPU backend or speedup is implemented here.
 
-The normalization check also exposes an inherited mismatch at longer scales:
-the production spectrum is smaller than the variance-normalized analytic
+The normalization check also exposed an inherited mismatch at longer scales:
+the released spectrum is smaller than the variance-normalized analytic
 spectrum by `1/(1+exp(-sqrt(3)/ell))` per axis. At ell=1 this leaves a 38.66%
 3D diagonal deficit even with an infinite Fourier band. At the .01/.005 scales
-in the table, the factor rounds to one in float64. The existing production
-code is unchanged; [issue #24](https://github.com/alecjacobson/fast-stochastic-psr/issues/24)
-tracks correction, released-code compatibility and affected tail diagnostics.
+in the table, the factor rounds to one in float64. The current default corrects
+this factor; `normalization='released'` explicitly preserves the old spectrum.
+[Issue #24](https://github.com/alecjacobson/fast-stochastic-psr/issues/24) tracks
+the correction, compatibility and affected tail diagnostics.
 `normalization-diagnostic.json` records the coefficient-ratio check. The block
 mass formula uses the normalized analytic law.
 

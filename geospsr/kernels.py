@@ -54,11 +54,18 @@ class Matern32_reference(AbstractKernel):
 class Matern32Kernel(AbstractKernel):
     """
     Stable version of Matern 3/2 kernel on S^1 as defined in https://arxiv.org/abs/2006.10160
+
+    The default spectrum integrates to the analytic variance. Set
+    normalization='released' to preserve the original Fourier scaling only;
+    the real-space covariance is identical in both modes.
     """
 
-    def __init__(self, lengthscale=1.0, variance=1.0):
+    def __init__(self, lengthscale=1.0, variance=1.0, normalization='analytic'):
+        if normalization not in ('analytic', 'released'):
+            raise ValueError('normalization must be analytic or released')
         self.lengthscale = lengthscale
         self.variance = variance
+        self.normalization = normalization
 
     def _helper(self, x1, x2):
         rt3 = 3 ** (1 / 2)
@@ -92,6 +99,11 @@ class Matern32Kernel(AbstractKernel):
 
         result = first * second
         result /= self._helper(0, 0)
+        # The stable helper scales the cosh formula by 2*exp(-sqrt(3)/(2*ell)).
+        # Its Fourier numerator must use the same scaling; the released tanh
+        # numerator misses this factor. The analytic covariance is unchanged.
+        if self.normalization == 'analytic':
+            result *= 1 + jnp.exp(-rt3 / self.lengthscale)
         return result * self.variance
 
 

@@ -11,12 +11,13 @@ from geospsr.spectral import FourierPoisson, spectral_axis
 
 class FourierCovariance:
     def __init__(self, cutoff=100, lengthscale=.01, variance=.1, eps=1e-6,
-                 dtype='float32', upsampfac=1.25):
+                 dtype='float32', upsampfac=1.25, normalization='analytic'):
         self.cutoff = cutoff
         self.dtype = np.dtype(dtype)
         self.cdtype = np.dtype('complex64' if self.dtype == np.float32 else 'complex128')
         self.eps, self.upsampfac = eps, upsampfac
-        _, axis = spectral_axis(cutoff, lengthscale, variance)
+        self.normalization = normalization
+        _, axis = spectral_axis(cutoff, lengthscale, variance, normalization=normalization)
         self.axis64 = cp.asarray(axis)
         r = self.axis64.astype(self.dtype)
         self.rho = r[:, None, None] * r[None, :, None] * r[None, None, :]

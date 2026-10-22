@@ -32,11 +32,12 @@ def test_positive_block_partition_and_explicit_mass():
 
 def test_independent_axis_normalization_matches_production():
     from geospsr.spectral import spectral_axis
-    # Audit configurations; longer scales have a separately tracked upstream
-    # spectral/analytic normalization mismatch, not a relaxed tolerance here.
-    for lengthscale in [.005, .01, .05]:
+    for lengthscale in [.005, .01, .05, .1, .5, 1., 10.]:
         n, expected = spectral_axis(200, lengthscale=lengthscale)
         np.testing.assert_allclose(axis_weights(n, lengthscale), expected, rtol=2e-12)
+        _, released = spectral_axis(200, lengthscale=lengthscale, normalization='released')
+        ratio = 1/(1+np.exp(-np.sqrt(3)/lengthscale))
+        np.testing.assert_allclose(released, expected*ratio, rtol=2e-12)
 
 
 def test_normalized_spectrum_reconstructs_analytic_periodic_kernel():

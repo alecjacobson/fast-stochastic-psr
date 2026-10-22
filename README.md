@@ -82,6 +82,11 @@ cases fail the current gates, motivating [local/FMM correction (#14)](https://gi
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
+[Length-scale validation](reproduction/results/normalization/README.md) corrects
+an inherited Fourier normalization mismatch and preserves an explicit released
+coefficient mode. The .01/.005 flagship settings are unchanged; at length scale
+1 the correction changes slice probabilities by up to 6.02 percentage points.
+
 The full paper application scenes and timing configurations were not released.
 Our application scenarios use the released scorpion and do not claim to recreate
 the unpublished dragon/cat/falcon scenes. Earlier kernel-only benchmarks and the

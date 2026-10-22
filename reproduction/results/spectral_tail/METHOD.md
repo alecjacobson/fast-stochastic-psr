@@ -109,12 +109,13 @@ per axis is `p`, these three disjoint cases have conditional weights
 - The theorem concerns exact solves and transforms. Floating-point,
   NUFFT and iterative errors remain separate; large-N estimates are not
   certified by the theorem alone.
-- A later [normalization audit](../spectral_blocks/README.md) found an inherited
+- The [normalization correction](../normalization/README.md) fixes an inherited
   Fourier/analytic Matérn scaling mismatch at long length scales. It is below
-  float64 resolution for the .01/.005 settings reported here. At larger scales
-  the in-band defect must also be included; the current outside-cube estimator
-  alone is insufficient. Correction is tracked in
-  [#24](https://github.com/alecjacobson/fast-stochastic-psr/issues/24).
+  float64 resolution for the .01/.005 settings reported here. The current
+  outside-cube estimator uses corrected normalization and rejects the released
+  coefficient mode, which has an additional in-band defect. The follow-up
+  checks long-scale tails and distinguishes numerical tolerance from covariance
+  differences resolved above roundoff.
 - Sixteen query probes do not establish complete ray/collision probabilities,
   mesh convergence, posterior mean agreement, or matching quality everywhere.
   Covariance error relative to a matrix norm also need not control every

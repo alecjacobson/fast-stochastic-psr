@@ -9,20 +9,29 @@ import cupy as cp
 import cufinufft
 
 
-def spectral_axis(cutoff, lengthscale=.01, variance=.1):
-    """One-dimensional Matérn spectrum in the upstream normalization."""
+def spectral_axis(cutoff, lengthscale=.01, variance=.1, normalization='analytic'):
+    """Periodic Matérn spectrum; analytic variance normalization by default.
+
+    'released' preserves the inherited coefficients, which understate analytic
+    variance by 1/(1+exp(-sqrt(3)/lengthscale)) per axis. The defect matters at
+    long scales and cannot be repaired by increasing the cutoff.
+    """
+    if normalization not in ('analytic', 'released'):
+        raise ValueError('normalization must be analytic or released')
     n = np.arange(-cutoff, cutoff+1, dtype=np.float64)
     rt3 = np.sqrt(3.)
     w = rt3 / 2
     first = 2 * lengthscale + rt3 / np.tanh(w / lengthscale)
     norm = (1 + np.exp(-2*w/lengthscale)) * (np.pi**2*lengthscale/3) * (first-2*w*np.tanh(w/lengthscale))
     rho1 = (2*rt3*np.tanh(w/lengthscale)/((2*np.pi)**-2*lengthscale)) * (3/lengthscale**2+4*np.pi**2*n**2)**-2 / norm * variance
+    if normalization == 'analytic':
+        rho1 *= 1 + np.exp(-rt3/lengthscale)
     return n, rho1
 
 
-def spectral_grid(cutoff, lengthscale=.01, variance=.1, dtype=np.float32):
-    """Match ProductKernel(Matern32Kernel(...), ...) in upstream normalization."""
-    n, rho1 = spectral_axis(cutoff, lengthscale, variance)
+def spectral_grid(cutoff, lengthscale=.01, variance=.1, dtype=np.float32, normalization='analytic'):
+    """Match ProductKernel(Matern32Kernel(...), ...) at the selected normalization."""
+    n, rho1 = spectral_axis(cutoff, lengthscale, variance, normalization=normalization)
     rho = rho1[:,None,None]*rho1[None,:,None]*rho1[None,None,:]
     ns = np.stack(np.meshgrid(n,n,n,indexing='ij'))
     return cp.asarray(ns.astype(dtype)), cp.asarray(rho.astype(dtype))
@@ -34,12 +43,13 @@ class FourierPoisson:
     Source alpha layout is (P,N,3), output (P,M). The real cross kernel is
     sum_n rho(n) n_i/|n|^2 sin(n.(x-y)); zero mode is exactly zero.
     """
-    def __init__(self, cutoff=50, lengthscale=.01, variance=.1, eps=1e-6, dtype='float32', upsampfac=2.0):
+    def __init__(self, cutoff=50, lengthscale=.01, variance=.1, eps=1e-6, dtype='float32', upsampfac=2.0, normalization='analytic'):
         self.dtype = np.dtype(dtype)
         self.cdtype = np.dtype('complex64' if self.dtype == np.float32 else 'complex128')
         self.eps = eps
         self.upsampfac = upsampfac
-        self.ns, self.rho = spectral_grid(cutoff,lengthscale,variance,self.dtype)
+        self.normalization = normalization
+        self.ns, self.rho = spectral_grid(cutoff,lengthscale,variance,self.dtype,normalization=normalization)
         self.shape = self.rho.shape
         norm2 = (self.ns**2).sum(0)
         self.multiplier = self.ns*self.rho/cp.where(norm2==0,1,norm2)

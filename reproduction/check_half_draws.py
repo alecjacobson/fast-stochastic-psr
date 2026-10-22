@@ -22,6 +22,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--dataset',choices=['B','1000000'],default='1000000')
     p.add_argument('--draws',type=int,default=4)
+    p.add_argument('--pack-rhs',action='store_true',help='use packed full-cube inverse with the same folded prior')
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     if a.dataset=='B':
@@ -50,7 +51,7 @@ def main():
     audit=GpuProcessAudit(cp.cuda.Device().pci_bus_id).start()
     try:
         model=timed('mean_fit',lambda:HalfCubePosterior(x,y))
-        timed('draw',lambda:model.draw(a.draws,seed=51,batch=1,retain_components=True,retain_rhs=True))
+        timed('draw',lambda:model.draw(a.draws,seed=51,batch=1,retain_components=True,retain_rhs=True,pack_rhs=a.pack_rhs))
         # Recreate the first canonical prior using a full 3D grid, without the
         # shifted positive-half or zero-plane evaluation. Identical Gaussian
         # coefficients here are a numerical control, not a seed-based pairing

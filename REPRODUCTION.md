@@ -75,6 +75,16 @@ Monte Carlo convergence, complete application quality or ContactFusion replay.
 
 ## Conditioning at larger posterior sample counts
 
+Paired real RHS are an optional alternative to folded inverse actions.
+`HalfCubePosterior.draw(..., pack_rhs=True)` keeps the folded coherent prior
+and fitted mean while conditioning with full-cube complex transforms. Each
+real channel is scaled separately before packing to control roundoff leakage;
+zero channels remain zero. This representation keeps every finite frequency.
+The [packed-RHS report](reproduction/results/packed_rhs/README.md) records
+repeated folded/packed comparisons, strict same-model gates and separate
+larger-sample and coherent-sampler checks. Conditioning speed alone is not a
+preparation-through-application speedup.
+
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)
 tests one million observations with eight and 128 common conditional draws.
 The eight-draw sweep has three timing repetitions: batching two or four draws

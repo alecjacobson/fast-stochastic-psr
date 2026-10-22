@@ -30,6 +30,7 @@ class HalfCubePosterior(BlockPosterior):
         self.sample_coeff=self.sample_weights=self.sample_prior_coeff=None
         self.cache_batch=16
         self._fluctuation_spectrum=self._fluctuation_kernel=None
+        self._packed_spectrum=self._packed_kernel=None
         sync()
 
     def _make_kernel(self,rhs_count):
@@ -37,11 +38,22 @@ class HalfCubePosterior(BlockPosterior):
 
     def _spectrum_record(self):
         record={'training_cutoff':self.training.cutoff,'half_cube':True,'fold_axis':self.axis}
+        if self._packed_spectrum is not None:
+            record['pack_rhs']=True
         if self._fluctuation_spectrum is not None:
             record.update(solve_cutoff=self._fluctuation_spectrum.cutoff,centered_fluctuations=True)
         return record
 
     def _solve_draw(self,kernel,rhs,initial_mean):
+        if self._packed_spectrum is not None:
+            from geospsr.packed_spectral import PackedFourierKernel
+            from reproduction.spectral_posterior import solve_centered_fluctuations
+            if self._packed_kernel is None or self._packed_kernel.rhs_count!=rhs.shape[1]:
+                self._packed_kernel=PackedFourierKernel(self.x,self._packed_spectrum,
+                                                        self.noise_variance,rhs.shape[1])
+            if self._fluctuation_spectrum is not None:
+                return solve_centered_fluctuations(self._packed_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
+            return super()._solve_draw(self._packed_kernel,rhs,initial_mean)
         if self._fluctuation_spectrum is None:
             return super()._solve_draw(kernel,rhs,initial_mean)
         from reproduction.spectral_posterior import solve_centered_fluctuations
@@ -51,11 +63,13 @@ class HalfCubePosterior(BlockPosterior):
         return solve_centered_fluctuations(self._fluctuation_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
 
     def draw(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,
-             initial_mean=False,progress=None,solve_cutoff=None):
+             initial_mean=False,progress=None,solve_cutoff=None,pack_rhs=False):
         """Optional narrower centered inverse keeps the training prior and mean.
 
         This reproduces the existing cube hybrid law using folded transforms;
         it is not an exact posterior at either bandwidth when they differ.
+        pack_rhs uses paired full-cube transforms only for the inverse. The
+        coherent folded prior and fitted mean are unchanged.
         """
         if solve_cutoff is not None:
             if solve_cutoff!=int(solve_cutoff) or not self.cutoff<=solve_cutoff<=self.training.cutoff:
@@ -65,6 +79,12 @@ class HalfCubePosterior(BlockPosterior):
             self._fluctuation_spectrum=HalfCubeSpectrum(int(solve_cutoff),self.lengthscale,self.variance,
                 self.training.eps,self.training.dtype,self.training.upsampfac,self.normalization)
         try:
+            if pack_rhs:
+                from geospsr.training_spectrum import FourierCovariance
+                band=self.training.cutoff if solve_cutoff is None else int(solve_cutoff)
+                self._packed_spectrum=FourierCovariance(band,self.lengthscale,self.variance,
+                    self.training.eps,self.training.dtype,self.training.upsampfac,self.normalization)
             return super().draw(count,seed,batch,retain_components,retain_rhs,initial_mean,progress)
         finally:
             self._fluctuation_kernel=self._fluctuation_spectrum=None
+            self._packed_kernel=self._packed_spectrum=None

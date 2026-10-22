@@ -60,6 +60,7 @@ def main():
     p.add_argument('--solve-cutoff',type=int,default=200)
     p.add_argument('--block-core',type=int,help='experimental positive-block core for centered inverse; solve-cutoff is its extent')
     p.add_argument('--half-cube',action='store_true',help='same finite cube via positive half plus 2D zero-axis plane')
+    p.add_argument('--pack-rhs',action='store_true',help='pair scaled real RHS in full-cube complex transforms')
     p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
     p.add_argument('--time-budget', type=float, default=1800, help='SDD update budget, seconds')
@@ -86,6 +87,8 @@ def main():
         p.error('half cube requires solve mode without block core')
     if a.fold_axis!=0 and not a.half_cube:
         p.error('fold axis requires half cube')
+    if a.pack_rhs and (a.mode!='solve' or a.half_cube or a.block_core is not None):
+        p.error('packed RHS requires full-cube solve mode')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -248,6 +251,9 @@ def main():
                 elif a.block_core is None:
                     vector = timed('spectrum', lambda: FourierCovariance(a.solve_cutoff))
                     kernel_type = FourierKernel
+                    if a.pack_rhs:
+                        from geospsr.packed_spectral import PackedFourierKernel
+                        kernel_type = PackedFourierKernel
                 else:
                     from geospsr.block_spectral import BlockSpectrum,BlockKernel
                     vector = timed('spectrum',lambda:BlockSpectrum(a.block_core,a.solve_cutoff))

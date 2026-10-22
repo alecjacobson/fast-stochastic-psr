@@ -1,0 +1,3067 @@
+{
+  "args": {
+    "mode": "solve",
+    "scratch": "/opt/geospsr-runtime/common-rhs-128",
+    "dataset": "1000000",
+    "samples": 8,
+    "batch": 1,
+    "repeats": 6,
+    "seed": 42,
+    "rtol": 1e-05,
+    "initial_mean": false,
+    "solve_cutoff": 150,
+    "block_core": null,
+    "half_cube": true,
+    "pack_rhs": false,
+    "fold_axis": 0,
+    "centered_fluctuations": true,
+    "time_budget": 1800,
+    "chunk": 512,
+    "sdd_row_batch": 512,
+    "eta": 5.0,
+    "stop_tolerance": 0.0005,
+    "stop_rows": 2048,
+    "stream_stop_rows": false,
+    "holdout_rows": 4096,
+    "holdout_seed": 2711,
+    "retain_weights": false,
+    "audit_analytic": true,
+    "reference": "reproduction/results/half_cube/half150-six",
+    "output": "/opt/geospsr-runtime/packed-rhs/folded150-six"
+  },
+  "complete": true,
+  "seconds": {
+    "rhs_transfer": 0.12167062237858772,
+    "spectrum": 0.02149861305952072,
+    "plans": 0.17122676223516464,
+    "solve_0": 49.16418740153313,
+    "solve_1": 31.392624508589506,
+    "solve_2": 31.389171820133924,
+    "solve_3": 31.38725984096527,
+    "solve_4": 31.391556922346354,
+    "solve_5": 31.578326296061277,
+    "analytic_holdout": 0.8290069848299026,
+    "scalar_aggregation": 0.21531113609671593,
+    "probe_fields": 0.017187271267175674,
+    "rays": 0.016866322606801987,
+    "collision": 0.03272569924592972
+  },
+  "device_used_bytes_at_stage": {
+    "rhs_transfer": 6243614720,
+    "spectrum": 6323306496,
+    "plans": 7833255936,
+    "solve_0": 2777743360,
+    "solve_1": 3104899072,
+    "solve_2": 3104899072,
+    "solve_3": 3104899072,
+    "solve_4": 3104899072,
+    "solve_5": 3104899072,
+    "analytic_holdout": 1722875904,
+    "scalar_aggregation": 1412497408,
+    "probe_fields": 1412497408,
+    "rays": 1412497408,
+    "collision": 1412497408
+  },
+  "scope": "experimental centered sampler: cutoff200 prior/mean and cutoff150 fluctuation inverse; not an analytic posterior sampler",
+  "device": "NVIDIA L40",
+  "source_manifest": {
+    "args": {
+      "mode": "prepare",
+      "scratch": "/opt/geospsr-runtime/common-rhs-128",
+      "dataset": "1000000",
+      "samples": 128,
+      "batch": 1,
+      "repeats": 3,
+      "seed": 42,
+      "reference": null,
+      "output": "reproduction/results/nufft_batches/prepare"
+    },
+    "complete": true,
+    "seconds": {
+      "mean_fit": 7.675920877605677,
+      "uncertain_geometry": 0.06353888660669327
+    },
+    "device_used_bytes_at_stage": {
+      "mean_fit": 11998920704,
+      "uncertain_geometry": 11998920704
+    },
+    "scope": "common finite-vector/cutoff50-scalar priors; conditional solve batching only",
+    "device": "NVIDIA L40",
+    "N": 1000000,
+    "hashes": {
+      "points": "88966848d5764040a4ecaadbc5381722827f6d929a1c740d2725ce46af1c5e47",
+      "normals": "bf5853403d2d0c3bc78a93ceddfa4c5914b1a31b69efa4ce35920f4d1fa85228",
+      "all_rhs": "8c4dc738cac5acc53b5821dd55084d74ade34746a48660e0f4786f7e165844ff"
+    },
+    "prior_generation_seconds": [
+      0.06175113469362259,
+      0.05769198760390282,
+      0.05718110874295235,
+      0.05733455345034599,
+      0.05729145184159279,
+      0.05772169679403305,
+      0.05776001140475273,
+      0.057247672230005264,
+      0.057453304529190063,
+      0.05769168585538864,
+      0.05765233561396599,
+      0.05757027864456177,
+      0.057776596397161484,
+      0.05745192617177963,
+      0.05785422772169113,
+      0.057701677083969116,
+      0.057691339403390884,
+      0.057730671018362045,
+      0.0577327162027359,
+      0.05760320648550987,
+      0.057233814150094986,
+      0.057655204087495804,
+      0.05781112238764763,
+      0.057670313864946365,
+      0.05765116959810257,
+      0.05780703201889992,
+      0.05769974738359451,
+      0.05762060359120369,
+      0.057672739028930664,
+      0.057818640023469925,
+      0.057266782969236374,
+      0.05775201693177223,
+      0.057671673595905304,
+      0.057587750256061554,
+      0.05752051621675491,
+      0.057433612644672394,
+      0.05722443759441376,
+      0.057669755071401596,
+      0.05771457403898239,
+      0.057716161012649536,
+      0.057620689272880554,
+      0.057514894753694534,
+      0.05792519822716713,
+      0.05759701877832413,
+      0.057662270963191986,
+      0.05774816498160362,
+      0.057687487453222275,
+      0.05756452679634094,
+      0.057850271463394165,
+      0.05758428946137428,
+      0.05753646790981293,
+      0.05719051510095596,
+      0.05734606459736824,
+      0.057767897844314575,
+      0.05753312259912491,
+      0.05762563645839691,
+      0.05767928063869476,
+      0.05772458016872406,
+      0.05767286941409111,
+      0.05776195600628853,
+      0.0576450489461422,
+      0.05763626471161842,
+      0.05767378583550453,
+      0.05767681077122688,
+      0.05768400803208351,
+      0.05773424729704857,
+      0.05755150690674782,
+      0.05764425918459892,
+      0.05791318416595459,
+      0.05768350884318352,
+      0.05769018456339836,
+      0.0575750432908535,
+      0.05753987655043602,
+      0.057807791978120804,
+      0.05786420404911041,
+      0.05786832422018051,
+      0.05780121684074402,
+      0.05778694525361061,
+      0.05761800333857536,
+      0.06258779019117355,
+      0.057744100689888,
+      0.05777270346879959,
+      0.0576985627412796,
+      0.057526081800460815,
+      0.05767045542597771,
+      0.05765648931264877,
+      0.05769825726747513,
+      0.0575871542096138,
+      0.05723130702972412,
+      0.057216446846723557,
+      0.057285092771053314,
+      0.0576559342443943,
+      0.057623378932476044,
+      0.05781641602516174,
+      0.05763956531882286,
+      0.0577368400990963,
+      0.05776648223400116,
+      0.05766710266470909,
+      0.05761222168803215,
+      0.057227637618780136,
+      0.057256363332271576,
+      0.05777489021420479,
+      0.057745810598134995,
+      0.05769294127821922,
+      0.05755387991666794,
+      0.05761859193444252,
+      0.05753432214260101,
+      0.057557083666324615,
+      0.057675816118717194,
+      0.05766403302550316,
+      0.05780870467424393,
+      0.057722605764865875,
+      0.057605158537626266,
+      0.05761568993330002,
+      0.05758848041296005,
+      0.0576590858399868,
+      0.05782682076096535,
+      0.0576888844370842,
+      0.05760807543992996,
+      0.057740870863199234,
+      0.057621102780103683,
+      0.05756884440779686,
+      0.05770508944988251,
+      0.057696014642715454,
+      0.057656437158584595,
+      0.05771741643548012,
+      0.057443033903837204,
+      0.05766312777996063
+    ]
+  },
+  "geometry_sha256": "61863bcee206d4a18d5e8ffc2fea48dc826ec0201c6078f5cfc4a1e87bf051c0",
+  "N": 1000000,
+  "timing_windows": {
+    "rhs_transfer": [
+      0.04284611716866493,
+      0.30202316865324974
+    ],
+    "spectrum": [
+      0.42939359322190285,
+      0.4509107582271099
+    ],
+    "plans": [
+      0.45133867114782333,
+      0.6225745491683483
+    ],
+    "solve_0": [
+      0.6484682597219944,
+      49.813126280903816
+    ],
+    "solve_1": [
+      49.81468426808715,
+      81.20732352510095
+    ],
+    "solve_2": [
+      81.20811977237463,
+      112.5973140001297
+    ],
+    "solve_3": [
+      112.59868071973324,
+      143.98596167191863
+    ],
+    "solve_4": [
+      143.98692209646106,
+      175.3785105459392
+    ],
+    "solve_5": [
+      175.3795500844717,
+      206.9578924253583
+    ],
+    "analytic_holdout": [
+      207.1028345413506,
+      207.96028407290578
+    ],
+    "scalar_aggregation": [
+      208.0355288684368,
+      208.2508519925177
+    ],
+    "probe_fields": [
+      208.25227814167738,
+      208.26947542652488
+    ],
+    "rays": [
+      208.27078241109848,
+      208.28765749186277
+    ],
+    "collision": [
+      208.28861309587955,
+      208.3213473148644
+    ]
+  },
+  "held_mean_sha256": "02dd8b79548c812f6511b231d5c3e88d33ca371c430e513e37b85d9eca5edd0a",
+  "iterations": [
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6576401321799494e-05,
+          1.6602596588199958e-05,
+          1.6817906725918874e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.690429235168267e-05,
+          1.675241583143361e-05,
+          1.695010723778978e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.731947486405261e-05,
+          1.7272432160098106e-05,
+          1.7498141460237093e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.72017389559187e-05,
+          1.6593787222518586e-05,
+          1.6289346604025923e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.716889164526947e-05,
+          1.651002821745351e-05,
+          1.6796700947452337e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.613829590496607e-05,
+          1.7218080756720155e-05,
+          1.62694304890465e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6868658349267207e-05,
+          1.6659776520100422e-05,
+          1.7171045328723267e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.698862797638867e-05,
+          1.7335194570478052e-05,
+          1.5658970369258896e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.65440851560561e-05,
+          1.6633437553537078e-05,
+          1.6762844097684138e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6946438336162828e-05,
+          1.6849209714564495e-05,
+          1.6953825252130628e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7352576833218336e-05,
+          1.7252652469323948e-05,
+          1.75358491105726e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7150114217656665e-05,
+          1.6614048945484683e-05,
+          1.627950587135274e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7141532225650735e-05,
+          1.646657801757101e-05,
+          1.6815951312310062e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6160114682861604e-05,
+          1.7297890735790133e-05,
+          1.6300869901897386e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6862897609826177e-05,
+          1.6751402654335834e-05,
+          1.7145019228337333e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6962236259132624e-05,
+          1.745642839523498e-05,
+          1.5669469576096162e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6507830878254026e-05,
+          1.665607669565361e-05,
+          1.678552507655695e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6958476408035494e-05,
+          1.6837904695421457e-05,
+          1.6954936654656194e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7365411622449756e-05,
+          1.7304822904407047e-05,
+          1.748924478306435e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7165421013487503e-05,
+          1.6637202861602418e-05,
+          1.6292364307446405e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7180303984787315e-05,
+          1.6508296539541334e-05,
+          1.6800646335468628e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6225263607339002e-05,
+          1.7205369658768177e-05,
+          1.63355034601409e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6900314221857116e-05,
+          1.672763937676791e-05,
+          1.7181848306790926e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.690763201622758e-05,
+          1.736525518936105e-05,
+          1.5708572391304187e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6496753232786432e-05,
+          1.6703341316315345e-05,
+          1.686273935774807e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6943218724918552e-05,
+          1.6796391719253734e-05,
+          1.7029073205776513e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7260341337532736e-05,
+          1.7174163076560944e-05,
+          1.754440563672688e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7109296095441096e-05,
+          1.6601727111265063e-05,
+          1.6268026229226962e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7119182302849367e-05,
+          1.6418463928857818e-05,
+          1.6853289707796648e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.617937596165575e-05,
+          1.722358683764469e-05,
+          1.633481588214636e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.689231976342853e-05,
+          1.673420592851471e-05,
+          1.7138145267381333e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.693914418865461e-05,
+          1.730965232127346e-05,
+          1.5656343748560175e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6486186723341234e-05,
+          1.6653730199323036e-05,
+          1.6739131751819514e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.696255822025705e-05,
+          1.6777068594819866e-05,
+          1.6971431250567548e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7344435036648065e-05,
+          1.724327012198046e-05,
+          1.747276655805763e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7163267330033705e-05,
+          1.6577365386183374e-05,
+          1.631720624573063e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.7162241420010105e-05,
+          1.6453566786367446e-05,
+          1.6746002074796706e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.615649125596974e-05,
+          1.7359630874125287e-05,
+          1.629079270060174e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.693273225100711e-05,
+          1.6672618585289456e-05,
+          1.7157621186925098e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.693073681963142e-05,
+          1.7386775652994402e-05,
+          1.5717016140115447e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ],
+    [
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6632870028843172e-05,
+          1.6629814126645215e-05,
+          1.683386290096678e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.695424725767225e-05,
+          1.6773570678196847e-05,
+          1.6905454685911536e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.739623439789284e-05,
+          1.7199283320223913e-05,
+          1.7513086277176626e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.713545498205349e-05,
+          1.656253880355507e-05,
+          1.62706110131694e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.715543112368323e-05,
+          1.6429779861937277e-05,
+          1.6835991118568927e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.6173047697520815e-05,
+          1.7270578609895892e-05,
+          1.6239875549217686e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.693373815214727e-05,
+          1.6722508007660508e-05,
+          1.7165688404929824e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      },
+      {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          1.692819751042407e-05,
+          1.7446514902985655e-05,
+          1.5651981811970472e-05
+        ],
+        "converged": true,
+        "centered_fluctuations": true,
+        "residual_normalization": "centered prior-plus-noise RHS"
+      }
+    ]
+  ],
+  "median_solve_seconds": 31.39209071546793,
+  "holdout_excludes_stopping_rows": true,
+  "holdout_indices_sha256": "b7a936e7cb6a0a8dbe8b2cc25379ae4163f63a56accd3eabdbb45ffb2da3b989",
+  "analytic_holdout": {
+    "per_draw_relative_rms": [
+      0.0007655832137547455,
+      0.0007669245784324906,
+      0.0007667237080822372,
+      0.0007658072244668197,
+      0.0007691813380791437,
+      0.0007567441274412235,
+      0.0007758603474643616,
+      0.0007639496402989892
+    ],
+    "max_relative_rms": 0.0007758603474643616,
+    "all_rows": false,
+    "per_draw_bootstrap_95_percent_intervals": [
+      [
+        0.0007538524550104567,
+        0.0007774714973254218
+      ],
+      [
+        0.0007546710997889973,
+        0.0007793180473631181
+      ],
+      [
+        0.0007543105826497835,
+        0.0007785706625993813
+      ],
+      [
+        0.0007543297171100848,
+        0.0007780766785959988
+      ],
+      [
+        0.0007573083711119471,
+        0.0007816758564045519
+      ],
+      [
+        0.0007443191024994139,
+        0.0007689371607260816
+      ],
+      [
+        0.0007633824818549261,
+        0.0007884525641558093
+      ],
+      [
+        0.0007525086700538199,
+        0.0007754101203861063
+      ]
+    ],
+    "max_upper_endpoint": 0.0007884525641558093,
+    "qualification": "marginal empirical intervals, not a simultaneous or full-system bound"
+  },
+  "quality": {
+    "fields": {
+      "field_relative_l2": 3.596035469399794e-08,
+      "error_over_fluctuation_l2": 1.877992986010213e-06,
+      "empirical_variance_relative_l2": 1.3381344388108118e-06,
+      "empirical_covariance_relative_l2": 2.7149026129322184e-06,
+      "queries": 257,
+      "covariance_queries": 32,
+      "pass": true
+    },
+    "events": {
+      "rays": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 14,
+        "candidate_best": 14,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0
+      },
+      "compatibility_pass": true,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": true,
+      "application_validation_complete": false
+    },
+    "comparison_kind": "same model numerical comparison",
+    "field_gates": {
+      "error_over_fluctuation_l2": 0.0005,
+      "empirical_variance_relative_l2": 0.0001,
+      "empirical_covariance_relative_l2": 0.0001
+    }
+  },
+  "benchmark_work_wall_seconds": 208.33874655142426,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 200,
+    "foreign_process_samples": [
+      {
+        "seconds": 0.03546086698770523,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 1.0943604744970798,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 2.132274392992258,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 3.190338220447302,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 4.247727230191231,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 5.286591921001673,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 6.324242226779461,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 7.38370131328702,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 8.46047655493021,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 9.53983935341239,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 10.58028095215559,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 11.639825340360403,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 12.678261138498783,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 13.715911503881216,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 14.753486081957817,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 15.792012065649033,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 16.87244976684451,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 17.9478206820786,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 19.012191001325846,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 20.049555882811546,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 21.08886193484068,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 22.15133250504732,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 23.191472698003054,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 24.22877176105976,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 25.27252969518304,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 26.360318016260862,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 27.418969966471195,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 28.475188054144382,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 29.55950368195772,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 30.597158432006836,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 31.665529817342758,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 32.705348677933216,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 33.75127600878477,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 34.809280917048454,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 35.87092513591051,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 36.91043221578002,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 37.949223920702934,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 38.99361473321915,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 40.07526234537363,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 41.142190642654896,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 42.20082350820303,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 43.24168272316456,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 44.26174032315612,
+        "pids": [
+          359624
+        ]
+      },
+      {
+        "seconds": 46.362870287150145,
+        "pids": [
+          360601
+        ]
+      },
+      {
+        "seconds": 178.38675245642662,
+        "pids": [
+          361038
+        ]
+      }
+    ],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 1.4320015907287598e-05,
+        "seconds": 0.03545837104320526,
+        "pids": [
+          359624
+        ],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.0357020236551762,
+        "seconds": 1.0943559631705284,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 2.094483718276024,
+        "seconds": 2.1322704069316387,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 3.1323914043605328,
+        "seconds": 3.190312020480633,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 4.190580788999796,
+        "seconds": 4.247703246772289,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 5.2479178160429,
+        "seconds": 5.286571629345417,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 6.286759570240974,
+        "seconds": 6.324229396879673,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 7.324410032480955,
+        "seconds": 7.383688930422068,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 8.383824203163385,
+        "seconds": 8.46046832203865,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2743074816.0
+      },
+      {
+        "started_seconds": 9.46063582226634,
+        "seconds": 9.539829432964325,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 10.53997490927577,
+        "seconds": 10.580275479704142,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 11.580471105873585,
+        "seconds": 11.63981731235981,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 12.640025183558464,
+        "seconds": 12.678255442529917,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 13.678393997251987,
+        "seconds": 13.71589782088995,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 14.716053072363138,
+        "seconds": 14.753473710268736,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 15.753584586083889,
+        "seconds": 15.79200865700841,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 16.79212449118495,
+        "seconds": 16.87244078144431,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 17.872594937682152,
+        "seconds": 17.947815142571926,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 18.94791256263852,
+        "seconds": 19.012187104672194,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 20.012305606156588,
+        "seconds": 20.049547713249922,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 21.049652561545372,
+        "seconds": 21.08885871991515,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 22.088972836732864,
+        "seconds": 22.151326458901167,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 23.151442497968674,
+        "seconds": 23.19146504253149,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 24.19156525656581,
+        "seconds": 24.228768479079008,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 25.22885987907648,
+        "seconds": 25.27251185104251,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 26.27265254408121,
+        "seconds": 26.36031225323677,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 27.360411792993546,
+        "seconds": 27.418966948986053,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 28.41907912865281,
+        "seconds": 28.47517978399992,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 29.475279916077852,
+        "seconds": 29.559500541538,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 30.55961651355028,
+        "seconds": 30.59715162962675,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 31.597251929342747,
+        "seconds": 31.665526684373617,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 32.665620520710945,
+        "seconds": 32.705345671623945,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 33.70545919984579,
+        "seconds": 33.75125438719988,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 34.751363690942526,
+        "seconds": 34.80927737802267,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 35.809369295835495,
+        "seconds": 35.87092054635286,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 36.871080439537764,
+        "seconds": 36.910424783825874,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 37.910522896796465,
+        "seconds": 37.94922064989805,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 38.94931088015437,
+        "seconds": 38.9936116784811,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 39.99372275173664,
+        "seconds": 40.07525518164039,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 41.07535559311509,
+        "seconds": 41.14218783006072,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 42.14228082448244,
+        "seconds": 42.20081486180425,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 43.20091399550438,
+        "seconds": 43.241678953170776,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 44.24179374799132,
+        "seconds": 44.261734072119,
+        "pids": [
+          359624,
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 45.2618312202394,
+        "seconds": 45.30024180933833,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 46.300333455204964,
+        "seconds": 46.36286733299494,
+        "pids": [
+          360156,
+          360601
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 47.3629578910768,
+        "seconds": 47.40353495255113,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 48.40364836528897,
+        "seconds": 48.47854980453849,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 49.47864806652069,
+        "seconds": 49.51600409299135,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 2768240640.0
+      },
+      {
+        "started_seconds": 50.51610038429499,
+        "seconds": 50.55225846916437,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 51.5523544549942,
+        "seconds": 51.58809310570359,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 52.58822577819228,
+        "seconds": 52.62561012431979,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 53.6257052347064,
+        "seconds": 53.68484991043806,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 54.68493967503309,
+        "seconds": 54.728020921349525,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 55.72811910137534,
+        "seconds": 55.76403959840536,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 56.764131888747215,
+        "seconds": 56.784276969730854,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 57.78442217037082,
+        "seconds": 57.8208575733006,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 58.82095659151673,
+        "seconds": 58.87913243845105,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 59.879222732037306,
+        "seconds": 59.93626946955919,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 60.93635938689113,
+        "seconds": 60.99477160349488,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 61.994860637933016,
+        "seconds": 62.031882520765066,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 63.03201320767403,
+        "seconds": 63.08673498407006,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 64.08682795986533,
+        "seconds": 64.12563127279282,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 65.12572043016553,
+        "seconds": 65.1670236364007,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 66.16711325570941,
+        "seconds": 66.20819550380111,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 67.2082845903933,
+        "seconds": 67.26275423914194,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 68.26285171881318,
+        "seconds": 68.31875077262521,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 69.31890497729182,
+        "seconds": 69.33858872205019,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 70.33868359029293,
+        "seconds": 70.37624017521739,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 71.37633252516389,
+        "seconds": 71.4314333498478,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 72.43152752146125,
+        "seconds": 72.47216095030308,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 73.4722628891468,
+        "seconds": 73.50813548266888,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 74.50822501629591,
+        "seconds": 74.54513572528958,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 75.54523062705994,
+        "seconds": 75.58416333422065,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 76.5842698737979,
+        "seconds": 76.62424059957266,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 77.62432951107621,
+        "seconds": 77.67865552008152,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 78.67874631658196,
+        "seconds": 78.71711513027549,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 79.71720224246383,
+        "seconds": 79.77649125084281,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 80.776585329324,
+        "seconds": 80.86194699257612,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 81.86203575506806,
+        "seconds": 81.9055386222899,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 82.90565239265561,
+        "seconds": 82.94528134539723,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 83.94537713378668,
+        "seconds": 84.00667452439666,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 85.00676168128848,
+        "seconds": 85.04411613568664,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 86.0442063845694,
+        "seconds": 86.07996393367648,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 87.08005177974701,
+        "seconds": 87.1374144628644,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 88.13750321418047,
+        "seconds": 88.17650503665209,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 89.17659140005708,
+        "seconds": 89.2249841466546,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 90.22507546469569,
+        "seconds": 90.30404542014003,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 91.30416234582663,
+        "seconds": 91.3586291782558,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 92.35872262716293,
+        "seconds": 92.39596398919821,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 93.39605491608381,
+        "seconds": 93.47059410437942,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 94.470683503896,
+        "seconds": 94.5089002288878,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 95.50899229571223,
+        "seconds": 95.55208282917738,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 96.55217695608735,
+        "seconds": 96.6066753603518,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 97.6067697815597,
+        "seconds": 97.64407638460398,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 98.64416860044003,
+        "seconds": 98.71857650205493,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 99.7186953946948,
+        "seconds": 99.75570051372051,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 100.7557971663773,
+        "seconds": 100.79206791520119,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 101.79216015338898,
+        "seconds": 101.8279915265739,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 102.82809180393815,
+        "seconds": 102.90419820696115,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 103.90428292378783,
+        "seconds": 103.97979142144322,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 104.97987436130643,
+        "seconds": 105.05468882247806,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 106.05477956309915,
+        "seconds": 106.09206532686949,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 107.09215776994824,
+        "seconds": 107.12799720093608,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 108.12809356302023,
+        "seconds": 108.16400787234306,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 109.16412221640348,
+        "seconds": 109.23968804255128,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 110.23978164792061,
+        "seconds": 110.27998903393745,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 111.28008013218641,
+        "seconds": 111.31598908826709,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 112.31608385965228,
+        "seconds": 112.39150704070926,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 113.39160091429949,
+        "seconds": 113.47101773321629,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 114.47111397236586,
+        "seconds": 114.51916455477476,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 115.51925574988127,
+        "seconds": 115.59098694100976,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 116.59108033031225,
+        "seconds": 116.62918420135975,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 117.62927446514368,
+        "seconds": 117.6908536478877,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 118.69095914438367,
+        "seconds": 118.73334684967995,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 119.73344323411584,
+        "seconds": 119.79072510823607,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 120.7908129915595,
+        "seconds": 120.8279963620007,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 121.82808378711343,
+        "seconds": 121.86403219774365,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 122.86412031203508,
+        "seconds": 122.92201398685575,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 123.92210230976343,
+        "seconds": 124.00250972434878,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 125.00259651243687,
+        "seconds": 125.04002422466874,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 126.04011420533061,
+        "seconds": 126.07988366857171,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 127.07999152317643,
+        "seconds": 127.11958957836032,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 128.11968155950308,
+        "seconds": 128.15806224569678,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 129.15815089643002,
+        "seconds": 129.17916795611382,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 130.17925652489066,
+        "seconds": 130.21950732916594,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 131.21962892636657,
+        "seconds": 131.26013860106468,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 132.26023296639323,
+        "seconds": 132.29965949058533,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 133.2997496202588,
+        "seconds": 133.33588889241219,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 134.3359903804958,
+        "seconds": 134.39472160860896,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 135.39481366053224,
+        "seconds": 135.43208446353674,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 136.43217055499554,
+        "seconds": 136.46779930964112,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 137.4678870216012,
+        "seconds": 137.50583877786994,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 138.50592913478613,
+        "seconds": 138.5469332076609,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 139.54702204465866,
+        "seconds": 139.62272894755006,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 140.62282013893127,
+        "seconds": 140.66021125018597,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 141.66031076014042,
+        "seconds": 141.69590740278363,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 142.69602020829916,
+        "seconds": 142.732130844146,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 143.73222847282887,
+        "seconds": 143.77027789875865,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 144.77036448940635,
+        "seconds": 144.82761300355196,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 145.8277041837573,
+        "seconds": 145.86730286478996,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 146.86739356070757,
+        "seconds": 146.90401060506701,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 147.90410174056888,
+        "seconds": 147.98021590709686,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 148.98030887171626,
+        "seconds": 149.05453702807426,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 150.05462871864438,
+        "seconds": 150.0920551866293,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 151.09214751422405,
+        "seconds": 151.1481530740857,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 152.14824294298887,
+        "seconds": 152.22283145785332,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 153.22292672097683,
+        "seconds": 153.2804825566709,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 154.28061425313354,
+        "seconds": 154.3384738266468,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 155.33856489881873,
+        "seconds": 155.37603390961885,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 156.3761329241097,
+        "seconds": 156.41624493151903,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 157.4163343347609,
+        "seconds": 157.45202385261655,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 158.45211447775364,
+        "seconds": 158.50946364924312,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 159.50955482572317,
+        "seconds": 159.5515026561916,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 160.55160964280367,
+        "seconds": 160.58988672494888,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 161.58998158946633,
+        "seconds": 161.63208327442408,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 162.63217318430543,
+        "seconds": 162.69075924158096,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 163.69085309654474,
+        "seconds": 163.72800958529115,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 164.72809915989637,
+        "seconds": 164.76578018814325,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 165.7658727541566,
+        "seconds": 165.8076664544642,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 166.80777249485254,
+        "seconds": 166.86676109954715,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 167.86685901507735,
+        "seconds": 167.90416029840708,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 168.90425042062998,
+        "seconds": 168.9587389342487,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 169.958828125149,
+        "seconds": 170.01767242699862,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 171.01776522770524,
+        "seconds": 171.05675372853875,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 172.05684438720345,
+        "seconds": 172.1419488862157,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 173.14203650131822,
+        "seconds": 173.20261500775814,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 174.20270258560777,
+        "seconds": 174.23976428061724,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 175.23985878750682,
+        "seconds": 175.27587638795376,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 176.2759578563273,
+        "seconds": 176.31153982132673,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 177.31162614002824,
+        "seconds": 177.3310861773789,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 178.33118487149477,
+        "seconds": 178.38674575462937,
+        "pids": [
+          360156,
+          361038
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 179.38686173036695,
+        "seconds": 179.47286503389478,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 180.47295600175858,
+        "seconds": 180.54456310719252,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 181.5446565411985,
+        "seconds": 181.5881816856563,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 182.58828691393137,
+        "seconds": 182.62417306378484,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 183.62426436692476,
+        "seconds": 183.66016709804535,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 184.66025421768427,
+        "seconds": 184.71702940016985,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 185.71711790934205,
+        "seconds": 185.77869087457657,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 186.77878323197365,
+        "seconds": 186.81585254892707,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 187.8159458078444,
+        "seconds": 187.8925337009132,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 188.89263186603785,
+        "seconds": 188.9136716388166,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 189.9137703999877,
+        "seconds": 189.97085263207555,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 190.970962241292,
+        "seconds": 191.05395579338074,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 192.05405075103045,
+        "seconds": 192.11465096846223,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 193.11473954468966,
+        "seconds": 193.15225856378675,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 194.1523468643427,
+        "seconds": 194.188075106591,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 195.18816245347261,
+        "seconds": 195.22397820279002,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 196.22406774014235,
+        "seconds": 196.2806228250265,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 197.2807142138481,
+        "seconds": 197.32230681553483,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 198.32240010797977,
+        "seconds": 198.40242781862617,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 199.40251567959785,
+        "seconds": 199.4636248461902,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 200.46371610462666,
+        "seconds": 200.51868218183517,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 201.51877534389496,
+        "seconds": 201.57540172711015,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 202.5755158700049,
+        "seconds": 202.61401100084186,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 203.6141073293984,
+        "seconds": 203.67065384238958,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 204.6707427278161,
+        "seconds": 204.71192967891693,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 205.71201680600643,
+        "seconds": 205.76674680039287,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 206.76683439686894,
+        "seconds": 206.82405427470803,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 3095396352.0
+      },
+      {
+        "started_seconds": 207.82415238022804,
+        "seconds": 207.87851650640368,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 1713373184.0
+      },
+      {
+        "started_seconds": 208.32623121514916,
+        "seconds": 208.38599808514118,
+        "pids": [
+          360156
+        ],
+        "own_memory_bytes": 1402994688.0
+      }
+    ],
+    "own_pid": 360156,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  },
+  "timing_process_audits": {
+    "rhs_transfer": {
+      "start_seconds": 0.04284611716866493,
+      "end_seconds": 0.30202316865324974,
+      "sampled_isolation_pass": false,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [
+        359624
+      ],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.000243652611971,
+      "sampled_process_memory_peak_bytes": 2743074816.0,
+      "samples": 2
+    },
+    "spectrum": {
+      "start_seconds": 0.42939359322190285,
+      "end_seconds": 0.4509107582271099,
+      "sampled_isolation_pass": false,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [
+        359624
+      ],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.000243652611971,
+      "sampled_process_memory_peak_bytes": 2743074816.0,
+      "samples": 2
+    },
+    "plans": {
+      "start_seconds": 0.45133867114782333,
+      "end_seconds": 0.6225745491683483,
+      "sampled_isolation_pass": false,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [
+        359624
+      ],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.000243652611971,
+      "sampled_process_memory_peak_bytes": 2743074816.0,
+      "samples": 2
+    },
+    "solve_0": {
+      "start_seconds": 0.6484682597219944,
+      "end_seconds": 49.813126280903816,
+      "sampled_isolation_pass": false,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [
+        359624,
+        360601
+      ],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.0002687685191631,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 49
+    },
+    "solve_1": {
+      "start_seconds": 49.81468426808715,
+      "end_seconds": 81.20732352510095,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.0001542046666145,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 32
+    },
+    "solve_2": {
+      "start_seconds": 81.20811977237463,
+      "end_seconds": 112.5973140001297,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.0001188926398754,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 32
+    },
+    "solve_3": {
+      "start_seconds": 112.59868071973324,
+      "end_seconds": 143.98596167191863,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.000121597200632,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 32
+    },
+    "solve_4": {
+      "start_seconds": 143.98692209646106,
+      "end_seconds": 175.3785105459392,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.0001316964626312,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 32
+    },
+    "solve_5": {
+      "start_seconds": 175.3795500844717,
+      "end_seconds": 206.9578924253583,
+      "sampled_isolation_pass": false,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [
+        361038
+      ],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.0001159757375717,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 32
+    },
+    "analytic_holdout": {
+      "start_seconds": 207.1028345413506,
+      "end_seconds": 207.96028407290578,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 1.00009810552001,
+      "sampled_process_memory_peak_bytes": 3095396352.0,
+      "samples": 3
+    },
+    "scalar_aggregation": {
+      "start_seconds": 208.0355288684368,
+      "end_seconds": 208.2508519925177,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 0.4477147087454796,
+      "sampled_process_memory_peak_bytes": 1713373184.0,
+      "samples": 2
+    },
+    "probe_fields": {
+      "start_seconds": 208.25227814167738,
+      "end_seconds": 208.26947542652488,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 0.4477147087454796,
+      "sampled_process_memory_peak_bytes": 1713373184.0,
+      "samples": 2
+    },
+    "rays": {
+      "start_seconds": 208.27078241109848,
+      "end_seconds": 208.28765749186277,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 0.4477147087454796,
+      "sampled_process_memory_peak_bytes": 1713373184.0,
+      "samples": 2
+    },
+    "collision": {
+      "start_seconds": 208.28861309587955,
+      "end_seconds": 208.3213473148644,
+      "sampled_isolation_pass": true,
+      "qualification": "Periodic observations and bracketing samples; not proof of exclusive GPU use or exact memory peak.",
+      "foreign_pids": [],
+      "errors": [],
+      "maximum_observation_gap_seconds": 0.4477147087454796,
+      "sampled_process_memory_peak_bytes": 1713373184.0,
+      "samples": 2
+    }
+  }
+}

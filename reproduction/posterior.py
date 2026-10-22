@@ -33,13 +33,36 @@ class Posterior:
         self.mean_coeff=self.op.aggregate(self.x,self.alpha)
         self.offset=self.op.evaluate(self.x,self.mean_coeff).mean()
         self.sample_coeff=None
+        self.mean_cache=None
+        self.sample_cache=None
+        self.cache_batch=16
         sync()
 
     def solve(self,b):
         return cla.solve_triangular(self.L.T,cla.solve_triangular(self.L,b,lower=True),lower=False)
 
     def mean(self,q):
+        if self.mean_cache is not None:
+            return self.mean_cache.evaluate(q)[0]-self.offset
         return self.op.evaluate(q,self.mean_coeff)[0]-self.offset
+
+    def prepare_query_cache(self,batch=16):
+        """Cache fixed functions; changing query locations remains supported.
+
+        Extra memory/preparation amortize only over repeated queries. `batch`
+        counts packed pairs of real sample functions during interpolation.
+        Calling draw again invalidates the sample cache, preserving the mean.
+        """
+        from geospsr.cached_spectral import CachedFourierEvaluator
+        if batch < 1:
+            raise ValueError('batch must be positive')
+        self.cache_batch=batch
+        self.mean_cache=CachedFourierEvaluator(self.mean_coeff,batch=1)
+        self.sample_cache=(CachedFourierEvaluator(self.sample_coeff,batch=1)
+                           if self.sample_coeff is not None else None)
+        sync()
+        return {'mean_cache_bytes':self.mean_cache.cache_bytes,
+                'sample_cache_bytes':self.sample_cache.cache_bytes if self.sample_cache is not None else 0}
 
     def draw(self,count=64,seed=0,batch=4,exact=True,retain_components=False):
         """Draw coherent functions.
@@ -51,6 +74,7 @@ class Posterior:
         retain_components keeps the common pathwise weights and prior spectrum
         for paired backend comparisons; it adds memory and is off by default.
         """
+        self.sample_cache=None
         rng=np.random.default_rng(seed)
         prior=self.op if exact else self.prior
         residual_chol=None
@@ -92,6 +116,8 @@ class Posterior:
         self.sample_prior_coeff=cp.concatenate(priors) if retain_components else None
         sync()
 
-    def samples(self,q,batch=4):
+    def samples(self,q,batch=None):
         if self.sample_coeff is None: raise RuntimeError('call draw first')
-        return self.op.evaluate_batched(q,self.sample_coeff,batch)-self.offset
+        if self.sample_cache is not None:
+            return self.sample_cache.evaluate(q,self.cache_batch if batch is None else batch)-self.offset
+        return self.op.evaluate_batched(q,self.sample_coeff,4 if batch is None else batch)-self.offset

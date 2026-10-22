@@ -18,6 +18,22 @@ use `--output PATH` to retain a separate result set. See the
 [paired application report](reproduction/results/paired_applications/README.md)
 for quality gates, preparation/query scope and known coverage gaps.
 
+Cached interpolation-only queries retain every Fourier mode. The newer
+[cached-query report](reproduction/results/cached_queries/README.md) measures
+moving queries, uncertain collision probes, paired moments and reference-grid
+convergence. Run `paired_applications.py --cached-grids --uncertain-collisions`
+with a separate `--output` directory to reproduce those comparisons.
+
+The reusable `Posterior.prepare_query_cache()` prepares mean/sample caches;
+`mean()` and `samples()` then support arbitrary new query positions. Redrawing
+samples invalidates their cache. Caches add memory and preparation costs and
+are optional. To use them in the application demonstration without overwriting
+earlier results:
+
+```bash
+./reproduction/run_env.sh reproduction/applications.py --cache-queries --output reproduction/results/cached_queries/applications-cached
+```
+
 GPU reproduction and acceleration experiments for **GeoSPSR**, with nonuniform
 FFTs (NUFFT), matrix-free Gaussian-process solves, and an initial assessment of
 fast multipole methods (FMM).

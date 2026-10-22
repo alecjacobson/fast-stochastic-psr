@@ -87,8 +87,8 @@ noise levels, and uncertainty regions where sign decisions are sensitive.
 | Length-scale/detail and Fourier/grid convergence (Figs. 2–4, 14, 16) | Kernel checks, compatible interpolant | Controlled downstream accuracy sweeps [#5](https://github.com/alecjacobson/fast-stochastic-psr/issues/5) |
 | Posterior sampling and local evaluation (Figs. 6, 10) | Coherent corrected sampler; moment tests | Matched distribution and preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Uncertainty-aware hitboxes (Fig. 5) | Scorpion meshes; clipping noted | Geometry/uncertainty gates [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
-| Collision probability (Fig. 7) | Scorpion proxy-object demonstration | Paired performance; geometry/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
-| Ray transmittance and next-view scores (Fig. 9) | Scorpion ray demonstration | Paired performance and rank stability [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
+| Collision probability (Fig. 7) | Paired uncertain probes, two B seeds; cached query acceleration | Geometry/sample convergence and complete preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
+| Ray transmittance and next-view scores (Fig. 9) | Paired moving queries; cached query acceleration; reference-grid convergence | Broader decision/ray/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
 | Sequential scanning (Fig. 8) | One seed, approximate sampler | Multi-seed acquisition/refit benchmark [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7) |
 | Input/output scaling and solver convergence (Figs. 11–13, 15) | Kernel scaling and solver audit | Analytic-model iterative baselines [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) |
 | Massive-scale applications | Exploratory million-point finite GP | Full quality bridge [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
@@ -96,6 +96,12 @@ noise levels, and uncertainty regions where sign decisions are sensitive.
 Scenes not present in the release remain labeled reconstructed task scenarios.
 Audit additional supplementary examples as they are incorporated; file new
 issues for missing coverage or discovered numerical/performance failures.
+
+The [cached-query report](results/cached_queries/README.md) adds function-level
+checks on 257 independent queries, including 32-point empirical covariance.
+Before those runs, numerical cache gates were set to error / fluctuation norm
+<5e-4 and empirical variance/covariance relative errors <1e-4. These isolate the
+cache approximation; they do not replace model or sample-count convergence.
 
 ## Beyond feasible upstream runs
 

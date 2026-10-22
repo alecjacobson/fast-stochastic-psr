@@ -1,0 +1,79 @@
+common_fit_and_direct_mean_setup 0.5445721633732319
+common_corrected_draws_and_direct_aggregation 10.573289345949888
+reference_kernel_setup 13.565644077956676
+reference_mean_offset 0.547083605080843
+common_collision_calibration 0.07727362960577011
+reference_rays_first 0.785625621676445
+reference_rays_repeat_0 0.11713199317455292
+reference_rays_repeat_1 0.11748789623379707
+reference_rays_repeat_2 0.13178148865699768
+reference_collision_first 0.6601313203573227
+reference_collision_repeat_0 0.11615272238850594
+reference_collision_repeat_1 0.1145980954170227
+reference_collision_repeat_2 0.11628784984350204
+reference_prior_grid_setup 0.08110073581337929
+reference_cached_rays_first 0.04444035887718201
+reference_cached_rays_repeat_0 0.04407959058880806
+reference_cached_rays_repeat_1 0.04301866143941879
+reference_cached_rays_repeat_2 0.041986849159002304
+reference_cached_collision_first 0.039445385336875916
+reference_cached_collision_repeat_0 0.03783334791660309
+reference_cached_collision_repeat_1 0.03722178563475609
+reference_cached_collision_repeat_2 0.04191131889820099
+direct_rays_first 0.15421297401189804
+direct_rays_repeat_0 0.12414547801017761
+direct_rays_repeat_1 0.11426049843430519
+direct_rays_repeat_2 0.11606720089912415
+direct_collision_first 0.1130022220313549
+direct_collision_repeat_0 0.1234169527888298
+direct_collision_repeat_1 0.13138948753476143
+direct_collision_repeat_2 0.11342644318938255
+direct_grid_setup 0.0364237055182457
+direct_cached_rays_first 0.03941049054265022
+direct_cached_rays_repeat_0 0.038202062249183655
+direct_cached_rays_repeat_1 0.03782794252038002
+direct_cached_rays_repeat_2 0.03866466507315636
+direct_cached_collision_first 0.034875188022851944
+direct_cached_collision_repeat_0 0.033712856471538544
+direct_cached_collision_repeat_1 0.03338116034865379
+direct_cached_collision_repeat_2 0.045459769666194916
+compatible_kernel_setup 0.11582062020897865
+compatible_sample_aggregation 1.1168211326003075
+compatible_rays_first 0.21118980273604393
+compatible_rays_repeat_0 0.2240559123456478
+compatible_rays_repeat_1 0.221213910728693
+compatible_rays_repeat_2 0.21116075292229652
+compatible_collision_first 0.20391371846199036
+compatible_collision_repeat_0 0.20358825474977493
+compatible_collision_repeat_1 0.20388639345765114
+compatible_collision_repeat_2 0.2042129747569561
+Traceback (most recent call last):
+  File "/home/horde/projects/stochastic-psr/reproduction/paired_applications.py", line 315, in <module>
+    main()
+  File "/home/horde/projects/stochastic-psr/reproduction/paired_applications.py", line 293, in main
+    grid = timed('compatible_grid_setup', lambda: CachedFourierEvaluator(coeff, batch=1))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/paired_applications.py", line 150, in timed
+    value, elapsed = measure(fn)
+                     ^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/matched_teaser.py", line 46, in measure
+    value = fn()
+            ^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/paired_applications.py", line 293, in <lambda>
+    grid = timed('compatible_grid_setup', lambda: CachedFourierEvaluator(coeff, batch=1))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/geospsr/cached_spectral.py", line 62, in __init__
+    self.grid = cp.empty((self.count, *self.shape), dtype=cp.complex64)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupy/_creation/basic.py", line 34, in empty
+    return cupy.ndarray(shape, dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 176, in cupy._core.core.ndarray.__new__
+  File "cupy/_core/core.pyx", line 282, in cupy._core.core._ndarray_base._init
+  File "cupy/cuda/memory.pyx", line 904, in cupy.cuda.memory.alloc
+  File "cupy/cuda/memory.pyx", line 1614, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1635, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1350, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1376, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+  File "cupy/cuda/memory.pyx", line 1560, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 34,828,517,376 bytes (allocated so far: 10,748,279,808 bytes).

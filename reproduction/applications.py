@@ -14,14 +14,19 @@ from skimage.measure import marching_cubes
 from posterior import Posterior, sync
 
 p=argparse.ArgumentParser(); p.add_argument('--samples',type=int,default=128); p.add_argument('--grid',type=int,default=48)
-a=p.parse_args(); out=Path(__file__).resolve().parent/'results'
-data=np.load(out/'upstream_baseline.npz'); x=data['points']; normals=data['normals']
+p.add_argument('--cache-queries',action='store_true',help='prepare interpolation-only mean/sample caches')
+p.add_argument('--output',type=Path,help='separate result directory; preserves existing measurements')
+a=p.parse_args(); source=Path(__file__).resolve().parent/'results'
+out=a.output or source; out.mkdir(parents=True,exist_ok=True)
+data=np.load(source/'upstream_baseline.npz'); x=data['points']; normals=data['normals']
 result={'scene':'published scorpion scan; reconstructed application scenarios','N':len(x),'samples':a.samples,'grid':a.grid,'seconds':{},'inside_convention':'negative with outward normals','noise_variance':.02,'cross_modes':101**3,'prior_modes':101**3,'uncertainty':'Monte Carlo; finite-f/full-analytic-v posterior, with exact residual-vector covariance and observation noise'}
 def timed(name,fn):
     sync(); t=time.perf_counter(); z=fn(); sync(); result['seconds'][name]=time.perf_counter()-t
     print(name,result['seconds'][name],flush=True); return z
 model=timed('fit_first',lambda:Posterior(x,normals))
 timed('draw_coefficients_first',lambda:model.draw(a.samples,seed=42))
+if a.cache_queries:
+    result['query_cache']=timed('query_cache_setup',model.prepare_query_cache)
 # One set of random functions is reused in every application, preserving joint events.
 q=data['query']
 sm=timed('slice_mean',lambda:model.mean(q))

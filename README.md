@@ -20,10 +20,16 @@ scopes; kernel-action timings are not complete-application speedups.
 | --- | --- | --- |
 | **A: released scorpion, 691 observations** | Same data and analytic training covariance; original APIs checked; mean error 0.123%, variance error 0.0022% | Reproduced. Cached original is faster at this size. |
 | **B: denser scorpion, 17,419 observations** | Mean error 0.0305%, variance error 0.0074%; inside-probability RMS error 0.041 percentage points | Cached mean **17.2× faster**; deterministic variance **slower**. First computation stages **9.5× faster**. |
-| **Collision, rays, next-view queries** | Paired A/B evaluations with 128 shared coherent draws; local probability and uncertain-collision checks expose remaining gaps | [Initial benchmark report](reproduction/results/paired_applications/README.md). No validated complete-application speedup yet: [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3), [#10](https://github.com/alecjacobson/fast-stochastic-psr/issues/10). |
-| **Uncertainty-aware hitboxes** | Demonstration implemented; variance and meshing accuracy need controlled comparison | Variance acceleration open: [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4). |
+| **Collision, rays, next-view queries** | Paired coherent samples, uncertain collision probes, moving queries and two seeds; numerical gates pass | At B: prepared ray queries **11.1–11.2× faster**, collisions **10.5× faster**. Setup excluded; [report and remaining validation](reproduction/results/cached_queries/README.md). |
+| **Uncertainty-aware hitboxes** | Cached sampled fields preserve all three demo meshes' connectivity; max vertex change <0.00011 | [Output check](reproduction/results/cached_queries/application_cache_check.json). Controlled upstream speed/quality comparison and exact variance remain open: [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4). |
 | **Sequential scanning** | Single-seed demonstration; multi-seed quality comparison pending | Training/update costs and decision stability open: [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7). |
 | **Million-point applications** | Exploratory finite-Fourier GP only; full-model equivalence unverified | Full-model conditioning [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) and massive-scale validation [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) open. |
+
+Application query ratios use 128 shared **corrected** posterior draws and a strong
+reference that also caches prior evaluation. Shared preparation takes about 13 s;
+additional compatibility-cache setup amortizes after about 17 ray batches in B.
+These are repeated-query gains, not complete reconstruction or scanning speedups.
+Absolute sampling accuracy and geometric discretization still need convergence studies.
 
 ### A — reproduce the released example
 

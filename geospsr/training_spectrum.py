@@ -27,7 +27,7 @@ class FourierCovariance:
     evaluate_batched = FourierPoisson.evaluate_batched
 
 
-_rows = cp.RawKernel(r'''
+_rows_source = r'''
 extern "C" __global__ void finite_rows(
     const float* q, const float* x, const double* rho, float* out,
     const int nq, const int nx, const int cutoff) {
@@ -50,19 +50,27 @@ extern "C" __global__ void finite_rows(
     }
     out[id] = (float)value;
 }
-''', 'finite_rows')
+'''
+_rows = cp.RawKernel(_rows_source, 'finite_rows')
+_rows64 = cp.RawKernel(_rows_source.replace('float* out', 'double* out').replace(
+    'out[id] = (float)value', 'out[id] = value'), 'finite_rows')
 
 
-def finite_covariance_rows(query, points, spectrum):
+def finite_covariance_rows(query, points, spectrum, dtype='float32'):
     """Direct product of 1D cosine sums, independent of the NUFFT implementation.
 
     Intended for overlap validation, not massive N-by-N storage. Recurrence and
-    accumulation use float64; fixed input positions/output use float32.
+    accumulation use float64; fixed input positions use float32. Float64 output
+    is available for subtracting the finite kernel from the analytic kernel.
     """
     q = cp.ascontiguousarray(cp.asarray(query, dtype=cp.float32))
     x = cp.ascontiguousarray(cp.asarray(points, dtype=cp.float32))
-    result = cp.empty((len(q), len(x)), dtype=cp.float32)
+    dtype = np.dtype(dtype)
+    if dtype not in (np.dtype('float32'), np.dtype('float64')):
+        raise ValueError('output dtype must be float32 or float64')
+    result = cp.empty((len(q), len(x)), dtype=dtype)
     size = result.size
-    _rows(((size + 127) // 128,), (128,),
+    kernel = _rows if dtype == np.float32 else _rows64
+    kernel(((size + 127) // 128,), (128,),
           (q, x, spectrum.axis64, result, len(q), len(x), spectrum.cutoff))
     return result

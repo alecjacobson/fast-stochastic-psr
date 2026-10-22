@@ -4,6 +4,22 @@ This document retains the detailed methodology and historical measurements.
 The [main README](README.md) is the current flagship status summary; the
 [benchmark contract](reproduction/BENCHMARKS.md) defines acceptance criteria.
 
+## Posterior covariance error from the omitted spectrum
+
+The [covariance-tail report](reproduction/results/spectral_tail/README.md)
+adds a million-point covariance diagnostic to the earlier analytic-residual
+checks. A PSD bound isolates omitted vector-training modes while preserving
+the cutoff-50 scalar/cross model. Dense A/B calculations validate the bound
+and its infinite-tail frequency estimator. A 16-query million-point panel
+supports small covariance error at default parameters; the short-scale,
+low-noise B case remains a failure. Production/stricter solver comparisons
+separate numerical sensitivity from spectral truncation.
+
+The report includes commands, fixed query/frequency seeds, raw arrays, the
+derivation and limitations. These are covariance diagnostics, not complete
+application accuracy or speedup measurements. Simply adding a full prior to
+a truncated inverse does not recover the analytic posterior.
+
 ## Batched conditional solves and optimized exact sampling
 
 The [conditional-solve report](reproduction/results/conditional_solves/README.md)
@@ -446,6 +462,12 @@ covariance, spatial preconditioning, and controlled near-field/spectral
 splitting. A standard Laplace or Coulomb FMM is not a drop-in replacement for
 the product-Matérn kernel. Comparisons need matched posterior accuracy, periodic
 boundary handling, setup/rebuild costs, and real surface-supported scans.
+
+[Issue #18](https://github.com/alecjacobson/fast-stochastic-psr/issues/18) also
+tracks exact sorted-range sums, motivated by
+[Langrené, Warin and Gruet's product-Matérn decomposition](https://arxiv.org/abs/2508.01864).
+A scalar periodic decomposition has been checked numerically; a stable GPU
+implementation and measured conditioning/application gains remain unimplemented.
 
 ## Code map
 

@@ -1,0 +1,27 @@
+cross_rows 0.19703126326203346
+scalar_prior 0.008726757019758224
+[cufinufft_makeplan_impl] cufft makeplan error: CUFFT_INTERNAL_ERRORTraceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/projects/stochastic-psr/reproduction/audit_spectral_tail.py", line 184, in <module>
+    main()
+  File "/home/horde/projects/stochastic-psr/reproduction/audit_spectral_tail.py", line 114, in main
+    kernel = timed('plans', lambda: FourierKernel(x, vector, args.noise))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/audit_spectral_tail.py", line 76, in timed
+    value = fn()
+            ^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/audit_spectral_tail.py", line 114, in <lambda>
+    kernel = timed('plans', lambda: FourierKernel(x, vector, args.noise))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/geospsr/spectral.py", line 115, in __init__
+    self.forward=op.plan(1,points,rhs_count)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/geospsr/spectral.py", line 50, in plan
+    plan = cufinufft.Plan(kind,self.shape,n_trans=n_trans,eps=self.eps,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 152, in __init__
+    self._init_plan()
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 219, in _init_plan
+    raise RuntimeError('Error creating plan.')
+RuntimeError: Error creating plan.

@@ -114,6 +114,14 @@ the million-point mean check but fails the conditional-draw check; cutoff 200
 passes both in the eight-draw pilot. Short-scale/low-noise B fails all tested
 cutoffs, tracked in [#14](https://github.com/alecjacobson/fast-stochastic-psr/issues/14).
 
+The [spectral-tail diagnostic](results/spectral_tail/README.md) provides separate
+posterior-covariance evidence: a PSD bound validated against dense analytic A/B
+conditioning and estimated on a fixed 16-query million-point panel. Its
+frequency-sampling standard errors are empirical; they are not rigorous or
+simultaneous certificates. Production/tighter numerical settings are compared
+separately. Passing this limited covariance panel does not close the mean,
+centering, joint-event, sample-count or geometry requirements above.
+
 ## Beyond feasible upstream runs
 
 Validate overlapping sizes first, then increase distinct real scan observations

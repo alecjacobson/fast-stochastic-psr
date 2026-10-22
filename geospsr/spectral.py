@@ -62,6 +62,26 @@ class FourierPoisson:
         if coefficients.ndim == 3: coefficients = coefficients[None]
         return self.plan(2,points,len(coefficients)).execute(coefficients).real
 
+    def evaluate_batched(self, points, coefficients, batch=4):
+        """Evaluate many fields with bounded workspace and one plan per batch size.
+
+        Plans live for this call only: arbitrary new query geometry remains
+        supported, and its setup is included in query timings.
+        """
+        if batch < 1:
+            raise ValueError('batch must be positive')
+        coefficients = cp.asarray(coefficients, dtype=self.cdtype)
+        if coefficients.ndim == 3:
+            coefficients = coefficients[None]
+        plans, values = {}, []
+        for start in range(0, len(coefficients), batch):
+            block = cp.ascontiguousarray(coefficients[start:start + batch])
+            count = len(block)
+            if count not in plans:
+                plans[count] = self.plan(2, points, count)
+            values.append(plans[count].execute(block).real)
+        return cp.concatenate(values)
+
     def cross_values(self, differences):
         coefficients = cp.ascontiguousarray(-1j*self.multiplier,dtype=self.cdtype)
         return self.evaluate(differences,coefficients).T

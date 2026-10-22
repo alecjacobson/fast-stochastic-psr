@@ -1,0 +1,107 @@
+# Benchmark contract and coverage
+
+Goal and work queue: [#1](https://github.com/alecjacobson/fast-stochastic-psr/issues/1).
+This contract separates measured speed from evidence that the same application
+is being solved. New results must state which checks they meet.
+
+## References and quality
+
+1. **Released implementation:** pinned upstream commit
+   `2352f1ef98aab20e0303611c1fa2b0948acd2a05`, untouched APIs where available.
+2. **Strong cached reference:** identical algebra with reused factors, kernel
+   rows shared across samples and reasonable GPU batch sizes. Check against the
+   released APIs on feasible cases.
+3. **Corrected statistical reference:** explicitly identify noise, covariance or
+   sampling corrections. Such a reference is not the untouched stochastic API.
+4. **Intended-model reference:** independent direct Fourier calculations and
+   dense analytic conditioning where feasible, with cutoff convergence. Matching
+   a coarse interpolation table alone does not establish model accuracy.
+
+Record observations, normals, queries and their hashes; seeds, covariance and
+noise conventions; Fourier/prior/interpolation cutoffs; solver and NUFFT
+tolerances; coherent sample count; geometric discretization; exact baseline
+provenance. Separate numerical error, model/truncation error, sampling error and
+geometric discretization error. A small finite-system residual does not certify
+the full analytic model. Report failures and difficult cases too.
+
+### Initial gates
+
+These thresholds are declared before the corresponding new benchmark runs.
+They are working acceptance criteria, not universal application guarantees.
+Changing them requires a reason and reclassification of earlier results.
+
+| Comparison | Initial gate | Additional reporting |
+| --- | --- | --- |
+| Matched Figure 1 fields (existing) | Mean relative L2 <0.2%, variance <0.02%, probability RMS <0.1 percentage points and maximum <2 points | Error maps, shared color scales, deterministic reference |
+| Paired ray evaluation | RMS transmittance difference ≤1 percentage point; maximum ≤2 points | Paired standard error, per-sample event disagreement, full curves |
+| Paired collision evaluation | Maximum probability difference ≤2 percentage points | Paired standard error, uncertain objects, surface point convergence |
+| Paired next-view scoring | Reference score regret ≤two ray steps | Full scores, selected view, ties, multi-seed decision stability |
+| Hitboxes / sequential scan / massive-scale posterior | Gates pending task-specific convergence studies | No matching-quality claim until those gates are specified and passed |
+
+Paired evaluation gates only check numerical evaluation of the same prepared
+draws. They do not certify the draw distribution, Monte Carlo convergence,
+continuous collision geometry or downstream scan quality. At 128 samples the
+worst-case marginal probability standard error is 4.42 percentage points;
+sharing draws can resolve much smaller *backend differences*. Independent
+sample-count/seed studies remain necessary for absolute application accuracy.
+
+**Gate revision 2:** the initial A/B runs used only the RMS ray threshold. B's
+direct-Fourier diagnostic passed that threshold but differed by 17.19 percentage
+points at one ray location. The maximum-error gate above was added after this
+finding; earlier RMS-only passes are not sufficient. B's initial collision
+trajectory also produced only 0/1 probabilities. Require uncertain collision
+cases before claiming uncertainty validation. Tracked in
+[#10](https://github.com/alecjacobson/fast-stochastic-psr/issues/10).
+
+For an application benchmark, use equal statistical accuracy, not automatically
+equal sample counts. Samples must be spatially coherent for joint events. Test
+small and large input/query counts, partial and clustered scans, length scales,
+noise levels, and uncertainty regions where sign decisions are sensitive.
+
+## Timing and memory
+
+- Synchronize GPU work at stage boundaries. Preserve first-call and at least
+  three repeated query measurements; report medians and individual values.
+- Separate data generation, kernel setup, fitting, prior/residual sampling,
+  conditional solves, source aggregation, field queries, event reductions,
+  mesh extraction, and acquisition/rebuild costs.
+- Report preparation plus first application result and repeated-query time;
+  identify amortization assumptions. Never present a supplied-weight kernel
+  action as an end-to-end application speedup.
+- Cache and batch fairly: reference factors, cross blocks across samples and
+  fixed-query results may be reused whenever the accelerated path also benefits
+  from that fixed workload. Repeating identical queries solely to measure warm
+  kernels must be distinguished from an application that can cache its answer.
+- Include plan creation/transfers unless explicitly timed as preparation. Record
+  hardware/software, memory measurement method, peak live/workspace memory,
+  repetitions, concurrent GPU use, precision and timing exclusions.
+- A recorded run is not promoted if quality gates fail or remain unverified.
+  Cold-stage sums from a shared diagnostic harness are not independently
+  optimized end-to-end application measurements.
+
+## Coverage and next evidence
+
+| Paper example / application | Present evidence | Missing work / issue |
+| --- | --- | --- |
+| Scorpion mean, variance, statistical slices (Fig. 1) | Matched A/B; original API verification | Faster variance [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
+| Length-scale/detail and Fourier/grid convergence (Figs. 2–4, 14, 16) | Kernel checks, compatible interpolant | Controlled downstream accuracy sweeps [#5](https://github.com/alecjacobson/fast-stochastic-psr/issues/5) |
+| Posterior sampling and local evaluation (Figs. 6, 10) | Coherent corrected sampler; moment tests | Matched distribution and preparation costs [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
+| Uncertainty-aware hitboxes (Fig. 5) | Scorpion meshes; clipping noted | Geometry/uncertainty gates [#4](https://github.com/alecjacobson/fast-stochastic-psr/issues/4) |
+| Collision probability (Fig. 7) | Scorpion proxy-object demonstration | Paired performance; geometry/sample convergence [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
+| Ray transmittance and next-view scores (Fig. 9) | Scorpion ray demonstration | Paired performance and rank stability [#3](https://github.com/alecjacobson/fast-stochastic-psr/issues/3) |
+| Sequential scanning (Fig. 8) | One seed, approximate sampler | Multi-seed acquisition/refit benchmark [#7](https://github.com/alecjacobson/fast-stochastic-psr/issues/7) |
+| Input/output scaling and solver convergence (Figs. 11–13, 15) | Kernel scaling and solver audit | Analytic-model iterative baselines [#6](https://github.com/alecjacobson/fast-stochastic-psr/issues/6) |
+| Massive-scale applications | Exploratory million-point finite GP | Full quality bridge [#8](https://github.com/alecjacobson/fast-stochastic-psr/issues/8) |
+
+Scenes not present in the release remain labeled reconstructed task scenarios.
+Audit additional supplementary examples as they are incorporated; file new
+issues for missing coverage or discovered numerical/performance failures.
+
+## Beyond feasible upstream runs
+
+Validate overlapping sizes first, then increase distinct real scan observations
+and query counts separately. Measure resource limits under declared budgets.
+Include the released iterative solver: a 4 TB dense matrix does not establish
+that every upstream algorithm is infeasible. Extrapolations must state their
+assumptions and cannot be labeled measured speedups. Sampled analytic residuals
+and overlap checks support, but do not prove, full-model fidelity at larger N.

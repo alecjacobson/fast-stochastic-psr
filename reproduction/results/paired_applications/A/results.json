@@ -1,0 +1,170 @@
+{
+  "case": "A",
+  "N": 691,
+  "samples": 128,
+  "seed": 42,
+  "query_counts": {
+    "rays": 6144,
+    "collision": 4352
+  },
+  "device": "NVIDIA L40",
+  "args": {
+    "case": "A",
+    "samples": 128,
+    "sample_batch": 4,
+    "query_batch": 1024,
+    "repeats": 3,
+    "backends": [
+      "compatible",
+      "direct"
+    ],
+    "output": "/home/horde/projects/stochastic-psr/reproduction/results/paired_applications/A"
+  },
+  "seconds": {
+    "common_fit_and_direct_mean_setup": 0.5945880748331547,
+    "common_corrected_draws_and_direct_aggregation": 10.640790540724993,
+    "reference_kernel_setup": 14.243226956576109,
+    "reference_mean_offset": 0.6107207350432873,
+    "reference_rays_first": 1.3700873367488384,
+    "reference_rays_repeat_0": 0.1880454421043396,
+    "reference_rays_repeat_1": 0.18488305807113647,
+    "reference_rays_repeat_2": 0.2050233855843544,
+    "reference_collision_first": 2.306661728769541,
+    "reference_collision_repeat_0": 0.18197066336870193,
+    "reference_collision_repeat_1": 0.2103261500597,
+    "reference_collision_repeat_2": 0.18874816969037056,
+    "direct_rays_first": 0.18052707239985466,
+    "direct_rays_repeat_0": 0.20111577212810516,
+    "direct_rays_repeat_1": 0.17871736735105515,
+    "direct_rays_repeat_2": 0.17818065360188484,
+    "direct_collision_first": 0.1921456791460514,
+    "direct_collision_repeat_0": 0.18676947802305222,
+    "direct_collision_repeat_1": 0.17638245970010757,
+    "direct_collision_repeat_2": 0.1892017461359501,
+    "compatible_kernel_setup": 0.09013740718364716,
+    "compatible_sample_aggregation": 1.4984358884394169,
+    "compatible_rays_first": 0.2777693644165993,
+    "compatible_rays_repeat_0": 0.28530966490507126,
+    "compatible_rays_repeat_1": 0.2762114033102989,
+    "compatible_rays_repeat_2": 0.285467691719532,
+    "compatible_collision_first": 0.271139744669199,
+    "compatible_collision_repeat_0": 0.2849060818552971,
+    "compatible_collision_repeat_1": 0.27077511698007584,
+    "compatible_collision_repeat_2": 0.28035450354218483
+  },
+  "input_sha256": {
+    "points": "f9361c57542ebd07fdfce5ec215c63ebfc958b4371039ad3f5c974aa6d6543ae",
+    "normals": "6e6ff354ebca8f189ef3630f9656bf7167bdb9f5f61d829f425bd1b61a8a8c97",
+    "rays": "2aaf18055c4ec84b2c1e68883b187f247681204d2469923809ae83fe30fa1ce7",
+    "collision": "c7f5436a8e794794526bec563f8c56b67af5250f063828c331a68fb2e542c65c"
+  },
+  "reference": "released interpolated cross kernel; shared corrected pathwise draws; cached analytic Cholesky; kernel blocks shared across samples",
+  "model": "full analytic product-Matern vector covariance, finite 101^3-mode scalar prior, noise variance .02; independent omitted-vector-spectrum plus noise draws",
+  "scope": "GPU-synchronized stages; query includes sample fields, joint-event reductions, probabilities and ray scores; excludes geometry generation, disk writes and rendering",
+  "status": "paired evaluation benchmark; not untouched stochastic API or massive-scale model validation",
+  "backends": {
+    "reference": {
+      "rays": {
+        "median_seconds": 0.1880454421043396,
+        "probability_min": 0.0,
+        "probability_max": 0.984375,
+        "uncertain_query_count": 2844,
+        "max_monte_carlo_standard_error": 0.04419417306780815,
+        "reference_over_backend_query_ratio": 1.0
+      },
+      "collision": {
+        "median_seconds": 0.18874816969037056,
+        "probability_min": 0.3203125,
+        "probability_max": 1.0,
+        "uncertain_query_count": 10,
+        "max_monte_carlo_standard_error": 0.043410371989011765,
+        "reference_over_backend_query_ratio": 1.0
+      }
+    },
+    "direct": {
+      "rays": {
+        "median_seconds": 0.17871736735105515,
+        "probability_min": 0.0,
+        "probability_max": 0.984375,
+        "uncertain_query_count": 2850,
+        "max_monte_carlo_standard_error": 0.04419417306780815,
+        "reference_over_backend_query_ratio": 1.0521945622383821
+      },
+      "collision": {
+        "median_seconds": 0.18676947802305222,
+        "probability_min": 0.3203125,
+        "probability_max": 1.0,
+        "uncertain_query_count": 10,
+        "max_monte_carlo_standard_error": 0.043272849172353745,
+        "reference_over_backend_query_ratio": 1.0105942988558019
+      }
+    },
+    "compatible": {
+      "rays": {
+        "median_seconds": 0.28530966490507126,
+        "probability_min": 0.0,
+        "probability_max": 0.984375,
+        "uncertain_query_count": 2844,
+        "max_monte_carlo_standard_error": 0.04419417306780815,
+        "reference_over_backend_query_ratio": 0.6590924361672305
+      },
+      "collision": {
+        "median_seconds": 0.28035450354218483,
+        "probability_min": 0.3203125,
+        "probability_max": 1.0,
+        "uncertain_query_count": 10,
+        "max_monte_carlo_standard_error": 0.043410371989011765,
+        "reference_over_backend_query_ratio": 0.6732482171878851
+      }
+    }
+  },
+  "quality": {
+    "direct": {
+      "rays": {
+        "rms_probability_difference": 0.0024127550423145294,
+        "max_probability_difference": 0.046875,
+        "max_paired_standard_error": 0.01875615101164758,
+        "event_disagreement_fraction": 0.0006383260091145834
+      },
+      "collision": {
+        "rms_probability_difference": 0.004236923065036535,
+        "max_probability_difference": 0.0078125,
+        "max_paired_standard_error": 0.007812499866294757,
+        "event_disagreement_fraction": 0.002297794117647059
+      },
+      "next_view": {
+        "reference_best": 16,
+        "candidate_best": 16,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.009804010391235352
+      },
+      "compatibility_pass": true
+    },
+    "compatible": {
+      "rays": {
+        "rms_probability_difference": 0.0002990099892485887,
+        "max_probability_difference": 0.015625,
+        "max_paired_standard_error": 0.011004959004867984,
+        "event_disagreement_fraction": 8.900960286458334e-06
+      },
+      "collision": {
+        "rms_probability_difference": 0.0018948095384985209,
+        "max_probability_difference": 0.0078125,
+        "max_paired_standard_error": 0.007812499866294757,
+        "event_disagreement_fraction": 0.00045955882352941176
+      },
+      "next_view": {
+        "reference_best": 16,
+        "candidate_best": 16,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0
+      },
+      "compatibility_pass": true
+    }
+  },
+  "accounting": {
+    "common_preparation_seconds": 11.235378615558147,
+    "limitation": "Common draw preparation includes direct aggregation even for the reference. Stage sums are this controlled harness, not independently optimized end-to-end implementations. Reference uses accelerated prior evaluation for a stronger baseline.",
+    "speedups_are_query_only": true
+  }
+}

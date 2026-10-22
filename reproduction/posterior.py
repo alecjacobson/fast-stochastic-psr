@@ -41,13 +41,15 @@ class Posterior:
     def mean(self,q):
         return self.op.evaluate(q,self.mean_coeff)[0]-self.offset
 
-    def draw(self,count=64,seed=0,batch=4,exact=True):
+    def draw(self,count=64,seed=0,batch=4,exact=True,retain_components=False):
         """Draw coherent functions.
 
         exact=True uses the cross-covariance's full finite spectrum, and samples
         the missing analytic vector-field spectrum at the observed points. This
         matches the finite-f/full-v posterior, up to NUFFT/floating-point error.
         exact=False uses the paper's smaller prior truncation approximation.
+        retain_components keeps the common pathwise weights and prior spectrum
+        for paired backend comparisons; it adds memory and is off by default.
         """
         rng=np.random.default_rng(seed)
         prior=self.op if exact else self.prior
@@ -63,6 +65,8 @@ class Posterior:
             residual=self.K-(low+low.T)*.5
             residual_chol=cp.linalg.cholesky(residual)
         coeff=[]
+        weights=[]
+        priors=[]
         for start in range(0,count,batch):
             p=min(batch,count-start)
             xi=cp.asarray(rng.standard_normal((p,3,*prior.shape,2),dtype=np.float32))
@@ -80,9 +84,14 @@ class Posterior:
             if pad < 0: raise ValueError('prior cutoff must not exceed cross cutoff')
             c+=cp.pad(f,((0,0),(pad,pad),(pad,pad),(pad,pad)))
             coeff.append(c)
+            if retain_components:
+                weights.append(alpha)
+                priors.append(f)
         self.sample_coeff=cp.concatenate(coeff)
+        self.sample_weights=cp.concatenate(weights) if retain_components else None
+        self.sample_prior_coeff=cp.concatenate(priors) if retain_components else None
         sync()
 
     def samples(self,q,batch=4):
         if self.sample_coeff is None: raise RuntimeError('call draw first')
-        return cp.concatenate([self.op.evaluate(q,self.sample_coeff[i:i+batch]) for i in range(0,len(self.sample_coeff),batch)])-self.offset
+        return self.op.evaluate_batched(q,self.sample_coeff,batch)-self.offset

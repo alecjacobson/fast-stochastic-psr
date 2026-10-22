@@ -1,0 +1,385 @@
+{
+  "case": "B",
+  "N": 17419,
+  "samples": 128,
+  "seed": 42,
+  "query_counts": {
+    "rays": 6144,
+    "collision": 4352
+  },
+  "device": "NVIDIA L40",
+  "args": {
+    "case": "B",
+    "samples": 128,
+    "sample_batch": 4,
+    "query_batch": 1024,
+    "repeats": 3,
+    "rebuild_plans": false,
+    "backends": [
+      "direct"
+    ],
+    "fluctuation_cutoffs": [
+      10,
+      20,
+      30
+    ],
+    "output": "reproduction/results/paired_applications/B-spectrum"
+  },
+  "seconds": {
+    "common_fit_and_direct_mean_setup": 2.0095369592309,
+    "common_corrected_draws_and_direct_aggregation": 11.52333426848054,
+    "reference_kernel_setup": 13.49986370652914,
+    "reference_mean_offset": 1.6045900247991085,
+    "reference_rays_first": 0.2610632888972759,
+    "reference_rays_repeat_0": 0.23140181228518486,
+    "reference_rays_repeat_1": 0.23145068809390068,
+    "reference_rays_repeat_2": 0.2315879762172699,
+    "reference_collision_first": 0.9374116696417332,
+    "reference_collision_repeat_0": 0.19550513848662376,
+    "reference_collision_repeat_1": 0.19394373893737793,
+    "reference_collision_repeat_2": 0.20816393196582794,
+    "direct_rays_first": 0.12647070735692978,
+    "direct_rays_repeat_0": 0.11366467550396919,
+    "direct_rays_repeat_1": 0.11712292581796646,
+    "direct_rays_repeat_2": 0.11345692723989487,
+    "direct_collision_first": 0.12381808459758759,
+    "direct_collision_repeat_0": 0.1293865069746971,
+    "direct_collision_repeat_1": 0.11321500688791275,
+    "direct_collision_repeat_2": 0.11307379603385925,
+    "fluctuation_10_operator_setup": 0.0007064752280712128,
+    "fluctuation_10_coefficient_compression": 0.09338565915822983,
+    "fluctuation_10_rays_first": 0.0911872424185276,
+    "fluctuation_10_rays_repeat_0": 0.06012305989861488,
+    "fluctuation_10_rays_repeat_1": 0.06689294800162315,
+    "fluctuation_10_rays_repeat_2": 0.03957073763012886,
+    "fluctuation_10_collision_first": 0.03985123708844185,
+    "fluctuation_10_collision_repeat_0": 0.03925004228949547,
+    "fluctuation_10_collision_repeat_1": 0.04062993451952934,
+    "fluctuation_10_collision_repeat_2": 0.041183557361364365,
+    "fluctuation_20_operator_setup": 0.0012120120227336884,
+    "fluctuation_20_coefficient_compression": 0.00022127851843833923,
+    "fluctuation_20_rays_first": 0.044101178646087646,
+    "fluctuation_20_rays_repeat_0": 0.04126583784818649,
+    "fluctuation_20_rays_repeat_1": 0.06162387505173683,
+    "fluctuation_20_rays_repeat_2": 0.06715266034007072,
+    "fluctuation_20_collision_first": 0.0412377305328846,
+    "fluctuation_20_collision_repeat_0": 0.040312521159648895,
+    "fluctuation_20_collision_repeat_1": 0.0407375767827034,
+    "fluctuation_20_collision_repeat_2": 0.04106486216187477,
+    "fluctuation_30_operator_setup": 0.0034565553069114685,
+    "fluctuation_30_coefficient_compression": 0.0006447881460189819,
+    "fluctuation_30_rays_first": 0.09719987586140633,
+    "fluctuation_30_rays_repeat_0": 0.056099120527505875,
+    "fluctuation_30_rays_repeat_1": 0.07374360039830208,
+    "fluctuation_30_rays_repeat_2": 0.045740995556116104,
+    "fluctuation_30_collision_first": 0.04628288373351097,
+    "fluctuation_30_collision_repeat_0": 0.04556887969374657,
+    "fluctuation_30_collision_repeat_1": 0.04588280990719795,
+    "fluctuation_30_collision_repeat_2": 0.04566178470849991
+  },
+  "input_sha256": {
+    "points": "be16fe0a787a27a1e58cdac5170f8157469fc02f246484435f3b1f0be4688ccc",
+    "normals": "c1ef9b5e299443ae0260580af8e8dd097242790a5d596b313059ba3efe29c47d",
+    "rays": "f4d16f6d8620e9a2af61e2daf7cd7cb51587b73bc9583a0e2d4282aa17eeb9a2",
+    "collision": "b234dee9d02a0e999c744744476d450babf899428bb1901c8f51cefc97cba7af"
+  },
+  "reference": "released interpolated cross kernel; shared corrected pathwise draws; cached analytic Cholesky; kernel blocks shared across samples",
+  "model": "full analytic product-Matern vector covariance, finite 101^3-mode scalar prior, noise variance .02; independent omitted-vector-spectrum plus noise draws",
+  "scope": "GPU-synchronized stages; query includes sample fields, joint-event reductions, probabilities and ray scores; excludes geometry generation, disk writes and rendering",
+  "status": "paired evaluation benchmark; not untouched stochastic API or massive-scale model validation",
+  "backends": {
+    "reference": {
+      "rays": {
+        "median_seconds": 0.23145068809390068,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 59,
+        "max_monte_carlo_standard_error": 0.044107772409915924,
+        "reference_over_backend_query_ratio": 1.0
+      },
+      "collision": {
+        "median_seconds": 0.19550513848662376,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 0,
+        "max_monte_carlo_standard_error": 0.0,
+        "reference_over_backend_query_ratio": 1.0
+      }
+    },
+    "direct": {
+      "rays": {
+        "median_seconds": 0.11366467550396919,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 61,
+        "max_monte_carlo_standard_error": 0.04417258873581886,
+        "reference_over_backend_query_ratio": 2.0362587326949995
+      },
+      "collision": {
+        "median_seconds": 0.11321500688791275,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 0,
+        "max_monte_carlo_standard_error": 0.0,
+        "reference_over_backend_query_ratio": 1.7268482673872152
+      }
+    },
+    "fluctuation_10": {
+      "rays": {
+        "median_seconds": 0.06012305989861488,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 51,
+        "max_monte_carlo_standard_error": 0.04418877884745598,
+        "reference_over_backend_query_ratio": 3.8496159125000364
+      },
+      "collision": {
+        "median_seconds": 0.04062993451952934,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 0,
+        "max_monte_carlo_standard_error": 0.0,
+        "reference_over_backend_query_ratio": 4.811849706345244
+      }
+    },
+    "fluctuation_20": {
+      "rays": {
+        "median_seconds": 0.06162387505173683,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 60,
+        "max_monte_carlo_standard_error": 0.04414559528231621,
+        "reference_over_backend_query_ratio": 3.7558606611412273
+      },
+      "collision": {
+        "median_seconds": 0.0407375767827034,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 0,
+        "max_monte_carlo_standard_error": 0.0,
+        "reference_over_backend_query_ratio": 4.799135194748071
+      }
+    },
+    "fluctuation_30": {
+      "rays": {
+        "median_seconds": 0.056099120527505875,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 59,
+        "max_monte_carlo_standard_error": 0.044107772409915924,
+        "reference_over_backend_query_ratio": 4.125745393466881
+      },
+      "collision": {
+        "median_seconds": 0.04566178470849991,
+        "probability_min": 0.0,
+        "probability_max": 1.0,
+        "uncertain_query_count": 0,
+        "max_monte_carlo_standard_error": 0.0,
+        "reference_over_backend_query_ratio": 4.281592139569407
+      }
+    }
+  },
+  "quality": {
+    "direct": {
+      "rays": {
+        "rms_probability_difference": 0.006392103154212236,
+        "max_probability_difference": 0.171875,
+        "max_paired_standard_error": 0.03347745514062371,
+        "event_disagreement_fraction": 0.0004259745279947917
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 0,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.019607901573181152
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    },
+    "fluctuation_10": {
+      "rays": {
+        "rms_probability_difference": 0.010852592997252941,
+        "max_probability_difference": 0.2890625,
+        "max_paired_standard_error": 0.04388315642392914,
+        "event_disagreement_fraction": 0.0010325113932291667
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 11,
+        "reference_score_regret": 0.07843142747879028,
+        "max_score_difference": 0.16666662693023682
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    },
+    "fluctuation_20": {
+      "rays": {
+        "rms_probability_difference": 0.008291800506412983,
+        "max_probability_difference": 0.28125,
+        "max_paired_standard_error": 0.04054163310179599,
+        "event_disagreement_fraction": 0.0007387797037760416
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 11,
+        "reference_score_regret": 0.07843142747879028,
+        "max_score_difference": 0.16666662693023682
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    },
+    "fluctuation_30": {
+      "rays": {
+        "rms_probability_difference": 0.006672680843621492,
+        "max_probability_difference": 0.1875,
+        "max_paired_standard_error": 0.034634623208270626,
+        "event_disagreement_fraction": 0.00049591064453125
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 0,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.019607901573181152
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    }
+  },
+  "quality_vs_full_direct": {
+    "fluctuation_10": {
+      "rays": {
+        "rms_probability_difference": 0.006029004696756601,
+        "max_probability_difference": 0.15625,
+        "max_paired_standard_error": 0.04838349680915719,
+        "event_disagreement_fraction": 0.0008989969889322916
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 11,
+        "reference_score_regret": 0.06862741708755493,
+        "max_score_difference": 0.16666662693023682
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    },
+    "fluctuation_20": {
+      "rays": {
+        "rms_probability_difference": 0.003403405426070094,
+        "max_probability_difference": 0.109375,
+        "max_paired_standard_error": 0.03745460298768375,
+        "event_disagreement_fraction": 0.0005620320638020834
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 11,
+        "reference_score_regret": 0.06862741708755493,
+        "max_score_difference": 0.16666662693023682
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    },
+    "fluctuation_30": {
+      "rays": {
+        "rms_probability_difference": 0.0013185100397095084,
+        "max_probability_difference": 0.03125,
+        "max_paired_standard_error": 0.03030529366087553,
+        "event_disagreement_fraction": 0.0003191630045572917
+      },
+      "collision": {
+        "rms_probability_difference": 0.0,
+        "max_probability_difference": 0.0,
+        "max_paired_standard_error": 0.0,
+        "event_disagreement_fraction": 0.0
+      },
+      "next_view": {
+        "reference_best": 0,
+        "candidate_best": 0,
+        "reference_score_regret": 0.0,
+        "max_score_difference": 0.0098038911819458
+      },
+      "compatibility_pass": false,
+      "quality_gate_version": 2,
+      "uncertainty_coverage_pass": false,
+      "application_validation_complete": false
+    }
+  },
+  "sample_spectrum_diagnostics": {
+    "fluctuation_10": {
+      "centered_field_relative_l2": 0.6606484055519104,
+      "empirical_variance_relative_l2": 0.45007774233818054,
+      "coefficient_storage_bytes": 9483264,
+      "full_coefficient_storage_bytes": 1055028224,
+      "check_queries": 256,
+      "qualification": "paired finite-sample diagnostics; not a bound on population covariance"
+    },
+    "fluctuation_20": {
+      "centered_field_relative_l2": 0.39293572306632996,
+      "empirical_variance_relative_l2": 0.16869187355041504,
+      "coefficient_storage_bytes": 70575104,
+      "full_coefficient_storage_bytes": 1055028224,
+      "check_queries": 256,
+      "qualification": "paired finite-sample diagnostics; not a bound on population covariance"
+    },
+    "fluctuation_30": {
+      "centered_field_relative_l2": 0.2204587161540985,
+      "empirical_variance_relative_l2": 0.06494918465614319,
+      "coefficient_storage_bytes": 232428544,
+      "full_coefficient_storage_bytes": 1055028224,
+      "check_queries": 256,
+      "qualification": "paired finite-sample diagnostics; not a bound on population covariance"
+    }
+  },
+  "accounting": {
+    "common_preparation_seconds": 13.53287122771144,
+    "limitation": "Common draw preparation includes direct aggregation even for the reference. Stage sums are this controlled harness, not independently optimized end-to-end implementations. Reference uses accelerated prior evaluation for a stronger baseline.",
+    "speedups_are_query_only": true
+  }
+}

@@ -7,7 +7,8 @@ from reproduction.half_posterior import HalfCubePosterior
 
 
 @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
-@pytest.mark.parametrize('options',[{}, {'basis_dtype':'float16','recompute_features':True,'apply_row_batch':11}])
+@pytest.mark.parametrize('options',[{}, {'basis_dtype':'float16','recompute_features':True,'apply_row_batch':11},
+    {'basis_dtype':'float16','recompute_features':True,'fused_apply':True}])
 def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial,options):
     rng=np.random.default_rng(222)
     x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')

@@ -150,13 +150,27 @@ The four-configuration pilot separates recomputation, blocked application and
 storage precision. It includes event-counted CuPy pool live peaks with
 end-state reconciliation; these exclude native NUFFT/context allocations and
 are not exact device-memory peaks. All declared quality and timing outcomes
-are retained. Shared-GPU contamination prevents a timing ratio; fused decoding
-to remove temporary traffic is tracked in #33.
+are retained. Shared-GPU contamination prevents a timing ratio for that storage sweep.
+
+The subsequent [fused application study](reproduction/results/nystrom_fused/README.md)
+adds `fused_apply=True` to half-basis preparation, replacing `apply_row_batch`.
+The optional CUDA kernels decode in registers and accumulate at solve precision.
+Three isolated profiles per size show 8.13×/8.38× faster preconditioner actions
+at one/three million observations. Full conditioning improves much less:
+eight common draws take 21.44 s versus 30.54 s for plain packed CG and 22.26 s
+for the stronger float32 preconditioner. Setup adds 11.89 s, so first use is
+slower at eight draws. These instrumented within-implementation pilots exclude
+source generation, fitting and queries; they are not upstream application ratios.
+The 128-draw and coherent streaming confirmations pass unchanged numerical
+gates, and all 128 tests pass. Use `--fused-preconditioner` with
+`--preconditioner-rank 1024 --basis-dtype float16 --recompute-features` in the
+conditioning benchmark or streaming application CLI. The report preserves
+fresh-cache compilation costs and all timing/quality records.
 
 A [three-million-point visible scorpion input](reproduction/results/large_inputs/README.md)
 is prepared with distinct observed positions and verified saved payload hashes.
-This is input preparation for the next scaling comparison, with no reconstruction,
-speedup or upstream resource-limit result at that size yet.
+Only the preconditioner action has been profiled at that size; no three-million-point
+reconstruction, complete-application speedup or upstream resource-limit result is claimed.
 
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.

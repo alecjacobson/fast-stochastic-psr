@@ -224,7 +224,8 @@ remains open for further storage/application tradeoffs and larger-N evidence.
 [Issue #33](https://github.com/alecjacobson/fast-stochastic-psr/issues/33) tracks
 fusing decoding with projection/correction to avoid the current float32
 temporary writes and repeated conversion launches. No fused backend is
-implemented or timed by this report.
+implemented or timed by this report. The later [fused study](../nystrom_fused/README.md)
+implements it and reports component and full-conditioning costs separately.
 
 ## Use and reproduction
 

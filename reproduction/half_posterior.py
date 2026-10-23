@@ -45,7 +45,7 @@ class HalfCubePosterior(BlockPosterior):
         sync()
 
     def prepare_conditioning_preconditioner(self,rank=1024,seed=41,row_batch=8192,
-                                           basis_dtype=None,recompute_features=False,apply_row_batch=None):
+                                           basis_dtype=None,recompute_features=False,apply_row_batch=None,fused_apply=False):
         """Build/cache a coarse space for this fixed fitted model.
 
         Setup is explicit so callers can time it separately. Draws use the
@@ -54,15 +54,16 @@ class HalfCubePosterior(BlockPosterior):
         covariance parameters or noise. The retained basis costs O(N*rank).
         Optional float16 basis storage is decoded in bounded blocks at the
         solve dtype; recompute_features avoids the full double setup array.
+        fused_apply=True decodes in registers instead of materializing blocks.
         """
         if getattr(self,'_drawing',False):
             raise RuntimeError('cannot prepare a preconditioner during an active stream')
-        key=(rank,seed,row_batch,basis_dtype,recompute_features,apply_row_batch)
+        key=(rank,seed,row_batch,basis_dtype,recompute_features,apply_row_batch,fused_apply)
         if self.conditioning_preconditioner is None or key!=self._conditioning_preconditioner_key:
             from geospsr.nystrom import LandmarkNystrom
             value=LandmarkNystrom(self.x,self.noise_variance,rank,self.lengthscale,self.variance,
                                   seed,row_batch,self.training.dtype,basis_dtype=basis_dtype,
-                                  recompute_features=recompute_features,apply_row_batch=apply_row_batch)
+                                  recompute_features=recompute_features,apply_row_batch=apply_row_batch,fused_apply=fused_apply)
             self.conditioning_preconditioner=value
             self._conditioning_preconditioner_key=key
             sync()

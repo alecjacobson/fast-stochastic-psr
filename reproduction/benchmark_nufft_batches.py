@@ -68,6 +68,7 @@ def main():
     p.add_argument('--recompute-features',action='store_true',help='two-pass Nystrom setup without full double feature array')
     p.add_argument('--preconditioner-apply-rows',type=int,help='bounded Nystrom projection/correction row blocks')
     p.add_argument('--profile-pool',action='store_true',help='instrument calling-thread CuPy pool live peaks; excludes native allocations')
+    p.add_argument('--fused-preconditioner',action='store_true',help='decode half basis inside projection/correction kernels')
     p.add_argument('--preconditioner-block',type=int,help='analytic spatial block Jacobi inside unchanged full-cube CG')
     p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
@@ -109,8 +110,10 @@ def main():
         p.error('Nystrom requires non-hybrid cube solve without another preconditioner')
     if a.quality_holdout_start is not None and (a.reference is None or not 0<=a.quality_holdout_start<a.samples-1):
         p.error('holdout requires a reference and at least two remaining draws')
-    if (a.basis_dtype is not None or a.recompute_features or a.preconditioner_apply_rows is not None) and a.preconditioner_rank is None:
+    if (a.basis_dtype is not None or a.recompute_features or a.preconditioner_apply_rows is not None or a.fused_preconditioner) and a.preconditioner_rank is None:
         p.error('basis options require Nystrom rank')
+    if a.fused_preconditioner and (a.basis_dtype!='float16' or a.preconditioner_apply_rows is not None):
+        p.error('fused preconditioner requires half basis without decoded application row batches')
     if a.preconditioner_apply_rows is not None and a.preconditioner_apply_rows<1:
         p.error('preconditioner application rows must be positive')
     work_started = time.perf_counter()
@@ -303,7 +306,7 @@ def main():
                     from geospsr.nystrom import LandmarkNystrom
                     preconditioner=timed('preconditioner_setup',lambda:LandmarkNystrom(x,.02,rank=a.preconditioner_rank,
                         basis_dtype=a.basis_dtype,recompute_features=a.recompute_features,
-                        apply_row_batch=a.preconditioner_apply_rows))
+                        apply_row_batch=a.preconditioner_apply_rows,fused_apply=a.fused_preconditioner))
                     record['preconditioner_storage_bytes']=preconditioner.storage_bytes
                     record['preconditioner']=preconditioner.record
                     record['preconditioner']['landmark_ids_sha256']=hashlib.sha256(preconditioner.landmark_ids.tobytes()).hexdigest()

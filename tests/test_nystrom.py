@@ -9,6 +9,7 @@ from geospsr.packed_spectral import PackedFourierKernel
 
 @pytest.mark.parametrize('options',[{}, {'recompute_features':True,'apply_row_batch':7},
     {'recompute_features':True,'basis_dtype':'float64','apply_row_batch':7},
+    {'recompute_features':True,'basis_dtype':'float16','fused_apply':True},
     {'recompute_features':True,'basis_dtype':'float16','apply_row_batch':7}])
 @pytest.mark.parametrize('dtype',['float32','float64'])
 def test_nystrom_against_independent_long_fourier_covariance(dtype,options):
@@ -41,16 +42,19 @@ def test_nystrom_duplicate_landmarks_and_validation():
     with pytest.raises(ValueError,match='exceeds'):LandmarkNystrom(x,.02,rank=18)
     with pytest.raises(ValueError,match='basis dtype'):LandmarkNystrom(x,.02,rank=4,basis_dtype='int8')
     with pytest.raises(ValueError,match='row batch'):LandmarkNystrom(x,.02,rank=4,apply_row_batch=0)
+    with pytest.raises(ValueError,match='fused'):LandmarkNystrom(x,.02,rank=4,fused_apply=True)
+    with pytest.raises(ValueError,match='fused'):
+        LandmarkNystrom(x,.02,rank=4,basis_dtype='float16',fused_apply=True,apply_row_batch=7)
 
 
-@pytest.mark.parametrize('basis_dtype',['float64','float16'])
-def test_nystrom_pcg_keeps_original_finite_covariance(basis_dtype):
+@pytest.mark.parametrize('basis_dtype,fused',[('float64',False),('float16',False),('float16',True)])
+def test_nystrom_pcg_keeps_original_finite_covariance(basis_dtype,fused):
     rng=np.random.default_rng(71);x=rng.normal(0,.1,(47,3)).astype('f')
     b=rng.normal(size=(47,6)).astype('f');b[:,3]=0
     op=FourierCovariance(9,lengthscale=.15,dtype='float64',eps=1e-11,upsampfac=2.)
     action=PackedFourierKernel(x,op,.0001,6)
     pre=LandmarkNystrom(x,.0001,rank=19,lengthscale=.15,dtype='float64',row_batch=13,
-                        basis_dtype=basis_dtype,recompute_features=True,apply_row_batch=11)
+                        basis_dtype=basis_dtype,recompute_features=True,apply_row_batch=None if fused else 11,fused_apply=fused)
     result,info=action.solve(b,preconditioner=pre,rtol=1e-9)
     modes,axis=spectral_axis(9,.15,.1);matrix=np.ones((len(x),len(x)))
     for d in range(3):matrix*=np.cos((x[:,None,d].astype('d')-x[None,:,d].astype('d'))[...,None]*modes)@axis

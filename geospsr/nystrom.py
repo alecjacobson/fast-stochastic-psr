@@ -36,19 +36,24 @@ class LandmarkNystrom:
     rows for basis construction in a second pass, avoiding the double N-by-rank
     feature array. basis_dtype='float16' uses scaled storage, then decodes in
     bounded apply_row_batch blocks at the solve dtype (never float16 GEMM).
+    fused_apply=True instead decodes half values in registers, with bounded
+    projection scratch and the same effective stored basis in both passes.
     """
     def __init__(self,points,noise_variance,rank=512,lengthscale=.01,variance=.1,
                  seed=41,row_batch=8192,dtype='float32',eigen_rtol=1e-10,
-                 basis_dtype=None,recompute_features=False,apply_row_batch=None):
+                 basis_dtype=None,recompute_features=False,apply_row_batch=None,fused_apply=False):
         self.dtype=np.dtype(dtype)
         if self.dtype not in (np.dtype('float32'),np.dtype('float64')):raise ValueError('invalid dtype')
         self.basis_dtype=self.dtype if basis_dtype is None else np.dtype(basis_dtype)
         if self.basis_dtype not in (np.dtype('float16'),np.dtype('float32'),np.dtype('float64')):
             raise ValueError('invalid basis dtype')
+        if fused_apply and (self.basis_dtype!=np.dtype('float16') or apply_row_batch is not None):
+            raise ValueError('fused application requires half storage without decoded row batches')
+        self.fused_apply=bool(fused_apply)
         if apply_row_batch is not None and (apply_row_batch!=int(apply_row_batch) or apply_row_batch<1):
             raise ValueError('invalid application row batch')
         # Bound decompression instead of materializing a second N-by-rank basis.
-        if self.basis_dtype!=self.dtype and apply_row_batch is None:apply_row_batch=row_batch
+        if self.basis_dtype!=self.dtype and apply_row_batch is None and not fused_apply:apply_row_batch=row_batch
         self.apply_row_batch=None if apply_row_batch is None else int(apply_row_batch)
         if (rank!=int(rank) or rank<1 or row_batch!=int(row_batch) or row_batch<1
                 or not np.isfinite([lengthscale,variance,eigen_rtol]).all()
@@ -111,6 +116,7 @@ class LandmarkNystrom:
                      'basis_dtype':self.basis_dtype.name,'accumulation_dtype':self.dtype.name,
                      'basis_scale':self.basis_scale,'recompute_features':bool(recompute_features),
                      'apply_row_batch':self.apply_row_batch,'storage_bytes':self.storage_bytes,
+                     'application_backend':'fused_half' if fused_apply else 'decoded',
                      'construction_feature_bytes':0 if recompute_features else self.n*landmark_rank*8,
                      'approximate_covariance_trace':float(self.eigenvalues.sum()),
                      'analytic_covariance_trace':self.n*variance**3}
@@ -119,6 +125,9 @@ class LandmarkNystrom:
         if cp.iscomplexobj(rhs):raise ValueError('require real RHS')
         rhs=cp.asarray(rhs,dtype=self.dtype)
         if rhs.ndim!=2 or len(rhs)!=self.n:raise ValueError('expected RHS (N,R)')
+        if self.fused_apply:
+            from geospsr.compact_basis import fused_half_apply
+            return fused_half_apply(self.basis,self.damping,rhs,self.basis_scale)
         if self.apply_row_batch is None:
             return rhs-self.basis@(self.damping[:,None]*(self.basis.T@rhs))
         projection=cp.zeros((self.rank,rhs.shape[1]),dtype=self.dtype)

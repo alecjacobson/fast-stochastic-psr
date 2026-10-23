@@ -137,6 +137,27 @@ Defaults remain unpreconditioned. The report retains a low-noise covariance
 failure and tolerance sweep; it makes no new timing-ratio claim. Basis
 compression/streaming is tracked in #31.
 
+The [compact-basis pilot](reproduction/results/nystrom_storage/README.md) adds
+optional `basis_dtype='float16', recompute_features=True, apply_row_batch=32768`
+to that preparation call. It stores a power-of-two-scaled half-precision basis
+and decodes bounded row blocks for float32 projection/correction. RHS precision,
+the finite covariance action and the posterior prior stay fixed. Two-pass
+construction regenerates feature rows instead of retaining the full double
+feature matrix. The numerical SPD guard checks the effective basis after
+storage-to-accumulation conversion. Defaults remain unchanged.
+
+The four-configuration pilot separates recomputation, blocked application and
+storage precision. It includes event-counted CuPy pool live peaks with
+end-state reconciliation; these exclude native NUFFT/context allocations and
+are not exact device-memory peaks. All declared quality and timing outcomes
+are retained. Shared-GPU contamination prevents a timing ratio; fused decoding
+to remove temporary traffic is tracked in #33.
+
+A [three-million-point visible scorpion input](reproduction/results/large_inputs/README.md)
+is prepared with distinct observed positions and verified saved payload hashes.
+This is input preparation for the next scaling comparison, with no reconstruction,
+speedup or upstream resource-limit result at that size yet.
+
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
 Legacy manifests hashed the float64 RHS before storage conversion; read-only

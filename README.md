@@ -97,6 +97,10 @@ checks, but adds a 3.8 GiB basis and setup cost.
 [128-draw confirmation and reusable streaming](reproduction/results/nystrom_validation/README.md)
 pass the numerical checks, including 120 pilot-held-out draws. Qualified timing
 comparisons and full application convergence remain open.
+An optional [compact basis](reproduction/results/nystrom_storage/README.md)
+halves retained preconditioner storage to **1.9 GiB**; recomputed setup avoids
+the full double-precision feature array. It establishes memory savings, with
+no new speedup claimed.
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

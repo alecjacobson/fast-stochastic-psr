@@ -57,6 +57,9 @@ def main():
     p.add_argument('--validation-rows',type=int,default=32)
     p.add_argument('--retained-control',action='store_true')
     p.add_argument('--preconditioner-rank',type=int,help='prepare once, then precondition streamed draws; retained control stays unpreconditioned')
+    p.add_argument('--basis-dtype',choices=['float16','float32','float64'])
+    p.add_argument('--recompute-features',action='store_true')
+    p.add_argument('--preconditioner-apply-rows',type=int)
     p.add_argument('--coefficient-dir',type=Path,help='optional CPU/disk blocks for later moving-query replay; not a resume protocol')
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
@@ -64,6 +67,10 @@ def main():
         p.error('require at least two samples and positive batch/row counts')
     if a.preconditioner_rank is not None and a.preconditioner_rank<1:
         p.error('preconditioner rank must be positive')
+    if (a.basis_dtype is not None or a.recompute_features or a.preconditioner_apply_rows is not None) and a.preconditioner_rank is None:
+        p.error('basis options require Nystrom rank')
+    if a.preconditioner_apply_rows is not None and a.preconditioner_apply_rows<1:
+        p.error('preconditioner application rows must be positive')
     checkpoints=sorted(set(a.checkpoints))
     if not checkpoints or checkpoints[-1]!=a.samples or any(n<2 or n>a.samples or (n%a.batch and n!=a.samples) for n in checkpoints):
         p.error('checkpoints must end at samples and align with batch boundaries')
@@ -94,7 +101,8 @@ def main():
         record['N']=len(x)
         model=timed('fit',lambda:HalfCubePosterior(x,y))
         if a.preconditioner_rank is not None:
-            coarse=timed('preconditioner_setup',lambda:model.prepare_conditioning_preconditioner(a.preconditioner_rank))
+            coarse=timed('preconditioner_setup',lambda:model.prepare_conditioning_preconditioner(a.preconditioner_rank,
+                basis_dtype=a.basis_dtype,recompute_features=a.recompute_features,apply_row_batch=a.preconditioner_apply_rows))
             record['conditioning_preconditioner']=coarse.record
         record['offset']=float(model.offset);record['saved_geometry_offset']=float(geo['offset'])
         ids=np.sort(np.random.default_rng(3187).choice(len(x),a.validation_rows,replace=False))

@@ -7,15 +7,16 @@ from reproduction.half_posterior import HalfCubePosterior
 
 
 @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
-def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial):
+@pytest.mark.parametrize('options',[{}, {'basis_dtype':'float16','recompute_features':True,'apply_row_batch':11}])
+def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial,options):
     rng=np.random.default_rng(222)
     x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')
     q=rng.uniform(-.5,.5,(11,3)).astype('f')
     model=HalfCubePosterior(x,y,training_cutoff=5,cutoff=2,lengthscale=.12,noise_variance=.0001,rtol=3e-6)
     model.draw(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,retain_components=True,retain_rhs=True)
     rhs=model.sample_rhs.copy();prior=model.sample_prior_coeff.copy();fields=cp.asnumpy(model.samples(q));mean=model.mean(q).copy()
-    pre=model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7)
-    assert model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7) is pre
+    pre=model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7,**options)
+    assert model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7,**options) is pre
     coefficients=[];weights=[]
     with closing(model.draw_batches(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,
                                    preconditioned=True,retain_components=True,retain_rhs=True)) as stream:

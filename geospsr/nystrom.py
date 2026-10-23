@@ -31,11 +31,25 @@ class LandmarkNystrom:
     added. Retained basis dtype is independently selectable. An orthogonality
     check guards positive definiteness after storage rounding. Noise must be
     a positive scalar; heteroscedastic whitening is not implemented here.
+
+    recompute_features=True builds the small Gram in one pass and recomputes
+    rows for basis construction in a second pass, avoiding the double N-by-rank
+    feature array. basis_dtype='float16' uses scaled storage, then decodes in
+    bounded apply_row_batch blocks at the solve dtype (never float16 GEMM).
     """
     def __init__(self,points,noise_variance,rank=512,lengthscale=.01,variance=.1,
-                 seed=41,row_batch=8192,dtype='float32',eigen_rtol=1e-10):
+                 seed=41,row_batch=8192,dtype='float32',eigen_rtol=1e-10,
+                 basis_dtype=None,recompute_features=False,apply_row_batch=None):
         self.dtype=np.dtype(dtype)
         if self.dtype not in (np.dtype('float32'),np.dtype('float64')):raise ValueError('invalid dtype')
+        self.basis_dtype=self.dtype if basis_dtype is None else np.dtype(basis_dtype)
+        if self.basis_dtype not in (np.dtype('float16'),np.dtype('float32'),np.dtype('float64')):
+            raise ValueError('invalid basis dtype')
+        if apply_row_batch is not None and (apply_row_batch!=int(apply_row_batch) or apply_row_batch<1):
+            raise ValueError('invalid application row batch')
+        # Bound decompression instead of materializing a second N-by-rank basis.
+        if self.basis_dtype!=self.dtype and apply_row_batch is None:apply_row_batch=row_batch
+        self.apply_row_batch=None if apply_row_batch is None else int(apply_row_batch)
         if (rank!=int(rank) or rank<1 or row_batch!=int(row_batch) or row_batch<1
                 or not np.isfinite([lengthscale,variance,eigen_rtol]).all()
                 or lengthscale<=0 or variance<=0 or not 0<eigen_rtol<1):
@@ -56,11 +70,12 @@ class LandmarkNystrom:
         keep=values>eigen_rtol*values[-1]
         whitening=vectors[:,keep]/cp.sqrt(values[keep])[None]
         landmark_rank=whitening.shape[1]
-        features=cp.empty((self.n,landmark_rank),dtype='d')
+        features=None if recompute_features else cp.empty((self.n,landmark_rank),dtype='d')
         gram=cp.zeros((landmark_rank,landmark_rank),dtype='d')
         for start in range(0,self.n,row_batch):
             z=analytic_cross(x[start:start+row_batch],landmarks,lengthscale,variance)@whitening
-            features[start:start+row_batch]=z;gram+=z.T@z
+            if features is not None:features[start:start+row_batch]=z
+            gram+=z.T@z
         with cupyx.errstate(linalg='raise'): values,vectors=cp.linalg.eigh((gram+gram.T)*.5)
         if not bool(cp.isfinite(values).all()) or float(values[-1])<=0:raise RuntimeError('invalid feature Gram spectrum')
         if float(values[0]) < -eigen_rtol*float(values[-1]):raise RuntimeError('indefinite feature Gram')
@@ -68,13 +83,21 @@ class LandmarkNystrom:
         self.eigenvalues=values[keep]
         rotation=vectors[:,keep]/cp.sqrt(self.eigenvalues)[None]
         self.rank=len(self.eigenvalues)
-        self.basis=cp.empty((self.n,self.rank),dtype=self.dtype)
+        # A power-of-two scale reduces half-precision underflow without adding
+        # rounding in the scale/unscale operation. Effective U is stored/scale.
+        self.basis_scale=float(2**min(14,int(np.log2(self.n)//2))) if self.basis_dtype==np.dtype('float16') else 1.
+        self.basis=cp.empty((self.n,self.rank),dtype=self.basis_dtype)
         for start in range(0,self.n,row_batch):
-            self.basis[start:start+row_batch]=features[start:start+row_batch]@rotation
-        del features
+            z=(analytic_cross(x[start:start+row_batch],landmarks,lengthscale,variance)@whitening
+               if features is None else features[start:start+row_batch])
+            self.basis[start:start+row_batch]=(z@rotation)*self.basis_scale
+        del features,z
         checked=cp.zeros((self.rank,self.rank),dtype='d')
         for start in range(0,self.n,row_batch):
-            u=self.basis[start:start+row_batch].astype('d');checked+=u.T@u
+            # Guard the basis actually used by multiplication, including any
+            # storage-to-accumulation rounding (e.g. float64 storage/float32 solve).
+            u=self.basis[start:start+row_batch].astype(self.dtype,copy=False).astype('d')/self.basis_scale
+            checked+=u.T@u
         orthogonality_error=float(cp.linalg.norm(checked-cp.eye(self.rank)))
         self.damping=(1-(self.eigenvalues[0]+self.noise)/(self.eigenvalues+self.noise)).astype(self.dtype)
         spd_margin=1-float(self.damping.max())*(1+orthogonality_error)
@@ -85,7 +108,10 @@ class LandmarkNystrom:
                      'seed':seed,'row_batch':row_batch,'eigen_rtol':eigen_rtol,
                      'eigenvalue_range':[float(self.eigenvalues[0]),float(self.eigenvalues[-1])],
                      'orthogonality_frobenius_error':orthogonality_error,'spd_margin_guard':spd_margin,
-                     'basis_dtype':self.dtype.name,'storage_bytes':self.storage_bytes,
+                     'basis_dtype':self.basis_dtype.name,'accumulation_dtype':self.dtype.name,
+                     'basis_scale':self.basis_scale,'recompute_features':bool(recompute_features),
+                     'apply_row_batch':self.apply_row_batch,'storage_bytes':self.storage_bytes,
+                     'construction_feature_bytes':0 if recompute_features else self.n*landmark_rank*8,
                      'approximate_covariance_trace':float(self.eigenvalues.sum()),
                      'analytic_covariance_trace':self.n*variance**3}
 
@@ -93,4 +119,19 @@ class LandmarkNystrom:
         if cp.iscomplexobj(rhs):raise ValueError('require real RHS')
         rhs=cp.asarray(rhs,dtype=self.dtype)
         if rhs.ndim!=2 or len(rhs)!=self.n:raise ValueError('expected RHS (N,R)')
-        return rhs-self.basis@(self.damping[:,None]*(self.basis.T@rhs))
+        if self.apply_row_batch is None:
+            return rhs-self.basis@(self.damping[:,None]*(self.basis.T@rhs))
+        projection=cp.zeros((self.rank,rhs.shape[1]),dtype=self.dtype)
+        for start in range(0,self.n,self.apply_row_batch):
+            stop=start+self.apply_row_batch
+            u=self.basis[start:stop].astype(self.dtype,copy=False)
+            if self.basis_scale!=1.:u/=self.basis_scale
+            projection+=u.T@rhs[start:stop]
+        projection*=self.damping[:,None]
+        result=cp.empty_like(rhs)
+        for start in range(0,self.n,self.apply_row_batch):
+            stop=start+self.apply_row_batch
+            u=self.basis[start:stop].astype(self.dtype,copy=False)
+            if self.basis_scale!=1.:u/=self.basis_scale
+            result[start:stop]=rhs[start:stop]-u@projection
+        return result

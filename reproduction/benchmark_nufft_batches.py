@@ -64,6 +64,10 @@ def main():
     p.add_argument('--pack-rhs',action='store_true',help='pair scaled real RHS in full-cube complex transforms')
     p.add_argument('--finite-rows',type=int,default=0,help='independent finite-covariance residual rows after conditioning')
     p.add_argument('--preconditioner-rank',type=int,help='analytic landmark Nystrom spectral preconditioner; unchanged solve operator')
+    p.add_argument('--basis-dtype',choices=['float16','float32','float64'],help='optional Nystrom basis storage dtype')
+    p.add_argument('--recompute-features',action='store_true',help='two-pass Nystrom setup without full double feature array')
+    p.add_argument('--preconditioner-apply-rows',type=int,help='bounded Nystrom projection/correction row blocks')
+    p.add_argument('--profile-pool',action='store_true',help='instrument calling-thread CuPy pool live peaks; excludes native allocations')
     p.add_argument('--preconditioner-block',type=int,help='analytic spatial block Jacobi inside unchanged full-cube CG')
     p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
@@ -105,6 +109,10 @@ def main():
         p.error('Nystrom requires non-hybrid cube solve without another preconditioner')
     if a.quality_holdout_start is not None and (a.reference is None or not 0<=a.quality_holdout_start<a.samples-1):
         p.error('holdout requires a reference and at least two remaining draws')
+    if (a.basis_dtype is not None or a.recompute_features or a.preconditioner_apply_rows is not None) and a.preconditioner_rank is None:
+        p.error('basis options require Nystrom rank')
+    if a.preconditioner_apply_rows is not None and a.preconditioner_apply_rows<1:
+        p.error('preconditioner application rows must be positive')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -122,7 +130,13 @@ def main():
         (a.output / 'results.json').write_text(json.dumps(record, indent=2)+'\n')
     def timed(name, fn):
         began=time.perf_counter()-audit.started
-        value, elapsed = measure(fn)
+        if a.profile_pool:
+            from reproduction.pool_memory import PoolLivePeak
+            hook=PoolLivePeak()
+            try:
+                with hook:value, elapsed = measure(fn)
+            finally:record.setdefault('pool_live_memory',{})[name]=hook.record()
+        else:value, elapsed = measure(fn)
         ended=time.perf_counter()-audit.started
         record.setdefault('timing_windows',{})[name]=[began,ended]
         record['seconds'][name] = elapsed
@@ -287,7 +301,9 @@ def main():
                     record['preconditioner_storage_bytes']=preconditioner.storage_bytes
                 if a.preconditioner_rank is not None:
                     from geospsr.nystrom import LandmarkNystrom
-                    preconditioner=timed('preconditioner_setup',lambda:LandmarkNystrom(x,.02,rank=a.preconditioner_rank))
+                    preconditioner=timed('preconditioner_setup',lambda:LandmarkNystrom(x,.02,rank=a.preconditioner_rank,
+                        basis_dtype=a.basis_dtype,recompute_features=a.recompute_features,
+                        apply_row_batch=a.preconditioner_apply_rows))
                     record['preconditioner_storage_bytes']=preconditioner.storage_bytes
                     record['preconditioner']=preconditioner.record
                     record['preconditioner']['landmark_ids_sha256']=hashlib.sha256(preconditioner.landmark_ids.tobytes()).hexdigest()

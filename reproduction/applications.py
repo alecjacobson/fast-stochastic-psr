@@ -49,7 +49,7 @@ t=np.linspace(0,5,256)
 rays=origins[:,None,:]+directions[:,None,:]*t[None,:,None]
 rs=timed('ray_samples',lambda:model.samples(rays.reshape(-1,3))).reshape(a.samples,24,256)
 trans=cp.asnumpy(cp.cumprod(rs>0,axis=2).mean(0))
-scores=np.trapezoid((trans>=.05)&(trans<=.95),t,axis=1)
+scores=np.trapezoid(((trans>=.05)&(trans<=.95)).astype(float),t,axis=1)
 best=int(np.argmax(scores))
 result['next_view']={'best_index':best,'origin':origins[best].tolist(),'scores':scores.tolist(),'criterion':'length of ray with transmittance between .05 and .95'}
 result['transmittance_monotone']=bool(np.all(np.diff(trans,axis=1)<=0))

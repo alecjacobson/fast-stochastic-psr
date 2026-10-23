@@ -1,5 +1,6 @@
 """Finite-cube posterior with conjugacy-folded training and prior transforms."""
 import cupy as cp
+from contextlib import contextmanager
 from geospsr.half_spectral import HalfCubeSpectrum,HalfCubeKernel
 from geospsr.spectral import FourierPoisson
 from reproduction.block_posterior import BlockPosterior
@@ -7,7 +8,14 @@ from reproduction.posterior import sync
 
 
 class HalfCubePosterior(BlockPosterior):
-    """Reuse the finite posterior draw/cache workflow; retain the complete cube."""
+    """Finite posterior with optional packed solves and streaming draws.
+
+    draw() and draw_batches() accept pack_rhs=True for paired full-cube inverse
+    transforms. solve_cutoff selects a narrower centered fluctuation inverse
+    while retaining the training-band prior and mean; this hybrid is not an
+    exact posterior at either bandwidth when the bands differ. Omit it for the
+    consistently coupled finite-cube law. Folding/packing alone keep every mode.
+    """
     def __init__(self,x,normals,training_cutoff=200,cutoff=50,lengthscale=.01,
                  variance=.1,noise_variance=.02,rtol=1e-5,eps=1e-6,dtype='float32',
                  upsampfac=1.25,normalization='analytic',axis=0):
@@ -62,15 +70,8 @@ class HalfCubePosterior(BlockPosterior):
                                                    self.noise_variance,rhs.shape[1],axis=self.axis)
         return solve_centered_fluctuations(self._fluctuation_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
 
-    def draw(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,
-             initial_mean=False,progress=None,solve_cutoff=None,pack_rhs=False):
-        """Optional narrower centered inverse keeps the training prior and mean.
-
-        This reproduces the existing cube hybrid law using folded transforms;
-        it is not an exact posterior at either bandwidth when they differ.
-        pack_rhs uses paired full-cube transforms only for the inverse. The
-        coherent folded prior and fitted mean are unchanged.
-        """
+    @contextmanager
+    def _draw_context(self,initial_mean=False,solve_cutoff=None,pack_rhs=False):
         if solve_cutoff is not None:
             if solve_cutoff!=int(solve_cutoff) or not self.cutoff<=solve_cutoff<=self.training.cutoff:
                 raise ValueError('solve cutoff must lie between scalar and prior cutoffs')
@@ -84,7 +85,7 @@ class HalfCubePosterior(BlockPosterior):
                 band=self.training.cutoff if solve_cutoff is None else int(solve_cutoff)
                 self._packed_spectrum=FourierCovariance(band,self.lengthscale,self.variance,
                     self.training.eps,self.training.dtype,self.training.upsampfac,self.normalization)
-            return super().draw(count,seed,batch,retain_components,retain_rhs,initial_mean,progress)
+            yield
         finally:
             self._fluctuation_kernel=self._fluctuation_spectrum=None
             self._packed_kernel=self._packed_spectrum=None

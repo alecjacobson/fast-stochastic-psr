@@ -1,5 +1,6 @@
 """Experimental finite-block posterior with coherent cached scalar draws."""
 import time
+from contextlib import contextmanager,closing
 import cupy as cp
 import numpy as np
 from geospsr.block_spectral import BlockSpectrum,BlockKernel
@@ -49,44 +50,87 @@ class BlockPosterior(Posterior):
         initial=cp.tile(self.alpha,(1,p)) if initial_mean else None
         return kernel.solve(rhs,rtol=self.rtol,maxiter=1000,x0=initial)
 
-    def draw(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,initial_mean=False,progress=None):
-        if count < 1 or batch < 1:
-            raise ValueError('counts must be positive')
-        self.sample_cache = None
-        rng = cp.random.RandomState(seed)
-        coefficients,weights,priors,rhs_records,records = [],[],[],[],[]
-        kernel,last_size = self.K,1
-        for start in range(0,count,batch):
-            p = min(batch,count-start)
-            if p != last_size:
-                if kernel is not self.K:
-                    del kernel
-                    cp.get_default_memory_pool().free_all_blocks()
-                kernel = self._make_kernel(3*p)
-                last_size = p
-            sync();begin = time.perf_counter()
-            vector,scalar = kernel.joint_prior(rng,self.op)
-            noise = rng.standard_normal(vector.shape,dtype=self.training.dtype)*np.sqrt(self.noise_variance)
-            rhs = cp.tile(self.normals,(1,p))-vector-noise
-            del vector,noise
-            alpha,info = self._solve_draw(kernel,rhs,initial_mean)
-            if not info['converged']:
-                raise RuntimeError(info)
-            alpha = alpha.reshape(len(self.x),p,3).transpose(1,0,2)
-            coefficients.append(self.op.aggregate(self.x,alpha)+scalar)
-            if retain_components:
-                weights.append(alpha.copy());priors.append(scalar.copy())
-            if retain_rhs:
-                rhs_records.append(rhs.reshape(len(self.x),p,3).transpose(1,0,2).copy())
-            sync()
-            records.append({**info,'samples_done':start+p,'seconds':time.perf_counter()-begin,
-                            **self._spectrum_record(),
-                            'normalization':self.normalization,'initial_mean':initial_mean})
-            if progress:
-                progress(start+p,count,records[-1])
+    @contextmanager
+    def _draw_context(self,initial_mean=False):
+        yield
+
+    def draw_batches(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,
+                     initial_mean=False,progress=None,**options):
+        """Yield coherent coefficient batches without retaining the ensemble.
+
+        Use ``with contextlib.closing(model.draw_batches(...)) as batches``
+        so an early break or consumer exception releases solver state. Do not
+        retain yielded arrays if bounded memory is required. Batching/seed/RNG
+        order matches draw(); changing batch size can change realizations.
+        Streaming invalidates any previous retained sample ensemble/cache.
+        Only one active stream per model is allowed. Mean queries remain valid.
+        This iterator has no checkpoint/resume contract yet.
+        """
+        if count!=int(count) or batch!=int(batch) or count<1 or batch<1:
+            raise ValueError('counts must be positive integers')
+        if getattr(self,'_drawing',False):
+            raise RuntimeError('a draw stream is already active on this model')
+        self._drawing=True
+        try:
+            with self._draw_context(initial_mean=initial_mean,**options):
+                self.sample_cache=self.sample_coeff=self.sample_weights=self.sample_prior_coeff=None
+                self.sample_rhs=None
+                self.sample_solve_records=[]
+                rng=cp.random.RandomState(seed)
+                kernel,last_size=self.K,1
+                for start in range(0,int(count),int(batch)):
+                    p=min(int(batch),int(count)-start)
+                    sync();setup_begin=time.perf_counter()
+                    if p!=last_size:
+                        if kernel is not self.K:
+                            del kernel
+                            cp.get_default_memory_pool().free_all_blocks()
+                        kernel=self._make_kernel(3*p)
+                        last_size=p
+                    sync();begin=time.perf_counter()
+                    vector,scalar=kernel.joint_prior(rng,self.op)
+                    noise=rng.standard_normal(vector.shape,dtype=self.training.dtype)*np.sqrt(self.noise_variance)
+                    rhs=cp.tile(self.normals,(1,p))-vector-noise
+                    del vector,noise
+                    sync();prior_end=time.perf_counter()
+                    alpha,info=self._solve_draw(kernel,rhs,initial_mean)
+                    if not info['converged']:
+                        raise RuntimeError(info)
+                    sync();solve_end=time.perf_counter()
+                    alpha=alpha.reshape(len(self.x),p,3).transpose(1,0,2)
+                    result={'start':start,'stop':start+p,'coefficients':self.op.aggregate(self.x,alpha)+scalar}
+                    if retain_components:
+                        result.update(weights=alpha.copy(),prior=scalar.copy())
+                    if retain_rhs:
+                        result['rhs']=rhs.reshape(len(self.x),p,3).transpose(1,0,2).copy()
+                    del alpha,rhs,scalar
+                    sync();end=time.perf_counter()
+                    record={**info,'samples_done':start+p,'seconds':end-begin,**self._spectrum_record(),
+                            'normalization':self.normalization,'initial_mean':initial_mean,
+                            'kernel_setup_seconds':begin-setup_begin,'prior_seconds':prior_end-begin,
+                            'solve_seconds':solve_end-prior_end,'aggregation_seconds':end-solve_end}
+                    result['record']=record
+                    self.sample_solve_records.append(record)
+                    if progress:
+                        progress(start+p,count,record)
+                    yield result
+                    del result
+        finally:
+            self._drawing=False
+
+    def draw(self,count=64,seed=0,batch=1,retain_components=False,retain_rhs=False,
+             initial_mean=False,progress=None,**options):
+        """Retain the ensemble; use draw_batches() for bounded sample storage."""
+        coefficients,weights,priors,rhs_records=[],[],[],[]
+        with closing(self.draw_batches(count,seed,batch,retain_components,retain_rhs,initial_mean,progress,**options)) as batches:
+            for result in batches:
+                coefficients.append(result['coefficients'])
+                if retain_components:
+                    weights.append(result['weights']);priors.append(result['prior'])
+                if retain_rhs:
+                    rhs_records.append(result['rhs'])
         self.sample_coeff = cp.concatenate(coefficients)
         self.sample_weights = cp.concatenate(weights) if retain_components else None
         self.sample_prior_coeff = cp.concatenate(priors) if retain_components else None
         self.sample_rhs = cp.concatenate(rhs_records) if retain_rhs else None
-        self.sample_solve_records = records
         return self.sample_coeff

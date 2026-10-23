@@ -86,7 +86,7 @@ def quality(reference, candidate, distance):
             'event_disagreement_fraction': float(np.mean(delta != 0)),
         }
     ref_t, candidate_t = reference['rays'].mean(0), candidate['rays'].mean(0)
-    score = lambda t: np.trapezoid((t >= .05) & (t <= .95), distance, axis=1)
+    score = lambda t: np.trapezoid(((t >= .05) & (t <= .95)).astype(float), distance, axis=1)
     a, b = score(ref_t), score(candidate_t)
     result['next_view'] = {'reference_best': int(a.argmax()), 'candidate_best': int(b.argmax()),
                            'reference_score_regret': float(a.max() - a[b.argmax()]),
@@ -98,7 +98,9 @@ def quality(reference, candidate, distance):
         and result['rays']['max_probability_difference'] <= .02
         and result['collision']['max_probability_difference'] <= .02
         and result['next_view']['reference_score_regret'] <= 2 * float(distance[1] - distance[0]))
-    result['quality_gate_version'] = 2
+    # Version 3 fixes Boolean trapezoidal addition in the physical ray length.
+    result['quality_gate_version'] = 3
+    result['next_view']['score_convention'] = 'numeric trapezoidal integral of 5%-95% uncertainty mask'
     result['uncertainty_coverage_pass'] = bool(np.any((reference['collision'].mean(0) > 0)
                                                     & (reference['collision'].mean(0) < 1)))
     result['application_validation_complete'] = False

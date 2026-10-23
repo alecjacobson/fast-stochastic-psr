@@ -46,7 +46,7 @@ def main():
         {'reference':'sdd128-validated','comparisons':pilot_quality},indent=2)+'\n')
     geometry = np.load(ROOT / 'prepare/geometry.npz')
     rays,collision = ref_fields['rays'],ref_fields['collision']
-    score = lambda t:np.trapezoid((t>=.05)&(t<=.95),geometry['distance'],axis=1)
+    score = lambda t:np.trapezoid(((t>=.05)&(t<=.95)).astype(float),geometry['distance'],axis=1)
     scores128 = score(rays.mean(0))
     prefixes = []
     for count in [8,16,32,64,128]:

@@ -64,6 +64,19 @@ equal sample counts. Samples must be spatially coherent for joint events. Test
 small and large input/query counts, partial and clustered scans, length scales,
 noise levels, and uncertainty regions where sign decisions are sensitive.
 
+**Gate revision 3:** next-view scores now integrate a numeric uncertainty-band
+indicator. NumPy's Boolean trapezoid undercounts adjacent true intervals. The
+[archived-score audit](results/view_score_audit/README.md) recomputes available
+scores and paired regret gates without changing source artifacts. Sequential
+trajectories without saved transmittance require a rerun. The two-ray-step
+threshold is unchanged; its score is now in the intended distance units.
+
+The [streaming application diagnostic](results/streamed_applications/README.md)
+adds predeclared sample-count checkpoints, simultaneous Monte Carlo bounds and
+nested ray/sphere refinement. Its two-percentage-point absolute MC radius target
+is distinct from the paired backend-difference gates above. Passing numerical
+agreement alone does not pass that absolute target, geometry or model accuracy.
+
 ## Timing and memory
 
 - Synchronize GPU work at stage boundaries. Preserve first-call and at least

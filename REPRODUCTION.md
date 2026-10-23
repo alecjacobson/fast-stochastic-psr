@@ -75,6 +75,21 @@ Monte Carlo convergence, complete application quality or ContactFusion replay.
 
 ## Conditioning at larger posterior sample counts
 
+The [streaming application report](reproduction/results/streamed_applications/README.md)
+evaluates coherent batches without retaining a full scalar-coefficient ensemble.
+`HalfCubePosterior.draw_batches()` supports the same folded/packed conditioning
+options as `draw()`; use `contextlib.closing` for early-exit cleanup. Online field
+moments, covariance and ray/collision event counts have retained-ensemble
+controls. Million-point execution includes independent finite rows, nested
+geometry refinement and explicit Monte Carlo uncertainty. This is a numerical
+and convergence diagnostic, not a new matched-quality application speed ratio.
+
+The [next-view score audit](reproduction/results/view_score_audit/README.md)
+corrects Boolean trapezoidal integration to numeric indicator integration.
+All 53 available archived artifacts and 82 paired comparisons retain their
+selected indices and regret-gate classifications under the corrected score;
+the sequential trajectory lacks saved transmittance and still requires a rerun.
+
 Paired real RHS are an optional alternative to folded inverse actions.
 `HalfCubePosterior.draw(..., pack_rhs=True)` keeps the folded coherent prior
 and fitted mean while conditioning with full-cube complex transforms. Each

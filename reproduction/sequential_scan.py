@@ -39,7 +39,7 @@ for policy in ['uncertainty','random']:
                 model.draw(64,seed=42+step,exact=False)
                 s=model.samples(rays.reshape(-1,3)).reshape(64,24,128)
                 trans=cp.asnumpy(cp.cumprod(s>0,axis=2).mean(0))
-                score=np.trapezoid((trans>=.05)&(trans<=.95),t,axis=1);score[used]=-np.inf
+                score=np.trapezoid(((trans>=.05)&(trans<=.95)).astype(float),t,axis=1);score[used]=-np.inf
                 choice=int(score.argmax());record['score']=float(score[choice])
             else:choice=int(rand.choice([i for i in range(24) if i not in used]))
             used.append(choice);record['camera_index']=choice

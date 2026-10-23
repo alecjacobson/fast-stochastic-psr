@@ -172,6 +172,18 @@ is prepared with distinct observed positions and verified saved payload hashes.
 Only the preconditioner action has been profiled at that size; no three-million-point
 reconstruction, complete-application speedup or upstream resource-limit result is claimed.
 
+The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
+uses the independent centered posterior and conditioning correction from coherent
+pathwise draws. `reproduction.complement_variance` combines their second moments
+using weights frozen on separate pilot draws, retaining negative estimates and
+empty exact-law interval intersections. On released A, three seeds with 32 pilot
+and 128 evaluation draws reduce total-variance error from 12–13% to 0.17–0.18%.
+Error relative to the much smaller spatial contrast is still 17.6–19.4%.
+This is not a replacement for the deterministic teaser comparison or a timing
+claim. The report includes a prior-only baseline and the extra-query cost;
+action rankings, B/million-point validation and fixed-quality timing remain open
+in [#34](https://github.com/alecjacobson/fast-stochastic-psr/issues/34).
+
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
 Legacy manifests hashed the float64 RHS before storage conversion; read-only

@@ -1,0 +1,419 @@
+{
+  "args": {
+    "archive": "/opt/geospsr-runtime/query-refinement/coefficients256",
+    "source_results": "/opt/geospsr-runtime/query-refinement/generate256",
+    "levels": 4,
+    "output": "/opt/geospsr-runtime/query-refinement/replay1"
+  },
+  "complete": true,
+  "seconds": {
+    "archive_metadata": 0.013623178005218506,
+    "direct_plan_setup": 0.09765000641345978,
+    "mean_query_validation": 0.1732195019721985,
+    "archive_block_io_hash": 3.0468537509441376,
+    "coefficient_transfer": 0.31769829243421555,
+    "cached_grid_setup": 0.5264169760048389,
+    "cached_query": 0.4267418012022972,
+    "direct_query_with_packing": 0.26613616570830345,
+    "field_validation": 0.03425144776701927,
+    "field_transfer": 0.05907449498772621,
+    "event_reductions": 0.41612083092331886,
+    "work_wall": 5.876406569033861
+  },
+  "scope": "prepared Fourier draw replay; no conditioning or source-data fitting in query timers",
+  "device": "NVIDIA L40",
+  "archive_manifest_sha256": "7df5cf3edc986f306b95a2a55e00a259245b74561a86dbea7504d4d86b701d1c",
+  "source_metadata": {
+    "source_hashes": {
+      "points": "88966848d5764040a4ecaadbc5381722827f6d929a1c740d2725ce46af1c5e47",
+      "normals": "bf5853403d2d0c3bc78a93ceddfa4c5914b1a31b69efa4ce35920f4d1fa85228",
+      "query": "3725b6f355e23c06ceb21c9c4d9b9a1114f43169b099090d3780101604dbb985",
+      "rays": "74ec077739a8e2e683d614958f3749aa9815e1b2ad3e8fcf4595fbecd66f47a2",
+      "objects": "333502da11f24e085514e76336ed73e5f0b105a7a0de8d9645ad63ef5d2f051d"
+    },
+    "model": {
+      "training_cutoff": 200,
+      "scalar_cutoff": 50,
+      "lengthscale": 0.01,
+      "variance": 0.1,
+      "noise_variance": 0.02,
+      "rtol": 1e-05,
+      "eps": 1e-06,
+      "normalization": "analytic",
+      "pack_rhs": true,
+      "centered_hybrid": false
+    },
+    "seed": 51,
+    "batch": 2,
+    "offset": -0.08178280293941498,
+    "N": 1000000
+  },
+  "ray_steps": [
+    256,
+    511,
+    1021,
+    2041,
+    4081
+  ],
+  "sphere_points": [
+    256,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "samples": 256,
+  "maximum_cached_error_over_fluctuations": 4.7440196768546e-05,
+  "field_gate_pass": true,
+  "maximum_backend_probability_difference": 0.00390625,
+  "backend_event_gate_pass": true,
+  "backend_any_disagreeing_draws": 1,
+  "refinement": [
+    {
+      "kind": "rays",
+      "level": 0,
+      "coarse_size": 256,
+      "fine_size": 511,
+      "maximum_empirical_probability_change": 0.03125,
+      "disagreeing_draws": 8,
+      "count": 256,
+      "empirical_any_probability": 0.03125,
+      "upper": 0.06970389963052735,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": false
+    },
+    {
+      "kind": "rays",
+      "level": 1,
+      "coarse_size": 511,
+      "fine_size": 1021,
+      "maximum_empirical_probability_change": 0.0,
+      "disagreeing_draws": 0,
+      "count": 256,
+      "empirical_any_probability": 0.0,
+      "upper": 0.019629676638817168,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": true
+    },
+    {
+      "kind": "rays",
+      "level": 2,
+      "coarse_size": 1021,
+      "fine_size": 2041,
+      "maximum_empirical_probability_change": 0.0,
+      "disagreeing_draws": 0,
+      "count": 256,
+      "empirical_any_probability": 0.0,
+      "upper": 0.019629676638817168,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": true
+    },
+    {
+      "kind": "rays",
+      "level": 3,
+      "coarse_size": 2041,
+      "fine_size": 4081,
+      "maximum_empirical_probability_change": 0.0,
+      "disagreeing_draws": 0,
+      "count": 256,
+      "empirical_any_probability": 0.0,
+      "upper": 0.019629676638817168,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": true
+    },
+    {
+      "kind": "sphere",
+      "level": 0,
+      "coarse_size": 256,
+      "fine_size": 512,
+      "maximum_empirical_probability_change": 0.0,
+      "disagreeing_draws": 0,
+      "count": 256,
+      "empirical_any_probability": 0.0,
+      "upper": 0.019629676638817168,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": true
+    },
+    {
+      "kind": "sphere",
+      "level": 1,
+      "coarse_size": 512,
+      "fine_size": 1024,
+      "maximum_empirical_probability_change": 0.21875,
+      "disagreeing_draws": 254,
+      "count": 256,
+      "empirical_any_probability": 0.9921875,
+      "upper": 0.9995453202898441,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": false
+    },
+    {
+      "kind": "sphere",
+      "level": 2,
+      "coarse_size": 1024,
+      "fine_size": 2048,
+      "maximum_empirical_probability_change": 0.03515625,
+      "disagreeing_draws": 45,
+      "count": 256,
+      "empirical_any_probability": 0.17578125,
+      "upper": 0.24274239160752256,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": false
+    },
+    {
+      "kind": "sphere",
+      "level": 3,
+      "coarse_size": 2048,
+      "fine_size": 4096,
+      "maximum_empirical_probability_change": 0.00390625,
+      "disagreeing_draws": 1,
+      "count": 256,
+      "empirical_any_probability": 0.00390625,
+      "upper": 0.027697169074161965,
+      "comparisons": 8,
+      "family_alpha": 0.05,
+      "pass_2pp": false
+    }
+  ],
+  "next_view": [
+    {
+      "level": 0,
+      "steps": 256,
+      "selected": 14,
+      "scores": [
+        0.0196077823638916,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.019607901573181152,
+        0.0,
+        0.0,
+        0.019607841968536377,
+        0.0,
+        0.07843136787414551,
+        0.0,
+        0.0196077823638916,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0196077823638916,
+        0.0,
+        0.0
+      ],
+      "empirical_regret_vs_finest": 0.0
+    },
+    {
+      "level": 1,
+      "steps": 511,
+      "selected": 14,
+      "scores": [
+        0.009804010391235352,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0098038911819458,
+        0.0,
+        0.009804010391235352,
+        0.009804010391235352,
+        0.0,
+        0.0098038911819458,
+        0.019607841968536377,
+        0.0,
+        0.08823513984680176,
+        0.0,
+        0.00980377197265625,
+        0.009804010391235352,
+        0.0,
+        0.0098038911819458,
+        0.009804010391235352,
+        0.009804010391235352,
+        0.0,
+        0.0098038911819458
+      ],
+      "empirical_regret_vs_finest": 0.0
+    },
+    {
+      "level": 2,
+      "steps": 1021,
+      "selected": 14,
+      "scores": [
+        0.009804129600524902,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.004902005195617676,
+        0.004901885986328125,
+        0.004902005195617676,
+        0.004901885986328125,
+        0.0049021244049072266,
+        0.004901885986328125,
+        0.00980377197265625,
+        0.014705896377563477,
+        0.0,
+        0.08823502063751221,
+        0.004901885986328125,
+        0.004901885986328125,
+        0.004901885986328125,
+        0.0,
+        0.004901885986328125,
+        0.0049021244049072266,
+        0.009804129600524902,
+        0.004902005195617676,
+        0.004901885986328125
+      ],
+      "empirical_regret_vs_finest": 0.0
+    },
+    {
+      "level": 3,
+      "steps": 2041,
+      "selected": 14,
+      "scores": [
+        0.009804129600524902,
+        0.0024509429931640625,
+        0.0024510622024536133,
+        0.0024510622024536133,
+        0.0024509429931640625,
+        0.004901885986328125,
+        0.0024509429931640625,
+        0.0024509429931640625,
+        0.0024509429931640625,
+        0.004902243614196777,
+        0.004901885986328125,
+        0.0073528289794921875,
+        0.014705896377563477,
+        0.002451002597808838,
+        0.08823490142822266,
+        0.004901885986328125,
+        0.004901885986328125,
+        0.0024509429931640625,
+        0.0024510622024536133,
+        0.0024509429931640625,
+        0.002451181411743164,
+        0.00735318660736084,
+        0.004901885986328125,
+        0.004901885986328125
+      ],
+      "empirical_regret_vs_finest": 0.0
+    },
+    {
+      "level": 4,
+      "steps": 4081,
+      "selected": 14,
+      "scores": [
+        0.011029720306396484,
+        0.0024509429931640625,
+        0.0024509429931640625,
+        0.0024510622024536133,
+        0.0024509429931640625,
+        0.0036764144897460938,
+        0.0036764144897460938,
+        0.0036764144897460938,
+        0.0036764144897460938,
+        0.004902362823486328,
+        0.0036764144897460938,
+        0.0073528289794921875,
+        0.014705896377563477,
+        0.003676474094390869,
+        0.08823490142822266,
+        0.004901885986328125,
+        0.004901885986328125,
+        0.0024509429931640625,
+        0.0036765336990356445,
+        0.0036764144897460938,
+        0.003676891326904297,
+        0.006127715110778809,
+        0.0036764144897460938,
+        0.0036764144897460938
+      ],
+      "empirical_regret_vs_finest": 0.0
+    }
+  ],
+  "source_event_replay_exact": {
+    "rays_0": true,
+    "rays_1": true,
+    "sphere_0": true,
+    "sphere_1": true
+  },
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 7,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 2.977997064590454e-05,
+        "seconds": 0.019771240651607513,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.0357259325683117,
+        "seconds": 1.0926809161901474,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      },
+      {
+        "started_seconds": 2.0928463861346245,
+        "seconds": 2.152470998466015,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      },
+      {
+        "started_seconds": 3.1530488915741444,
+        "seconds": 3.2087989151477814,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      },
+      {
+        "started_seconds": 4.208928342908621,
+        "seconds": 4.26994913816452,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      },
+      {
+        "started_seconds": 5.270086165517569,
+        "seconds": 5.34845756739378,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      },
+      {
+        "started_seconds": 5.896562993526459,
+        "seconds": 5.933564871549606,
+        "pids": [
+          378421
+        ],
+        "own_memory_bytes": 727711744.0
+      }
+    ],
+    "own_pid": 378421,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

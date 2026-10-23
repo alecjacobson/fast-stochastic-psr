@@ -18,6 +18,7 @@ from reproduction.half_posterior import HalfCubePosterior
 from reproduction.gpu_audit import GpuProcessAudit
 from reproduction.paired_applications import events,field_quality,quality
 from reproduction.streaming_statistics import OnlineMoments,OnlineEvents,view_scores
+from reproduction.coefficient_archive import CoefficientArchiveWriter
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -64,7 +65,8 @@ def main():
     if not checkpoints or checkpoints[-1]!=a.samples or any(n<2 or n>a.samples or (n%a.batch and n!=a.samples) for n in checkpoints):
         p.error('checkpoints must end at samples and align with batch boundaries')
     a.output.mkdir(parents=True,exist_ok=True)
-    if a.coefficient_dir: a.coefficient_dir.mkdir(parents=True,exist_ok=True)
+    if a.coefficient_dir and a.coefficient_dir.exists() and any(a.coefficient_dir.iterdir()):
+        p.error('coefficient archive directory must be empty')
     record={'args':{**vars(a),'scratch':str(a.scratch),'output':str(a.output),
                     'coefficient_dir':None if a.coefficient_dir is None else str(a.coefficient_dir)},
             'complete':False,'seconds':{},'checkpoints':{},'batches':[],
@@ -93,6 +95,12 @@ def main():
         rows=timed('validation_rows_setup',lambda:finite_covariance_rows(x[ids],x,model.training,dtype='d'))
         record['validation_ids']=ids
         mean=cp.asnumpy(model.mean(q))
+        archive=None
+        if a.coefficient_dir:
+            archive=CoefficientArchiveWriter(a.coefficient_dir,a.samples,
+                {'source_hashes':record['hashes'],'model':record['model'],'seed':a.seed,'batch':a.batch,
+                 'offset':record['offset'],'N':len(x)},cp.asnumpy(model.mean_coeff),
+                {'query':q,'rays':rays,'objects':objects,'distance':distance})
         reference=None
         if a.retained_control:
             timed('retained_control_draw',lambda:model.draw(a.samples,seed=a.seed,batch=a.batch,pack_rhs=True))
@@ -140,9 +148,8 @@ def main():
                 if reference is not None:
                     paired['fields'].append(fields)
                     for key in ['rays','collision']: paired[key].append(values[key])
-                if a.coefficient_dir:
-                    target=a.coefficient_dir/f'{block["start"]:08d}-{n:08d}.npy'
-                    timed('coefficient_export',lambda:np.save(target,cp.asnumpy(block['coefficients'])))
+                if archive is not None:
+                    timed('coefficient_export',lambda:archive.append(block['start'],cp.asnumpy(block['coefficients'])))
                 del cache
                 record['batches'].append({**block['record'],'coefficient_bytes':block['coefficients'].nbytes,
                                           'cupy_live_bytes_at_yield':cp.get_default_memory_pool().used_bytes(),
@@ -178,6 +185,9 @@ def main():
                 raise RuntimeError('retained-control quality gate failed')
         if not record['finite_residual_gate_pass'] or not record['cache_gate_pass'] or moments.count!=a.samples:
             raise RuntimeError('streaming numerical gate failed')
+        if archive is not None:
+            archive.finish({key:record[key] for key in ['finite_residual_gate_pass','cache_gate_pass',
+                'maximum_independent_finite_residual','maximum_cached_error_over_fluctuations']})
         record['complete']=True
     except Exception as exc:
         record['failure']=f'{type(exc).__name__}: {exc}';raise

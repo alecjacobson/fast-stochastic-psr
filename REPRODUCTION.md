@@ -84,6 +84,16 @@ controls. Million-point execution includes independent finite rows, nested
 geometry refinement and explicit Monte Carlo uncertainty. This is a numerical
 and convergence diagnostic, not a new matched-quality application speed ratio.
 
+The [checked replay and nested-query report](reproduction/results/query_refinement/README.md)
+uses 256 fresh cube200 draws and five ray/sphere resolutions. Archive blocks
+include source/model/geometry provenance, complete coverage and file hashes;
+incomplete or damaged archives cannot be replayed. They support bounded-memory
+query reuse, not sampler resumption. The 512 → 1,024 sphere refinement changes
+collision probabilities by up to 21.875 percentage points, exposing a substantial
+remaining geometry error. The stronger ordinary type-2 reference packs real
+fields and reuses plans; its recorded query times are lower on this workload.
+One replay was contended, so the declared timing protocol publishes no ratio.
+
 The [next-view score audit](reproduction/results/view_score_audit/README.md)
 corrects Boolean trapezoidal integration to numeric indicator integration.
 All 53 available archived artifacts and 82 paired comparisons retain their

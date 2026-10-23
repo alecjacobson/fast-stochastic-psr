@@ -19,6 +19,7 @@ from geospsr.spectral import FourierKernel, FourierPoisson
 from geospsr.training_spectrum import FourierCovariance
 from reproduction.spectral_posterior import SpectralPosterior, solve_centered_fluctuations
 from reproduction.gpu_audit import GpuProcessAudit,assess_gpu_interval
+from reproduction.common_rhs_integrity import validate_source
 from reproduction.paired_applications import (application_geometry, uncertain_objects,
                                              events, field_quality, quality)
 
@@ -77,6 +78,7 @@ def main():
     p.add_argument('--holdout-seed', type=int, default=917)
     p.add_argument('--retain-weights', action='store_true', help='save final weights under scratch for independent diagnostics')
     p.add_argument('--audit-analytic', action='store_true')
+    p.add_argument('--quality-holdout-start',type=int,help='also evaluate unchanged quality gates after this draw index')
     p.add_argument('--reference', type=Path, help='compact output from a common-RHS reference run')
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
@@ -101,6 +103,8 @@ def main():
     if a.preconditioner_rank is not None and (a.preconditioner_rank<1 or a.preconditioner_block is not None
             or a.mode!='solve' or a.centered_fluctuations or a.block_core is not None):
         p.error('Nystrom requires non-hybrid cube solve without another preconditioner')
+    if a.quality_holdout_start is not None and (a.reference is None or not 0<=a.quality_holdout_start<a.samples-1):
+        p.error('holdout requires a reference and at least two remaining draws')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -151,17 +155,20 @@ def main():
             root = cp.sqrt(model.training.rho)
             denominator = cp.maximum((model.op.ns**2).sum(0),1)
             record['prior_generation_seconds'] = []
-            digest = hashlib.sha256()
+            digest = hashlib.sha256();prior_digest=hashlib.sha256()
             for i in range(a.samples):
                 (rhs, prior), elapsed = measure(lambda: prior_rhs(model, rng, root, denominator))
                 record['prior_generation_seconds'].append(elapsed)
-                host = cp.asnumpy(rhs)
-                digest.update(host.tobytes())
-                rhs_file[i], prior_file[i] = host, cp.asnumpy(prior)
+                host = np.asarray(cp.asnumpy(rhs),dtype=rhs_file.dtype)
+                prior_host=np.asarray(cp.asnumpy(prior),dtype=prior_file.dtype)
+                digest.update(host.tobytes());prior_digest.update(prior_host.tobytes())
+                rhs_file[i], prior_file[i] = host, prior_host
                 if (i+1) % 8 == 0:
                     print('prepared', i+1, flush=True)
             rhs_file.flush(); prior_file.flush()
             record['hashes']['all_rhs'] = digest.hexdigest()
+            record['hashes']['all_prior'] = prior_digest.hexdigest()
+            record['array_hash_schema']=2
             rays, objects, distance = application_geometry(x)
             norm2 = (model.op.ns**2).sum(0)
             std = float(cp.sqrt(cp.where(norm2 > 0, model.op.rho / cp.maximum(norm2,1),0).sum()))
@@ -180,6 +187,7 @@ def main():
             if a.dataset != manifest['args']['dataset']:
                 raise ValueError('dataset does not match prepared inputs')
             record['source_manifest'] = manifest
+            record['source_integrity']=timed('source_integrity',lambda:validate_source(a.scratch,manifest))
             if a.reference:
                 ref_record = json.loads((a.reference / 'results.json').read_text())
                 if not ref_record['complete'] or (ref_record['args']['mode'] == 'sdd' and
@@ -384,6 +392,14 @@ def main():
                 f = record['quality']['fields']
                 f['pass'] = all(f[key] < value for key,value in gates.items())
                 record['quality']['field_gates'] = gates
+                if a.quality_holdout_start is not None:
+                    start=a.quality_holdout_start
+                    held_fields=field_quality(cp.asarray(ref['fields'][start:]),cp.asarray(fields[start:]))
+                    held_fields['pass']=all(held_fields[key]<value for key,value in gates.items())
+                    record['heldout_quality']={'start':start,'count':len(fields)-start,'fields':held_fields,
+                        'events':quality({k:ref[k][start:] for k in outputs},{k:v[start:] for k,v in outputs.items()},geometry['distance']),
+                        'field_gates':gates,'comparison_kind':record['quality']['comparison_kind']}
+
             np.savez_compressed(a.output / 'fields.npz',fields=fields,**outputs)
             record['complete'] = True
         record['benchmark_work_wall_seconds'] = time.perf_counter()-work_started

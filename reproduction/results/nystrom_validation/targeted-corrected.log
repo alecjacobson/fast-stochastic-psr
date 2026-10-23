@@ -1,0 +1,100 @@
+FF...                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_preconditioned_stream_matches_prior_dense_solve_and_fields[True-False] __
+
+packed = True, initial = False
+
+    @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
+    def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial):
+        rng=np.random.default_rng(222)
+        x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')
+        q=rng.uniform(-.5,.5,(11,3)).astype('f')
+>       model=HalfCubePosterior(x,y,training_cutoff=5,cutoff=2,lengthscale=.12,noise_variance=.0001,rtol=1e-6)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_preconditioned_streaming.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <reproduction.half_posterior.HalfCubePosterior object at 0x7f676a56f110>
+x = array([[-0.12279104,  0.20364252,  0.2221986 ],
+       [ 0.3664707 ,  0.39554274, -0.4199769 ],
+       [ 0.05540016,  ...48136],
+       [-0.44854304,  0.33636755,  0.0098573 ],
+       [ 0.28442094,  0.49616593,  0.00745616]], dtype=float32)
+normals = array([[-5.59818000e-05, -7.47110426e-01,  9.62398589e-01],
+       [ 3.56279872e-02,  8.54636014e-01, -8.89502287e-01]...391e-01,  7.87084520e-01,  9.63909149e-01],
+       [-1.01076770e+00, -1.73327595e-01, -1.77984044e-01]], dtype=float32)
+training_cutoff = 5, cutoff = 2, lengthscale = 0.12, variance = 0.1
+noise_variance = 0.0001, rtol = 1e-06, eps = 1e-06, dtype = 'float32'
+upsampfac = 1.25, normalization = 'analytic', axis = 0
+
+    def __init__(self,x,normals,training_cutoff=200,cutoff=50,lengthscale=.01,
+                 variance=.1,noise_variance=.02,rtol=1e-5,eps=1e-6,dtype='float32',
+                 upsampfac=1.25,normalization='analytic',axis=0):
+        if cutoff>training_cutoff:
+            raise ValueError('training cutoff must cover every scalar mode')
+        self.x=cp.asarray(x,dtype=dtype)
+        self.normals=cp.asarray(normals,dtype=dtype)
+        self.noise_variance,self.rtol,self.axis=noise_variance,rtol,axis
+        self.lengthscale,self.variance,self.cutoff=lengthscale,variance,cutoff
+        self.normalization=normalization
+        self.op=FourierPoisson(cutoff,lengthscale,variance,eps=eps,dtype=dtype,normalization=normalization)
+        self.training=HalfCubeSpectrum(training_cutoff,lengthscale,variance,eps,dtype,upsampfac,normalization)
+        self.K=self._make_kernel(3)
+        self.alpha,self.mean_solve=self.K.solve(self.normals,rtol=rtol,maxiter=1000)
+        if not self.mean_solve['converged']:
+>           raise RuntimeError(self.mean_solve)
+E           RuntimeError: {'iterations': 23, 'recurrence_converged': True, 'relative_residual': [2.154186176994699e-06, 2.2806270862929523e-06, 2.2510701001010602e-06], 'converged': False}
+
+reproduction/half_posterior.py:34: RuntimeError
+_ test_preconditioned_stream_matches_prior_dense_solve_and_fields[False-True] __
+
+packed = False, initial = True
+
+    @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
+    def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial):
+        rng=np.random.default_rng(222)
+        x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')
+        q=rng.uniform(-.5,.5,(11,3)).astype('f')
+>       model=HalfCubePosterior(x,y,training_cutoff=5,cutoff=2,lengthscale=.12,noise_variance=.0001,rtol=1e-6)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_preconditioned_streaming.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <reproduction.half_posterior.HalfCubePosterior object at 0x7f66f3380bd0>
+x = array([[-0.12279104,  0.20364252,  0.2221986 ],
+       [ 0.3664707 ,  0.39554274, -0.4199769 ],
+       [ 0.05540016,  ...48136],
+       [-0.44854304,  0.33636755,  0.0098573 ],
+       [ 0.28442094,  0.49616593,  0.00745616]], dtype=float32)
+normals = array([[-5.59818000e-05, -7.47110426e-01,  9.62398589e-01],
+       [ 3.56279872e-02,  8.54636014e-01, -8.89502287e-01]...391e-01,  7.87084520e-01,  9.63909149e-01],
+       [-1.01076770e+00, -1.73327595e-01, -1.77984044e-01]], dtype=float32)
+training_cutoff = 5, cutoff = 2, lengthscale = 0.12, variance = 0.1
+noise_variance = 0.0001, rtol = 1e-06, eps = 1e-06, dtype = 'float32'
+upsampfac = 1.25, normalization = 'analytic', axis = 0
+
+    def __init__(self,x,normals,training_cutoff=200,cutoff=50,lengthscale=.01,
+                 variance=.1,noise_variance=.02,rtol=1e-5,eps=1e-6,dtype='float32',
+                 upsampfac=1.25,normalization='analytic',axis=0):
+        if cutoff>training_cutoff:
+            raise ValueError('training cutoff must cover every scalar mode')
+        self.x=cp.asarray(x,dtype=dtype)
+        self.normals=cp.asarray(normals,dtype=dtype)
+        self.noise_variance,self.rtol,self.axis=noise_variance,rtol,axis
+        self.lengthscale,self.variance,self.cutoff=lengthscale,variance,cutoff
+        self.normalization=normalization
+        self.op=FourierPoisson(cutoff,lengthscale,variance,eps=eps,dtype=dtype,normalization=normalization)
+        self.training=HalfCubeSpectrum(training_cutoff,lengthscale,variance,eps,dtype,upsampfac,normalization)
+        self.K=self._make_kernel(3)
+        self.alpha,self.mean_solve=self.K.solve(self.normals,rtol=rtol,maxiter=1000)
+        if not self.mean_solve['converged']:
+>           raise RuntimeError(self.mean_solve)
+E           RuntimeError: {'iterations': 23, 'recurrence_converged': True, 'relative_residual': [2.154186176994699e-06, 2.2806270862929523e-06, 2.2510701001010602e-06], 'converged': False}
+
+reproduction/half_posterior.py:34: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_preconditioned_streaming.py::test_preconditioned_stream_matches_prior_dense_solve_and_fields[True-False]
+FAILED tests/test_preconditioned_streaming.py::test_preconditioned_stream_matches_prior_dense_solve_and_fields[False-True]
+2 failed, 3 passed in 1.68s

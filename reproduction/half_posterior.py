@@ -39,7 +39,37 @@ class HalfCubePosterior(BlockPosterior):
         self.cache_batch=16
         self._fluctuation_spectrum=self._fluctuation_kernel=None
         self._packed_spectrum=self._packed_kernel=None
+        self.conditioning_preconditioner=None
+        self._conditioning_preconditioner_key=None
+        self._draw_preconditioner=None
         sync()
+
+    def prepare_conditioning_preconditioner(self,rank=1024,seed=41,row_batch=8192):
+        """Build/cache a coarse space for this fixed fitted model.
+
+        Setup is explicit so callers can time it separately. Draws use the
+        cache only with preconditioned=True; default draws and fitted mean
+        remain unchanged. Refit a new model after changing observations,
+        covariance parameters or noise. The retained basis costs O(N*rank).
+        """
+        if getattr(self,'_drawing',False):
+            raise RuntimeError('cannot prepare a preconditioner during an active stream')
+        key=(rank,seed,row_batch)
+        if self.conditioning_preconditioner is None or key!=self._conditioning_preconditioner_key:
+            from geospsr.nystrom import LandmarkNystrom
+            value=LandmarkNystrom(self.x,self.noise_variance,rank,self.lengthscale,self.variance,
+                                  seed,row_batch,self.training.dtype)
+            self.conditioning_preconditioner=value
+            self._conditioning_preconditioner_key=key
+            sync()
+            cp.get_default_memory_pool().free_all_blocks()
+        return self.conditioning_preconditioner
+
+    def clear_conditioning_preconditioner(self):
+        """Release the cached basis after all consumers have closed their stream."""
+        if getattr(self,'_drawing',False):
+            raise RuntimeError('cannot clear a preconditioner during an active stream')
+        self.conditioning_preconditioner=self._conditioning_preconditioner_key=None
 
     def _make_kernel(self,rhs_count):
         return HalfCubeKernel(self.x,self.training,self.noise_variance,rhs_count,axis=self.axis)
@@ -50,6 +80,9 @@ class HalfCubePosterior(BlockPosterior):
             record['pack_rhs']=True
         if self._fluctuation_spectrum is not None:
             record.update(solve_cutoff=self._fluctuation_spectrum.cutoff,centered_fluctuations=True)
+        if self._draw_preconditioner is not None:
+            record['conditioning_preconditioner']={'kind':'landmark_nystrom',
+                'rank':self._draw_preconditioner.rank,'seed':self._draw_preconditioner.record['seed']}
         return record
 
     def _solve_draw(self,kernel,rhs,initial_mean):
@@ -61,8 +94,16 @@ class HalfCubePosterior(BlockPosterior):
                                                         self.noise_variance,rhs.shape[1])
             if self._fluctuation_spectrum is not None:
                 return solve_centered_fluctuations(self._packed_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
+            if self._draw_preconditioner is not None:
+                initial=cp.tile(self.alpha,(1,rhs.shape[1]//3)) if initial_mean else None
+                return self._packed_kernel.solve(rhs,rtol=self.rtol,maxiter=1000,x0=initial,
+                                                 preconditioner=self._draw_preconditioner)
             return super()._solve_draw(self._packed_kernel,rhs,initial_mean)
         if self._fluctuation_spectrum is None:
+            if self._draw_preconditioner is not None:
+                initial=cp.tile(self.alpha,(1,rhs.shape[1]//3)) if initial_mean else None
+                return kernel.solve(rhs,rtol=self.rtol,maxiter=1000,x0=initial,
+                                    preconditioner=self._draw_preconditioner)
             return super()._solve_draw(kernel,rhs,initial_mean)
         from reproduction.spectral_posterior import solve_centered_fluctuations
         if self._fluctuation_kernel is None or self._fluctuation_kernel.rhs_count!=rhs.shape[1]:
@@ -71,7 +112,11 @@ class HalfCubePosterior(BlockPosterior):
         return solve_centered_fluctuations(self._fluctuation_kernel,rhs,self.normals,self.alpha,rtol=self.rtol)
 
     @contextmanager
-    def _draw_context(self,initial_mean=False,solve_cutoff=None,pack_rhs=False):
+    def _draw_context(self,initial_mean=False,solve_cutoff=None,pack_rhs=False,preconditioned=False):
+        if preconditioned and self.conditioning_preconditioner is None:
+            raise ValueError('prepare the conditioning preconditioner before drawing')
+        if preconditioned and solve_cutoff is not None:
+            raise ValueError('preconditioned drawing currently requires the full coupled cube')
         if solve_cutoff is not None:
             if solve_cutoff!=int(solve_cutoff) or not self.cutoff<=solve_cutoff<=self.training.cutoff:
                 raise ValueError('solve cutoff must lie between scalar and prior cutoffs')
@@ -80,6 +125,7 @@ class HalfCubePosterior(BlockPosterior):
             self._fluctuation_spectrum=HalfCubeSpectrum(int(solve_cutoff),self.lengthscale,self.variance,
                 self.training.eps,self.training.dtype,self.training.upsampfac,self.normalization)
         try:
+            self._draw_preconditioner=self.conditioning_preconditioner if preconditioned else None
             if pack_rhs:
                 from geospsr.training_spectrum import FourierCovariance
                 band=self.training.cutoff if solve_cutoff is None else int(solve_cutoff)
@@ -89,3 +135,4 @@ class HalfCubePosterior(BlockPosterior):
         finally:
             self._fluctuation_kernel=self._fluctuation_spectrum=None
             self._packed_kernel=self._packed_spectrum=None
+            self._draw_preconditioner=None

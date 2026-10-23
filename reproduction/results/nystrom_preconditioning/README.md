@@ -2,6 +2,11 @@
 
 **Rank 1,024 reduces million-point CG iterations from 57 to 38** in this pilot, with numerical and paired-event gates passing. It retains 3.815 GiB of basis data and costs 9.095 s to construct. Larger sample-count and coherent-producer validation remain open.
 
+Follow-up: [128-draw and coherent-streaming validation](../nystrom_validation/README.md)
+now passes the numerical gates, including 120 pilot-held-out draws. It also
+documents a legacy source-hash correction and a low-noise precision failure.
+Qualified timing and complete application convergence remain open.
+
 This pilot tests a global coarse correction after
 [disjoint spatial blocks](../preconditioning/README.md) failed to reduce
 million-point iteration counts. It preserves the packed full-cube200 covariance

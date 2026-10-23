@@ -1,0 +1,94 @@
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_preconditioned_stream_matches_prior_dense_solve_and_fields[True-False] __
+
+packed = True, initial = False
+
+    @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
+    def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial):
+        rng=np.random.default_rng(222)
+        x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')
+        q=rng.uniform(-.5,.5,(11,3)).astype('f')
+        model=HalfCubePosterior(x,y,training_cutoff=5,cutoff=2,lengthscale=.12,noise_variance=.0001)
+        model.draw(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,retain_components=True,retain_rhs=True)
+        rhs=model.sample_rhs.copy();prior=model.sample_prior_coeff.copy();fields=cp.asnumpy(model.samples(q));mean=model.mean(q).copy()
+        pre=model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7)
+        assert model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7) is pre
+        coefficients=[];weights=[]
+        with closing(model.draw_batches(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,
+                                       preconditioned=True,retain_components=True,retain_rhs=True)) as stream:
+            for b in stream:
+                sl=slice(b['start'],b['stop'])
+                np.testing.assert_array_equal(cp.asnumpy(b['rhs']),cp.asnumpy(rhs[sl]))
+                np.testing.assert_array_equal(cp.asnumpy(b['prior']),cp.asnumpy(prior[sl]))
+                coefficients.append(b['coefficients']);weights.append(b['weights'])
+                assert b['record']['preconditioned'] and b['record']['conditioning_preconditioner']['rank']==9
+        actual=cp.asnumpy(model.op.evaluate(q,cp.concatenate(coefficients))-model.offset)
+        assert np.linalg.norm(actual-fields)/np.linalg.norm(fields-fields.mean(0))<5e-4
+>       assert np.linalg.norm(np.cov(actual.T)-np.cov(fields.T))/np.linalg.norm(np.cov(fields.T))<1e-4
+E       AssertionError: assert (np.float64(2.483610721255143e-07) / np.float64(0.0017694543964285904)) < 0.0001
+E        +  where np.float64(2.483610721255143e-07) = <function norm at 0x7f9e5f481f70>((array([[0.00015687, 0.00011295, 0.00016732, 0.00015523, 0.00013066,\n        0.00014938, 0.00015282, 0.00017634, 0.0001...1286, 0.00019162, 0.00014151,\n        0.00020046, 0.00018781, 0.00018136, 0.00018733, 0.0001561 ,\n        0.00020776]]) - array([[0.00015684, 0.00011293, 0.0001673 , 0.0001552 , 0.00013063,\n        0.00014936, 0.00015278, 0.00017631, 0.0001...1285, 0.0001916 , 0.00014148,\n        0.00020045, 0.00018778, 0.00018133, 0.00018731, 0.00015608,\n        0.00020773]])))
+E        +    where <function norm at 0x7f9e5f481f70> = <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'>.norm
+E        +      where <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'> = np.linalg
+E        +    and   array([[0.00015687, 0.00011295, 0.00016732, 0.00015523, 0.00013066,\n        0.00014938, 0.00015282, 0.00017634, 0.0001...1286, 0.00019162, 0.00014151,\n        0.00020046, 0.00018781, 0.00018136, 0.00018733, 0.0001561 ,\n        0.00020776]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.0110254 ,  0.01920435,  0.00724703,  0.01065822,  0.01980197],\n       [ 0.00040492,  0.0304625 ,  0.0237079...00923134, -0.00162636],\n       [-0.02882576,  0.01100218, -0.00454767, -0.00492106, -0.00177696]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.0110254 ,  0.01920435,  0.00724703,  0.01065822,  0.01980197],\n       [ 0.00040492,  0.0304625 ,  0.0237079...00923134, -0.00162636],\n       [-0.02882576,  0.01100218, -0.00454767, -0.00492106, -0.00177696]],\n      dtype=float32) = array([[-0.0110254 ,  0.00040492, -0.06657426,  0.0404717 , -0.04223636,\n         0.00691955,  0.0317993 , -0.04413252...1570526,\n         0.02784127,  0.05770878, -0.00814539, -0.03756008, -0.00162636,\n        -0.00177696]], dtype=float32).T
+E        +    and   array([[0.00015684, 0.00011293, 0.0001673 , 0.0001552 , 0.00013063,\n        0.00014936, 0.00015278, 0.00017631, 0.0001...1285, 0.0001916 , 0.00014148,\n        0.00020045, 0.00018778, 0.00018133, 0.00018731, 0.00015608,\n        0.00020773]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.01102118,  0.01920618,  0.00724822,  0.01066068,  0.01980273],\n       [ 0.00040811,  0.03046423,  0.0237094...00922959, -0.00162496],\n       [-0.02882338,  0.01100273, -0.00454777, -0.00491981, -0.00177705]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.01102118,  0.01920618,  0.00724822,  0.01066068,  0.01980273],\n       [ 0.00040811,  0.03046423,  0.0237094...00922959, -0.00162496],\n       [-0.02882338,  0.01100273, -0.00454777, -0.00491981, -0.00177705]],\n      dtype=float32) = array([[-0.01102118,  0.00040811, -0.06657301,  0.04047522, -0.0422328 ,\n         0.00692147,  0.03180285, -0.04412857...1570457,\n         0.02784154,  0.05770832, -0.00814515, -0.03756064, -0.00162496,\n        -0.00177705]], dtype=float32).T
+E        +  and   np.float64(0.0017694543964285904) = <function norm at 0x7f9e5f481f70>(array([[0.00015684, 0.00011293, 0.0001673 , 0.0001552 , 0.00013063,\n        0.00014936, 0.00015278, 0.00017631, 0.0001...1285, 0.0001916 , 0.00014148,\n        0.00020045, 0.00018778, 0.00018133, 0.00018731, 0.00015608,\n        0.00020773]]))
+E        +    where <function norm at 0x7f9e5f481f70> = <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'>.norm
+E        +      where <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'> = np.linalg
+E        +    and   array([[0.00015684, 0.00011293, 0.0001673 , 0.0001552 , 0.00013063,\n        0.00014936, 0.00015278, 0.00017631, 0.0001...1285, 0.0001916 , 0.00014148,\n        0.00020045, 0.00018778, 0.00018133, 0.00018731, 0.00015608,\n        0.00020773]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.01102118,  0.01920618,  0.00724822,  0.01066068,  0.01980273],\n       [ 0.00040811,  0.03046423,  0.0237094...00922959, -0.00162496],\n       [-0.02882338,  0.01100273, -0.00454777, -0.00491981, -0.00177705]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.01102118,  0.01920618,  0.00724822,  0.01066068,  0.01980273],\n       [ 0.00040811,  0.03046423,  0.0237094...00922959, -0.00162496],\n       [-0.02882338,  0.01100273, -0.00454777, -0.00491981, -0.00177705]],\n      dtype=float32) = array([[-0.01102118,  0.00040811, -0.06657301,  0.04047522, -0.0422328 ,\n         0.00692147,  0.03180285, -0.04412857...1570457,\n         0.02784154,  0.05770832, -0.00814515, -0.03756064, -0.00162496,\n        -0.00177705]], dtype=float32).T
+
+tests/test_preconditioned_streaming.py:30: AssertionError
+_ test_preconditioned_stream_matches_prior_dense_solve_and_fields[False-True] __
+
+packed = False, initial = True
+
+    @pytest.mark.parametrize('packed,initial',[(True,False),(False,True)])
+    def test_preconditioned_stream_matches_prior_dense_solve_and_fields(packed,initial):
+        rng=np.random.default_rng(222)
+        x=rng.uniform(-.5,.5,(23,3)).astype('f');y=rng.normal(size=x.shape).astype('f')
+        q=rng.uniform(-.5,.5,(11,3)).astype('f')
+        model=HalfCubePosterior(x,y,training_cutoff=5,cutoff=2,lengthscale=.12,noise_variance=.0001)
+        model.draw(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,retain_components=True,retain_rhs=True)
+        rhs=model.sample_rhs.copy();prior=model.sample_prior_coeff.copy();fields=cp.asnumpy(model.samples(q));mean=model.mean(q).copy()
+        pre=model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7)
+        assert model.prepare_conditioning_preconditioner(rank=9,seed=41,row_batch=7) is pre
+        coefficients=[];weights=[]
+        with closing(model.draw_batches(5,seed=19,batch=2,pack_rhs=packed,initial_mean=initial,
+                                       preconditioned=True,retain_components=True,retain_rhs=True)) as stream:
+            for b in stream:
+                sl=slice(b['start'],b['stop'])
+                np.testing.assert_array_equal(cp.asnumpy(b['rhs']),cp.asnumpy(rhs[sl]))
+                np.testing.assert_array_equal(cp.asnumpy(b['prior']),cp.asnumpy(prior[sl]))
+                coefficients.append(b['coefficients']);weights.append(b['weights'])
+                assert b['record']['preconditioned'] and b['record']['conditioning_preconditioner']['rank']==9
+        actual=cp.asnumpy(model.op.evaluate(q,cp.concatenate(coefficients))-model.offset)
+        assert np.linalg.norm(actual-fields)/np.linalg.norm(fields-fields.mean(0))<5e-4
+>       assert np.linalg.norm(np.cov(actual.T)-np.cov(fields.T))/np.linalg.norm(np.cov(fields.T))<1e-4
+E       AssertionError: assert (np.float64(3.105498537866275e-07) / np.float64(0.0017698378955841878)) < 0.0001
+E        +  where np.float64(3.105498537866275e-07) = <function norm at 0x7f9e5f481f70>((array([[0.00015688, 0.00011294, 0.00016731, 0.00015522, 0.00013066,\n        0.00014937, 0.00015281, 0.00017635, 0.0001...1284, 0.00019161, 0.0001415 ,\n        0.00020044, 0.0001878 , 0.00018135, 0.0001873 , 0.00015609,\n        0.00020774]]) - array([[0.00015688, 0.00011295, 0.00016733, 0.00015524, 0.00013066,\n        0.00014939, 0.00015282, 0.00017635, 0.0001...1289, 0.00019164, 0.00014151,\n        0.00020049, 0.00018783, 0.00018137, 0.00018735, 0.00015611,\n        0.00020778]])))
+E        +    where <function norm at 0x7f9e5f481f70> = <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'>.norm
+E        +      where <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'> = np.linalg
+E        +    and   array([[0.00015688, 0.00011294, 0.00016731, 0.00015522, 0.00013066,\n        0.00014937, 0.00015281, 0.00017635, 0.0001...1284, 0.00019161, 0.0001415 ,\n        0.00020044, 0.0001878 , 0.00018135, 0.0001873 , 0.00015609,\n        0.00020774]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.01102409,  0.01920539,  0.00724597,  0.01066193,  0.01980352],\n       [ 0.00040627,  0.03046279,  0.0237069...00922857, -0.00162478],\n       [-0.02882564,  0.01099965, -0.0045487 , -0.00491875, -0.00177592]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.01102409,  0.01920539,  0.00724597,  0.01066193,  0.01980352],\n       [ 0.00040627,  0.03046279,  0.0237069...00922857, -0.00162478],\n       [-0.02882564,  0.01099965, -0.0045487 , -0.00491875, -0.00177592]],\n      dtype=float32) = array([[-0.01102409,  0.00040627, -0.06657446,  0.04047248, -0.04223481,\n         0.00691991,  0.03179958, -0.04413179...1570453,\n         0.02784228,  0.05770846, -0.00814362, -0.03755948, -0.00162478,\n        -0.00177592]], dtype=float32).T
+E        +    and   array([[0.00015688, 0.00011295, 0.00016733, 0.00015524, 0.00013066,\n        0.00014939, 0.00015282, 0.00017635, 0.0001...1289, 0.00019164, 0.00014151,\n        0.00020049, 0.00018783, 0.00018137, 0.00018735, 0.00015611,\n        0.00020778]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.01102583,  0.01920609,  0.00725019,  0.01065969,  0.01980184],\n       [ 0.00040536,  0.03046356,  0.0237130...0092303 , -0.00162674],\n       [-0.02882749,  0.01100293, -0.00454433, -0.00492194, -0.00178061]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.01102583,  0.01920609,  0.00725019,  0.01065969,  0.01980184],\n       [ 0.00040536,  0.03046356,  0.0237130...0092303 , -0.00162674],\n       [-0.02882749,  0.01100293, -0.00454433, -0.00492194, -0.00178061]],\n      dtype=float32) = array([[-0.01102583,  0.00040536, -0.06657629,  0.04047166, -0.04223554,\n         0.00691822,  0.03179917, -0.04413427...1570426,\n         0.02783753,  0.05770622, -0.00814657, -0.03756478, -0.00162674,\n        -0.00178061]], dtype=float32).T
+E        +  and   np.float64(0.0017698378955841878) = <function norm at 0x7f9e5f481f70>(array([[0.00015688, 0.00011295, 0.00016733, 0.00015524, 0.00013066,\n        0.00014939, 0.00015282, 0.00017635, 0.0001...1289, 0.00019164, 0.00014151,\n        0.00020049, 0.00018783, 0.00018137, 0.00018735, 0.00015611,\n        0.00020778]]))
+E        +    where <function norm at 0x7f9e5f481f70> = <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'>.norm
+E        +      where <module 'numpy.linalg' from '/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/linalg/__init__.py'> = np.linalg
+E        +    and   array([[0.00015688, 0.00011295, 0.00016733, 0.00015524, 0.00013066,\n        0.00014939, 0.00015282, 0.00017635, 0.0001...1289, 0.00019164, 0.00014151,\n        0.00020049, 0.00018783, 0.00018137, 0.00018735, 0.00015611,\n        0.00020778]]) = <function cov at 0x7f9e5f4b5bf0>(array([[-0.01102583,  0.01920609,  0.00725019,  0.01065969,  0.01980184],\n       [ 0.00040536,  0.03046356,  0.0237130...0092303 , -0.00162674],\n       [-0.02882749,  0.01100293, -0.00454433, -0.00492194, -0.00178061]],\n      dtype=float32))
+E        +      where <function cov at 0x7f9e5f4b5bf0> = np.cov
+E        +      and   array([[-0.01102583,  0.01920609,  0.00725019,  0.01065969,  0.01980184],\n       [ 0.00040536,  0.03046356,  0.0237130...0092303 , -0.00162674],\n       [-0.02882749,  0.01100293, -0.00454433, -0.00492194, -0.00178061]],\n      dtype=float32) = array([[-0.01102583,  0.00040536, -0.06657629,  0.04047166, -0.04223554,\n         0.00691822,  0.03179917, -0.04413427...1570426,\n         0.02783753,  0.05770622, -0.00814657, -0.03756478, -0.00162674,\n        -0.00178061]], dtype=float32).T
+
+tests/test_preconditioned_streaming.py:30: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_preconditioned_streaming.py::test_preconditioned_stream_matches_prior_dense_solve_and_fields[True-False]
+FAILED tests/test_preconditioned_streaming.py::test_preconditioned_stream_matches_prior_dense_solve_and_fields[False-True]
+2 failed, 1 passed in 2.38s

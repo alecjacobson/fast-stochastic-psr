@@ -56,11 +56,14 @@ def main():
     p.add_argument('--checkpoints',type=int,nargs='+',default=[8,32,128])
     p.add_argument('--validation-rows',type=int,default=32)
     p.add_argument('--retained-control',action='store_true')
+    p.add_argument('--preconditioner-rank',type=int,help='prepare once, then precondition streamed draws; retained control stays unpreconditioned')
     p.add_argument('--coefficient-dir',type=Path,help='optional CPU/disk blocks for later moving-query replay; not a resume protocol')
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     if min(a.samples,a.batch,a.validation_rows)<1 or a.samples<2:
         p.error('require at least two samples and positive batch/row counts')
+    if a.preconditioner_rank is not None and a.preconditioner_rank<1:
+        p.error('preconditioner rank must be positive')
     checkpoints=sorted(set(a.checkpoints))
     if not checkpoints or checkpoints[-1]!=a.samples or any(n<2 or n>a.samples or (n%a.batch and n!=a.samples) for n in checkpoints):
         p.error('checkpoints must end at samples and align with batch boundaries')
@@ -90,6 +93,9 @@ def main():
         record['hashes']={k:hashlib.sha256(v.tobytes()).hexdigest() for k,v in [('points',x),('normals',y),('query',q),('rays',rays),('objects',objects)]}
         record['N']=len(x)
         model=timed('fit',lambda:HalfCubePosterior(x,y))
+        if a.preconditioner_rank is not None:
+            coarse=timed('preconditioner_setup',lambda:model.prepare_conditioning_preconditioner(a.preconditioner_rank))
+            record['conditioning_preconditioner']=coarse.record
         record['offset']=float(model.offset);record['saved_geometry_offset']=float(geo['offset'])
         ids=np.sort(np.random.default_rng(3187).choice(len(x),a.validation_rows,replace=False))
         rows=timed('validation_rows_setup',lambda:finite_covariance_rows(x[ids],x,model.training,dtype='d'))
@@ -103,8 +109,12 @@ def main():
                 {'query':q,'rays':rays,'objects':objects,'distance':distance})
         reference=None
         if a.retained_control:
-            timed('retained_control_draw',lambda:model.draw(a.samples,seed=a.seed,batch=a.batch,pack_rhs=True))
-            reference={'fields':timed('retained_control_queries',lambda:cp.asnumpy(model.samples(q)))}
+            timed('retained_control_draw',lambda:model.draw(a.samples,seed=a.seed,batch=a.batch,pack_rhs=True,
+                                                          retain_components=True,retain_rhs=True))
+            record['retained_control_solves']=model.sample_solve_records
+            record['retained_control_prior_rhs_exact']=True
+            reference={'fields':timed('retained_control_queries',lambda:cp.asnumpy(model.samples(q))),
+                       'prior':model.sample_prior_coeff,'rhs':model.sample_rhs}
             for key,pos in [('rays',rays),('collision',objects)]:
                 reference[key]=timed('retained_control_queries',lambda:cp.asnumpy(events(model.samples(pos.reshape(-1,3)),pos.shape[:2],key)))
         moments=OnlineMoments();covariance=OnlineMoments(covariance=True)
@@ -117,9 +127,15 @@ def main():
         paired={k:[] for k in ['fields','rays','collision']}
         stream_begin=time.perf_counter()
         with closing(model.draw_batches(a.samples,seed=a.seed,batch=a.batch,pack_rhs=True,
+                                       preconditioned=a.preconditioner_rank is not None,
                                        retain_components=True,retain_rhs=True)) as batches:
             for block in batches:
                 n=block['stop'];size=n-block['start']
+                if reference is not None:
+                    sl=slice(block['start'],n)
+                    exact=bool(cp.array_equal(reference['prior'][sl],block['prior']) and
+                               cp.array_equal(reference['rhs'][sl],block['rhs']))
+                    record['retained_control_prior_rhs_exact'] &= exact
                 weights=block['weights'].transpose(1,0,2).reshape(len(x),-1)
                 rhs=block['rhs'][:,ids].transpose(1,0,2).reshape(len(ids),-1)
                 def residual_check():
@@ -181,7 +197,9 @@ def main():
             candidate={k:np.concatenate(v) for k,v in paired.items()}
             record['retained_control_quality']={'fields':field_quality(cp.asarray(reference['fields']),cp.asarray(candidate['fields'])),
                 'events':quality(reference,candidate,distance)}
-            if not record['retained_control_quality']['fields']['pass'] or not record['retained_control_quality']['events']['compatibility_pass']:
+            if (not record['retained_control_quality']['fields']['pass']
+                    or not record['retained_control_quality']['events']['compatibility_pass']
+                    or not record['retained_control_prior_rhs_exact']):
                 raise RuntimeError('retained-control quality gate failed')
         if not record['finite_residual_gate_pass'] or not record['cache_gate_pass'] or moments.count!=a.samples:
             raise RuntimeError('streaming numerical gate failed')

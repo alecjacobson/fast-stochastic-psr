@@ -68,6 +68,11 @@ def main():
 
 {headline}
 
+Follow-up: [128-draw and coherent-streaming validation](../nystrom_validation/README.md)
+now passes the numerical gates, including 120 pilot-held-out draws. It also
+documents a legacy source-hash correction and a low-noise precision failure.
+Qualified timing and complete application convergence remain open.
+
 This pilot tests a global coarse correction after
 [disjoint spatial blocks](../preconditioning/README.md) failed to reduce
 million-point iteration counts. It preserves the packed full-cube200 covariance

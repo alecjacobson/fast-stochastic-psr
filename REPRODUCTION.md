@@ -126,8 +126,32 @@ Ranks 128/512/1,024 reduce iterations from 57 to 54/45/38. All numerical and
 sampled-event gates pass; rank 1,024 retains 3.8 GiB and costs 9.1 s to construct.
 The declared timing audits fail, so no speedup ratio follows. The optional
 `--preconditioner-rank` benchmark flag constructs this reusable coarse space;
-it is not a low-rank replacement posterior. Larger ensembles/coherent producer
-integration remain in #30, and basis compression/streaming is tracked in #31.
+it is not a low-rank replacement posterior.
+[Larger-ensemble and coherent-producer validation](reproduction/results/nystrom_validation/README.md)
+now passes 128 common draws (120 held out from the pilot), plus a separate
+eight-draw streaming control with bitwise-identical priors and RHS. Call
+`HalfCubePosterior.prepare_conditioning_preconditioner(rank=1024)` once per
+fixed map, then `draw_batches(..., preconditioned=True, pack_rhs=True)`.
+Close partially consumed generators; clear the basis outside an active stream.
+Defaults remain unpreconditioned. The report retains a low-noise covariance
+failure and tolerance sweep; it makes no new timing-ratio claim. Basis
+compression/streaming is tracked in #31.
+
+Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
+arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
+Legacy manifests hashed the float64 RHS before storage conversion; read-only
+regeneration reproduced all 128 million-point and four B draws exactly.
+Before using an existing legacy cache, create its required audit with:
+
+```bash
+./reproduction/run_env.sh -m reproduction.audit_common_rhs_storage \
+  --scratch /opt/geospsr-runtime/common-rhs-128 \
+  --output /opt/geospsr-runtime/common-rhs-128/storage_audit.json
+```
+
+Fresh schema2 caches do not require this migration audit. Their references
+must use the same source manifests; historical hashes are not rewritten.
+See the [storage audit and fresh readback](reproduction/results/nystrom_validation/README.md#source-integrity-correction).
 
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)
 tests one million observations with eight and 128 common conditional draws.

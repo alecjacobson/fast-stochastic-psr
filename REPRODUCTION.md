@@ -110,6 +110,16 @@ repeated folded/packed comparisons, strict same-model gates and separate
 larger-sample and coherent-sampler checks. Conditioning speed alone is not a
 preparation-through-application speedup.
 
+The [spatial preconditioning pilot](reproduction/results/preconditioning/README.md)
+adds optional `solve(..., preconditioner=...)` to full, folded and packed kernels.
+Morton-ordered analytic principal blocks are inverse preconditioners only; the
+original covariance action and posterior prior remain fixed. Block sizes 64,
+128 and 256 do not reduce million-point iterations against packed full-cube200
+CG. Numerical fields/events and independent finite residual rows pass, but
+setup and application costs prevent treating this as an acceleration result.
+The default remains unpreconditioned; shared coarse-space alternatives remain
+tracked in issue #30.
+
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)
 tests one million observations with eight and 128 common conditional draws.
 The eight-draw sweep has three timing repetitions: batching two or four draws

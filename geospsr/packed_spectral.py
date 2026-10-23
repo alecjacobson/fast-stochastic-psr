@@ -53,7 +53,7 @@ class PackedFourierKernel:
         result[:,1::2]=values[:self.rhs_count//2].imag.T*scales[None,1::2]
         return result+self.noise_variance*weights
 
-    def solve(self,rhs,rtol=1e-5,maxiter=500,x0=None):
+    def solve(self,rhs,rtol=1e-5,maxiter=500,x0=None,preconditioner=None):
         if cp.iscomplexobj(rhs) or (x0 is not None and cp.iscomplexobj(x0)):
             raise ValueError('packed solves require real RHS and initial weights')
-        return FourierKernel.solve(self,rhs,rtol=rtol,maxiter=maxiter,x0=x0)
+        return FourierKernel.solve(self,rhs,rtol=rtol,maxiter=maxiter,x0=x0,preconditioner=preconditioner)

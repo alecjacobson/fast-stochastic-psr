@@ -132,12 +132,17 @@ class FourierKernel:
         values=self.backward.execute(cp.ascontiguousarray(modes*self.op.rho[None]))
         return values.real.T+self.noise_variance*weights
 
-    def solve(self, rhs, rtol=1e-5, maxiter=500, x0=None):
+    def solve(self, rhs, rtol=1e-5, maxiter=500, x0=None,preconditioner=None):
         """Independent CG recurrences, batched over RHS; true residual reported.
 
         An optional starting solution preserves the tolerance relative to the
         original RHS, not the smaller initial residual. x0 is never mutated.
+        A supplied preconditioner opts into PCG without changing this action;
+        it must apply a fixed symmetric positive definite inverse approximation.
         """
+        if preconditioner is not None:
+            from geospsr.preconditioning import pcg
+            return pcg(self,rhs,preconditioner,rtol=rtol,maxiter=maxiter,x0=x0)
         rhs=cp.asarray(rhs,dtype=self.op.dtype)
         if x0 is None:
             x=cp.zeros_like(rhs);r=rhs.copy()

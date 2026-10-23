@@ -109,7 +109,7 @@ intersection. Adaptive surface/ray refinement and held-out validation remain
 necessary; see [#29](https://github.com/alecjacobson/fast-stochastic-psr/issues/29).
 
 Next-view scores integrate the floating-point indicator of transmittance lying
-between .025 and .975. The zero-based selected ray is 14 at all five resolutions:
+between .05 and .95. The zero-based selected ray is 14 at all five resolutions:
 
 | Ray positions | Selected ray | Selected score | Empirical regret at finest grid |
 | ---: | ---: | ---: | ---: |

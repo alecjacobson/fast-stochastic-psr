@@ -88,6 +88,9 @@ application validation remains open. A centered block-inverse pilot passed
 quality checks but was slower than the existing cube solve.
 [Local/FMM correction (#14)](https://github.com/alecjacobson/fast-stochastic-psr/issues/14)
 remains another avenue.
+A [spatial block-preconditioner pilot](reproduction/results/preconditioning/README.md)
+preserves the finite-model numerical checks but does not reduce million-point
+CG iterations; it remains optional, with no new speedup claimed.
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

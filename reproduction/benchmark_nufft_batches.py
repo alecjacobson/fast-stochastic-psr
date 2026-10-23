@@ -61,6 +61,8 @@ def main():
     p.add_argument('--block-core',type=int,help='experimental positive-block core for centered inverse; solve-cutoff is its extent')
     p.add_argument('--half-cube',action='store_true',help='same finite cube via positive half plus 2D zero-axis plane')
     p.add_argument('--pack-rhs',action='store_true',help='pair scaled real RHS in full-cube complex transforms')
+    p.add_argument('--finite-rows',type=int,default=0,help='independent finite-covariance residual rows after conditioning')
+    p.add_argument('--preconditioner-block',type=int,help='analytic spatial block Jacobi inside unchanged full-cube CG')
     p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
     p.add_argument('--time-budget', type=float, default=1800, help='SDD update budget, seconds')
@@ -89,6 +91,12 @@ def main():
         p.error('fold axis requires half cube')
     if a.pack_rhs and (a.mode!='solve' or a.half_cube or a.block_core is not None):
         p.error('packed RHS requires full-cube solve mode')
+    if a.finite_rows<0:
+        p.error('finite row count must be nonnegative')
+    if a.finite_rows and (a.mode!='solve' or a.centered_fluctuations or a.block_core is not None):
+        p.error('independent finite rows require a non-hybrid cube solve')
+    if a.preconditioner_block is not None and (a.preconditioner_block<1 or a.mode!='solve' or a.centered_fluctuations or a.block_core is not None):
+        p.error('spatial preconditioning requires full-cube solve without centered hybrid')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -260,6 +268,11 @@ def main():
                     kernel_type = BlockKernel
                 sizes = sorted(set(min(a.batch,a.samples-i) for i in range(0,a.samples,a.batch)))
                 kernels = timed('plans', lambda: {size: kernel_type(x,vector,.02,rhs_count=3*size) for size in sizes})
+                preconditioner=None
+                if a.preconditioner_block is not None:
+                    from geospsr.preconditioning import SpatialBlockJacobi
+                    preconditioner=timed('preconditioner_setup',lambda:SpatialBlockJacobi(x,.02,block_size=a.preconditioner_block))
+                    record['preconditioner_storage_bytes']=preconditioner.storage_bytes
                 initial = None
                 if a.initial_mean or a.centered_fluctuations:
                     alpha = np.load(a.scratch / 'mean_alpha.npy')
@@ -282,7 +295,7 @@ def main():
                                 kernels[size],rhs[:,sl],normals,mean_alpha,rtol=a.rtol)
                         else:
                             value, stats = kernels[size].solve(rhs[:,sl],rtol=a.rtol,maxiter=1000,
-                                                              x0=None if initial is None else initial[size])
+                                                              x0=None if initial is None else initial[size],preconditioner=preconditioner)
                         if not stats['converged']:
                             raise RuntimeError(stats)
                         result[:,sl] = value
@@ -293,7 +306,7 @@ def main():
                 for repeat in range(a.repeats):
                     weights = timed(f'solve_{repeat}', solve_all)
                 record['median_solve_seconds'] = float(np.median([record['seconds'][f'solve_{r}'] for r in range(a.repeats)]))
-                del kernels, vector, initial
+                del kernels, vector, initial, preconditioner
                 if a.centered_fluctuations:
                     del normals,mean_alpha
             gc.collect(); cp.get_default_memory_pool().free_all_blocks()
@@ -306,6 +319,18 @@ def main():
                 record['holdout_excludes_stopping_rows'] = True
                 record['holdout_indices_sha256'] = hashlib.sha256(ids.tobytes()).hexdigest()
                 record['analytic_holdout'] = timed('analytic_holdout',lambda:analytic_residual(ids,weights))
+            if a.finite_rows:
+                if a.mode!='solve' or a.centered_fluctuations or a.block_core is not None:
+                    raise ValueError('independent finite rows currently require non-hybrid cube solve')
+                from geospsr.training_spectrum import finite_covariance_rows
+                finite_spectrum=FourierCovariance(a.solve_cutoff)
+                ids=np.random.default_rng(20261023).choice(len(x),min(a.finite_rows,len(x)),replace=False)
+                rows=timed('finite_rows_setup',lambda:finite_covariance_rows(x[ids],x,finite_spectrum,dtype='d'))
+                residual=rows@weights.astype('d')+.02*weights[ids].astype('d')-rhs[ids]
+                relative=cp.linalg.norm(residual,axis=0)/cp.maximum(cp.linalg.norm(rhs[ids].astype('d'),axis=0),1e-30)
+                record['independent_finite_residual']={'ids':ids.tolist(),'relative_per_rhs':cp.asnumpy(relative).tolist(),
+                    'maximum':float(relative.max()),'pass':bool(cp.all(relative<2e-5))}
+                del finite_spectrum,rows,residual,relative
             if a.retain_weights:
                 target = a.scratch / (a.output.name + '-weights.npy')
                 np.save(target,cp.asnumpy(weights))

@@ -120,6 +120,15 @@ setup and application costs prevent treating this as an acceleration result.
 The default remains unpreconditioned; shared coarse-space alternatives remain
 tracked in issue #30.
 
+The [landmark Nyström pilot](reproduction/results/nystrom_preconditioning/README.md)
+tests a global spectral preconditioner with the unchanged full-cube200 action.
+Ranks 128/512/1,024 reduce iterations from 57 to 54/45/38. All numerical and
+sampled-event gates pass; rank 1,024 retains 3.8 GiB and costs 9.1 s to construct.
+The declared timing audits fail, so no speedup ratio follows. The optional
+`--preconditioner-rank` benchmark flag constructs this reusable coarse space;
+it is not a low-rank replacement posterior. Larger ensembles/coherent producer
+integration remain in #30, and basis compression/streaming is tracked in #31.
+
 The [fixed-RHS batching report](reproduction/results/nufft_batches/README.md)
 tests one million observations with eight and 128 common conditional draws.
 The eight-draw sweep has three timing repetitions: batching two or four draws

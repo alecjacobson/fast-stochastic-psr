@@ -91,6 +91,10 @@ remains another avenue.
 A [spatial block-preconditioner pilot](reproduction/results/preconditioning/README.md)
 preserves the finite-model numerical checks but does not reduce million-point
 CG iterations; it remains optional, with no new speedup claimed.
+A [global Nyström pilot](reproduction/results/nystrom_preconditioning/README.md)
+reduces million-point iterations from **57 to 38**, passing the same numerical
+checks, but adds a 3.8 GiB basis and setup cost. Larger-sample validation and
+qualified performance comparisons remain open.
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

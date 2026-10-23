@@ -62,6 +62,7 @@ def main():
     p.add_argument('--half-cube',action='store_true',help='same finite cube via positive half plus 2D zero-axis plane')
     p.add_argument('--pack-rhs',action='store_true',help='pair scaled real RHS in full-cube complex transforms')
     p.add_argument('--finite-rows',type=int,default=0,help='independent finite-covariance residual rows after conditioning')
+    p.add_argument('--preconditioner-rank',type=int,help='analytic landmark Nystrom spectral preconditioner; unchanged solve operator')
     p.add_argument('--preconditioner-block',type=int,help='analytic spatial block Jacobi inside unchanged full-cube CG')
     p.add_argument('--fold-axis',type=int,choices=[0,1,2],default=0)
     p.add_argument('--centered-fluctuations',action='store_true',help='experimental inverse on centered fluctuations; preserve cutoff200 mean/prior')
@@ -97,6 +98,9 @@ def main():
         p.error('independent finite rows require a non-hybrid cube solve')
     if a.preconditioner_block is not None and (a.preconditioner_block<1 or a.mode!='solve' or a.centered_fluctuations or a.block_core is not None):
         p.error('spatial preconditioning requires full-cube solve without centered hybrid')
+    if a.preconditioner_rank is not None and (a.preconditioner_rank<1 or a.preconditioner_block is not None
+            or a.mode!='solve' or a.centered_fluctuations or a.block_core is not None):
+        p.error('Nystrom requires non-hybrid cube solve without another preconditioner')
     work_started = time.perf_counter()
     if min(a.samples, a.batch, a.repeats, a.chunk, a.sdd_row_batch,a.stop_rows,a.holdout_rows) < 1 or min(a.rtol,a.time_budget,a.eta,a.stop_tolerance) <= 0:
         p.error('counts, tolerance and time budget must be positive')
@@ -273,6 +277,12 @@ def main():
                     from geospsr.preconditioning import SpatialBlockJacobi
                     preconditioner=timed('preconditioner_setup',lambda:SpatialBlockJacobi(x,.02,block_size=a.preconditioner_block))
                     record['preconditioner_storage_bytes']=preconditioner.storage_bytes
+                if a.preconditioner_rank is not None:
+                    from geospsr.nystrom import LandmarkNystrom
+                    preconditioner=timed('preconditioner_setup',lambda:LandmarkNystrom(x,.02,rank=a.preconditioner_rank))
+                    record['preconditioner_storage_bytes']=preconditioner.storage_bytes
+                    record['preconditioner']=preconditioner.record
+                    record['preconditioner']['landmark_ids_sha256']=hashlib.sha256(preconditioner.landmark_ids.tobytes()).hexdigest()
                 initial = None
                 if a.initial_mean or a.centered_fluctuations:
                     alpha = np.load(a.scratch / 'mean_alpha.npy')

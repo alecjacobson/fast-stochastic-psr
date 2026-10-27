@@ -896,6 +896,19 @@ is claimed. Issue 49 tracks residual-based query-covariance error budgets for
 the next scaling step. Initial mean/inner-CG failures and explicit roundoff-only
 PSD projections are retained in the report.
 
+The [residual-corrected query study](reproduction/results/query_error/README.md)
+adds a quadratic solve-error correction and full all-observation residual
+budgets. Twelve tests and five retained-control replays pass, with the
+cutoff-50 B budget failure preserved. At a million observations and 32 queries,
+cutoffs 100 and 200 both meet the preset 0.01% solve-only relative covariance
+budget; full preparation takes 166.28 and 246.95 s respectively. This budget
+differs from the earlier strict covariance-L2 gate. The full analytic mean fit
+remains at tolerance 1e-10. Independent direct checks cover 1,024 rows and all
+96 query RHS; the error budget uses all million rows. These are small fixed
+covariance controls, not ray/collision/scanning results or an upstream speedup.
+The report includes equations, commands, timing scopes and raw artifacts.
+Issue 50 tracks the O(NM) residual storage bottleneck at larger query panels.
+
 ## Code map
 
 | Path | Purpose |

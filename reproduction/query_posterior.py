@@ -29,24 +29,25 @@ class AnalyticConditioner:
         self.kernel=_AnalyticCG(self.action) if solver=='analytic_cg' else None
         self.rhs_count=None;self.records=[]
 
+    def finite_solve(self, rhs):
+        """Approximate finite-system solve only; no analytic convergence claim."""
+        if self.spectrum is None:raise ValueError('finite_solve requires solver=defect')
+        if rhs.shape[1]!=self.rhs_count:
+            self.kernel=None
+            self.kernel=PackedFourierKernel(self.points,self.spectrum,self.noise,rhs_count=rhs.shape[1])
+            self.rhs_count=rhs.shape[1]
+        b=cp.asarray(rhs,dtype='d');scale=cp.max(cp.abs(b),axis=0)
+        scale=cp.where(scale>0,scale,1)
+        value,info=self.kernel.solve(b/scale,rtol=1e-5,maxiter=1000)
+        return value.astype('d')*scale,{**info,'rhs_normalized':True}
+
     def solve(self, rhs):
         if rhs.ndim!=2 or rhs.shape[0]!=self.action.n or rhs.shape[1]<1:
             raise ValueError('expected nonempty (observations,RHS)')
         if self.solver=='analytic_cg':
             value,info=self.kernel.solve(rhs,rtol=self.rtol/2,maxiter=1000)
         else:
-            if rhs.shape[1]!=self.rhs_count:
-                self.kernel=None
-                self.kernel=PackedFourierKernel(self.points,self.spectrum,self.noise,rhs_count=rhs.shape[1])
-                self.rhs_count=rhs.shape[1]
-            def approximate(b):
-                # Packed actions normalize transform channels, but CG's dot
-                # products still need a well-scaled RHS. Covariance corrections
-                # can otherwise underflow in float32 at tiny absolute scales.
-                b=cp.asarray(b,dtype='d');scale=cp.max(cp.abs(b),axis=0)
-                scale=cp.where(scale>0,scale,1)
-                value,info=self.kernel.solve(b/scale,rtol=1e-5,maxiter=1000)
-                return value.astype('d')*scale,{**info,'rhs_normalized':True}
+            approximate=self.finite_solve
             initial,initial_info=approximate(rhs)
             value,info=refine_analytic(self.action,approximate,rhs,initial,rtol=self.rtol,max_corrections=8)
             info['initial_finite_solve']=initial_info
@@ -83,7 +84,7 @@ def principal_root(covariance):
 
 class FixedQueryPosterior:
     def __init__(self, points, queries, operator, solve, mean_coefficients, offset,
-                 batch=1, progress=None):
+                 batch=1, progress=None, residual_audit=None):
         if operator.dtype!=np.dtype('float64') or operator.normalization!='analytic':
             raise ValueError('requires double analytic-normalized Fourier operator')
         self.queries=cp.array(queries,dtype='d',copy=True)
@@ -113,7 +114,12 @@ class FixedQueryPosterior:
                 value[start:start+64]=operator.evaluate(diff,rho).reshape(-1,m)
             return value
         self.prior,self.record['seconds']['prior']=timed(prior)
-        (self.covariance,self.factor,psd),self.record['seconds']['factor']=timed(lambda:principal_root(self.prior-correction))
+        covariance=self.prior-correction
+        if residual_audit is not None:
+            if solve is not residual_audit:raise ValueError('residual_audit must be the exact solve callable used above')
+            covariance,self.record['seconds']['residual_correction']=timed(lambda:residual_audit.correct(covariance))
+            self.record['residual_audit']=residual_audit.record
+        (self.covariance,self.factor,psd),self.record['seconds']['factor']=timed(lambda:principal_root(covariance))
         self.record['psd']=psd
         self.record['retained_bytes']=sum(v.nbytes for v in [self.queries,self.mean,self.prior,self.covariance,self.factor])
 

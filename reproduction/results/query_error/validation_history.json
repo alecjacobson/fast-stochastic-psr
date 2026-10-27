@@ -1,0 +1,18 @@
+{
+  "incomplete_runs": [
+    {
+      "directory": "B_c50_serialization_failure",
+      "failure": "Final JSON serialization rejected a numpy.bool_ validation flag.",
+      "observed": "The computation and controls.npz completed. The earlier results.json checkpoint survived, but the final dense-validation and GPU-process record did not.",
+      "resolution": "Convert NumPy scalar values when serializing JSON. Preserve this directory and rerun in B_c50.",
+      "timing_use": "Excluded from reported comparisons."
+    }
+  ],
+  "retained_quality_failures": [
+    {
+      "directory": "B_c50",
+      "failure": "The solve-only relative covariance bound exceeds the preset 1e-4 budget.",
+      "resolution": "Keep the budget unchanged and test wider finite training spectra."
+    }
+  ]
+}

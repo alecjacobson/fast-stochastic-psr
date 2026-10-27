@@ -6,6 +6,11 @@ cached dense query-space reference. It removes the source-space tail draw, but
 bounded-memory route to selected queries at large N; that scale has not yet
 been measured for this implementation.
 
+A subsequent [residual-corrected variant](../query_error/README.md) now measures
+32-query covariance preparation at one million observations with explicit
+solve-error budgets. It uses a different quality target and retains O(NM)
+weights/residuals; the strict streaming benchmarks below remain separate.
+
 On B's 32-point covariance-control panel, preparation plus 8,192 correlated
 samples takes **491.4 s through the cached dense source-space sampler, 9.01 s
 through matrix-free query covariance, and 2.26 s through dense query covariance**.

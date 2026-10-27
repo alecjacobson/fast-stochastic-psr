@@ -16,6 +16,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--case',choices=['B','million'],default='B')
     p.add_argument('--rank',type=int);p.add_argument('--cutoff',type=int,choices=[50,100,200],default=50)
     p.add_argument('--steps',type=int,choices=range(7),default=2);p.add_argument('--batch',type=int,default=4)
+    p.add_argument('--save-vectors',action='store_true')
     a=p.parse_args();root=Path(__file__).resolve().parents[1]
     label=f'{a.case}_r{a.rank if a.rank is not None else "auto"}_c{a.cutoff}_s{a.steps}_b{a.batch}'
     out=root/'reproduction/results/query_projection'/label;out.mkdir(parents=True,exist_ok=True)
@@ -52,6 +53,17 @@ def main():
         model,r['seconds']['query_posterior']=timed(lambda:ProjectedQueryPosterior(x,q,op,approximate,condition.action,coeff,offset,
             rank=a.rank,batch=a.batch,progress=lambda done,total:print('basis',done,total,flush=True) if done%16==0 or done==total else None))
         r['query_record']=model.record;r['seconds']['prepare_total']=sum(r['seconds'].values());r['budget_pass']=model.record['budget_pass'];save()
+        if a.save_vectors and hasattr(model,'audit'):
+            def archive_vectors():
+                archive=Path('/opt/geospsr-runtime/query-projection-vectors')/label;archive.mkdir(parents=True,exist_ok=True)
+                record={}
+                for name,value in [('weights',model.audit.host_w),('residuals',model.audit.host_r)]:
+                    path=archive/(name+'.npy');np.save(path,value)
+                    record[name]={'path':str(path),'shape':list(value.shape),'dtype':str(value.dtype),
+                                  'array_sha256':array_digest(value.reshape(-1))}
+                record['qualification']='local scratch checkpoint, not a published or durable full-vector archive'
+                return record
+            r['vector_archive'],r['seconds']['validation_vector_archive']=timed(archive_vectors);save()
         condition.kernel=condition.spectrum=None;cp.get_default_memory_pool().free_all_blocks()
         arrays={k:getattr(model,k).get() for k in ['queries','mean','prior','basis','tail','cross_action','weight_residual','solve_upper','covariance','upper']}
         if a.case=='B':

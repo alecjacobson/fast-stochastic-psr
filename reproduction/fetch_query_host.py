@@ -1,4 +1,4 @@
-"""Fetch public query-host controls and verify their recorded file digests."""
+"""Fetch manifest-listed public controls (query-host by default) and check hashes."""
 import argparse,hashlib,json,shutil,tempfile,urllib.request
 from pathlib import Path
 
@@ -12,9 +12,10 @@ def digest(path):
 
 def main():
     root=Path(__file__).resolve().parents[1]/'reproduction/results/query_host'
-    p=argparse.ArgumentParser();p.add_argument('--destination',type=Path,default=root)
+    p=argparse.ArgumentParser();p.add_argument('--destination',type=Path)
+    p.add_argument('--manifest',type=Path,default=root/'release_manifest.json')
     p.add_argument('--verify-only',action='store_true');a=p.parse_args()
-    manifest=json.loads((root/'release_manifest.json').read_text());dest=a.destination.resolve()
+    manifest=json.loads(a.manifest.read_text());dest=(a.destination or a.manifest.parent).resolve()
     for asset in manifest['assets']:
         path=(dest/asset['relative_path']).resolve();path.relative_to(dest)
         if path.exists():

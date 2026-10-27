@@ -143,13 +143,14 @@ now prepares a million-point mean and 32-query covariance/root in **166 s**,
 with a **0.00703% solve-only covariance-error bound** and independent sampled
 analytic checks. Larger application panels, other numerical/model errors and
 same-input upstream speedups remain open.
-[Host-backed products and adaptive conditioning](reproduction/results/query_host/README.md)
-now prepare B's 1,024-query ray/sphere panel in **177 s (1.50× faster than our
-previous matrix-free pipeline)**, passing the same numerical gates with zero
-event disagreements across 32,768 paired draws. The strong dense B reference
-remains faster. Massive application panels and reducing query solve count are
-tracked in [#50](https://github.com/alecjacobson/fast-stochastic-psr/issues/50) and
-[#51](https://github.com/alecjacobson/fast-stochastic-psr/issues/51).
+[Prior-basis conditioning](reproduction/results/query_projection/README.md)
+now prepares B's 1,024-query ray/sphere panel in **98.9 s**: **1.79× faster**
+than our adaptive method and **2.69× faster** than the earlier matrix-free
+pipeline, at the same numerical gates with zero event disagreements across
+32,768 paired draws. The strong dense B reference remains faster. Massive
+application validation and event-level error budgets remain open in
+[#51](https://github.com/alecjacobson/fast-stochastic-psr/issues/51) and
+[#52](https://github.com/alecjacobson/fast-stochastic-psr/issues/52).
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

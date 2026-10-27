@@ -921,6 +921,16 @@ on identical vectors. This is not a million-point application result. Larger
 arrays are hash-verified public release assets; the report provides fetch and
 replay commands. Issue 51 tracks query-basis compression to reduce solve count.
 
+The [query-basis prototype](reproduction/results/query_projection/README.md)
+reduces B's 1,024 queries to 478 prior directions, retaining a coherent full-panel
+covariance. Separate residual/truncation budgets and independent dense checks
+pass at the existing 1e-7 output gates. Preparation takes 98.89 s, versus
+177.37 s for adaptive full-query conditioning; dense query preparation still
+wins at B. All 23 targeted tests and two artifact replays pass, retaining a
+rank-384 marginal/budget failure. The full million-point panel is running;
+no massive application outcome is established yet. Issue 52 tracks translating
+PSD covariance budgets into finite-grid event probability bounds.
+
 ## Code map
 
 | Path | Purpose |

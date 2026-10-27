@@ -837,6 +837,16 @@ per call and retains 18.5 GB: no massive fitting/application gain is established
 See the report for caps, setup/memory qualifications, 22 new tests, retained
 negative evidence and archive replay. The native option requires C++17/g++.
 
+The [hybrid/cached-leaf follow-up](reproduction/results/range_hybrid/README.md)
+profiles far groups by size and caches exact direct leaf matrices. Leaf128 lowers
+B actions to 9.96 ms and first mean fitting to .242 s versus 1.849 s dense
+Cholesky, with the native library cached. A remains slower and dense-factor reuse
+wins. A fresh million-point action comparison gives 2.231 to 1.282 s, with storage
+increasing from 18.51 to 27.31 GB. All analytic controls pass (sampled rows only
+at a million), with 23 new tests and complete archive replay. No SDD, posterior
+or complete application speedup is claimed. Issue45 tracks using the analytic
+action selectively to verify/refine fast NUFFT solutions.
+
 ## Code map
 
 | Path | Purpose |

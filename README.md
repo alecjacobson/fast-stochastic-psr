@@ -118,13 +118,15 @@ An optional [compact basis](reproduction/results/nystrom_storage/README.md)
 halves retained preconditioner storage to **1.9 GiB**; recomputed setup avoids
 the full double-precision feature array. It establishes memory savings, with
 no new speedup claimed.
-An [exact periodic range-sum GPU prototype](reproduction/results/range_compact/README.md)
-now uses **149 MB** at B, down from 349 MB, with a modest action slowdown.
-Compiled planning gives a first mean-fit pilot of **1.85 → .523 s (3.54×)**
+An [exact periodic range-sum GPU prototype](reproduction/results/range_hybrid/README.md)
+with cached leaves gives a first mean-fit pilot of **1.85 → .242 s (7.63×)**
 versus double dense Cholesky on B, including setup with the native library cached
-(a separate cold build costs .98 s). Reused dense factors win. The full analytic
-million-point action runs in **2.23 s** with **18.5 GB** retained storage and passes
-1,024 sampled rows; massive fitting, SDD comparison and application gains remain open. FMM has no implemented backend or measured speedup. A dense matrix's memory
+(a separate cold build costs .98 s). Reused dense factors win. At one million
+observations, repeated analytic actions improve **2.23 → 1.28 s (1.74×)**, but
+retained storage grows **18.5 → 27.3 GB**. The 1,024 sampled analytic rows pass;
+massive fitting, SDD comparison and application gains remain open.
+[Full-model refinement of NUFFT fits (#45)](https://github.com/alecjacobson/fast-stochastic-psr/issues/45)
+is the next combined approach to test. FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects

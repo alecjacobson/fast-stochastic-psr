@@ -129,10 +129,12 @@ these action timings do not establish an SDD or application speedup.
 now passes strict million-point mean-fit gates: setup+fit improves **130.4 → 36.1 s
 (3.61×)** in confirmation versus our analytic range CG. A/B are slower with this
 combination. This is neither an SDD nor an application speedup.
-A [matrix-free omitted-prior root](reproduction/results/analytic_tail/README.md)
-passes small covariance and scorpion draw checks, but is slower on A; complete
-posterior/application gains remain open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46)
-and [#47](https://github.com/alecjacobson/fast-stochastic-psr/issues/47).
+A [coherent analytic posterior pipeline](reproduction/results/analytic_posterior/README.md)
+passes paired A/B field, ray, collision and next-view checks, but its measured
+preparation/query stages are slower than cached dense Cholesky. Massive posterior
+and application gains remain open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46),
+[#47](https://github.com/alecjacobson/fast-stochastic-psr/issues/47) and
+[#48](https://github.com/alecjacobson/fast-stochastic-psr/issues/48).
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

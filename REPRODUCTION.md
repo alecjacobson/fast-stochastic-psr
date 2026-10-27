@@ -866,7 +866,21 @@ independent CPU replay; the matrix-free root is slower than dense Cholesky at A.
 At one million points the current bounds select 281 actions at cutoff50 or147
 at cutoff200 (standard settings, relative root tolerance1e-7). These are computed
 degrees, not measured massive root times. Issue47 tracks reducing this cost;
-full posterior integration and application comparisons remain open.
+the root component alone does not establish posterior or application gains.
+
+The subsequent [coherent analytic posterior integration](reproduction/results/analytic_posterior/README.md)
+combines that tail root, jointly drawn scalar/vector priors and analytically
+refined NUFFT conditioning. Nine targeted tests pass, including an independent
+8,192-draw moment check. A/B experiments with 64 samples pass paired field,
+ray/collision and next-view checks and retained-control replay, but measured
+setup plus sampling/query stages are slower than cached dense Cholesky:
+63.15 versus2.18s on A and265.62 versus9.79s on B. The comparison uses direct
+finite-scalar/full-analytic-vector kernels and shares fast Fourier queries with
+the dense baseline. Small RHS assembly and bookkeeping outside stage timers
+are excluded; no full application wall-latency speedup is claimed. At64 draws,
+probability standard errors can reach6.25 percentage points. Issue48 tracks
+query-space coherent sampling for small candidate panels as an alternative to
+the expensive source-space tail draw.
 
 ## Code map
 

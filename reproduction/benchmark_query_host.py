@@ -65,7 +65,26 @@ def main():
         model,r['seconds']['query_posterior']=timed(lambda:FixedQueryPosterior(x,q,op,audit,coeff,offset,batch=batch,residual_audit=audit,
             progress=lambda done,total:print(a.case,a.panel,a.storage,done,total,flush=True) if done%32==0 or done==total else None))
         r['seconds']['prepare_total']=sum(r['seconds'].values());r['query_record']=model.record;save()
-        audit.clear_vectors();condition.kernel=condition.spectrum=None;cp.get_default_memory_pool().free_all_blocks()
+        condition.kernel=condition.spectrum=None;cp.get_default_memory_pool().free_all_blocks()
+        product_controls={}
+        if a.storage=='host':
+            # Validation only: compare chunked products to unchunked GPU
+            # products of the EXACT SAME retained vectors, avoiding differences
+            # caused by rerunning float32 NUFFT conditioning in another process.
+            def product_reference():
+                if 2*len(x)*len(q)*8>2*2**30:raise MemoryError('independent full-component product check capped at2GiB')
+                cross=cp.zeros((len(q),len(q)),dtype='d');gram=cp.zeros_like(cross)
+                for d in range(3):
+                    wd=cp.asarray(audit.host_w[d]);rd=cp.asarray(audit.host_r[d])
+                    cross+=wd@rd.T;gram+=rd@rd.T
+                    del wd,rd
+                return (cross+cross.T)*.5,(gram+gram.T)*(.5/.02)
+            (shift_ref,upper_ref),r['seconds']['validation_same_vector_products']=timed(product_reference)
+            r['same_vector_products']={k:float(cp.linalg.norm(v-ref)/cp.maximum(cp.linalg.norm(ref),1e-300)) for k,v,ref in
+                [('shift_relative_l2',audit.shift,shift_ref),('upper_relative_l2',audit.upper,upper_ref)]}
+            if max(r['same_vector_products'].values())>1e-11:raise ValueError('host chunked products disagree with same-vector GPU products')
+            product_controls={'same_vector_reference_shift':shift_ref.get(),'same_vector_reference_upper':upper_ref.get()}
+        audit.clear_vectors()
         if a.case=='B':target=reference['reference_covariance'];mu=reference['reference_mean']
         else:
             old=np.load(root/'reproduction/results/query_error/million_c100/controls.npz')
@@ -83,7 +102,7 @@ def main():
         r['prior_psd_roundoff_budget']=float(100*np.finfo(float).eps*len(q)*np.abs(prior_eig).max())
         np.savez_compressed(out/'controls.npz',queries=q,mean=model.mean.get(),reference_mean=mu,covariance=model.covariance.get(),
             reference_covariance=target,prior=model.prior.get(),prior_eigenvalues=prior_eig,upper=audit.upper.get(),shift=audit.shift.get(),
-            cross_norms=audit.cross_norms,residual_norms=audit.residual_norms)
+            cross_norms=audit.cross_norms,residual_norms=audit.residual_norms,**product_controls)
         if a.panel=='applications':
             (_,factor,psd),r['seconds']['validation_reference_root']=timed(lambda:principal_root(cov));r['reference_psd']=psd
             count=32768

@@ -909,6 +909,18 @@ covariance controls, not ray/collision/scanning results or an upstream speedup.
 The report includes equations, commands, timing scopes and raw artifacts.
 Issue 50 tracks the O(NM) residual storage bottleneck at larger query panels.
 
+The [host-backed query study](reproduction/results/query_host/README.md) moves
+these vectors to capped host storage and streams GPU product operands.
+Seventeen tests and five artifact replays pass. The full 1,024-query B panel
+preserves all 32,768 paired ray/collision events. A smaller-bandwidth run with
+fixed solve effort fails the marginal gate; residual-budget stopping refines
+six blocks and passes the unchanged gates in 177.37 s, versus 266.23 s for our
+previous matrix-free preparation. Dense B query preparation remains faster.
+A 32-query million-point overlap verifies chunked versus unchunked products
+on identical vectors. This is not a million-point application result. Larger
+arrays are hash-verified public release assets; the report provides fetch and
+replay commands. Issue 51 tracks query-basis compression to reduce solve count.
+
 ## Code map
 
 | Path | Purpose |

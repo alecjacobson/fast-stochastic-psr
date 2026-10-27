@@ -6,7 +6,7 @@ import numpy as np
 from geospsr.spectral import FourierPoisson
 from geospsr.training_spectrum import FourierCovariance
 from reproduction.query_posterior import AnalyticConditioner,FixedQueryPosterior,principal_root
-from reproduction.query_error import QueryResidualAudit,HostQueryResidualAudit
+from reproduction.query_error import QueryResidualAudit,HostQueryResidualAudit,DiagonalBudgetSolve
 from reproduction.analytic_posterior import timed
 from reproduction.common_rhs_integrity import array_digest
 from reproduction.gpu_audit import GpuProcessAudit
@@ -18,8 +18,10 @@ def main():
     p.add_argument('--storage',choices=['host','gpu'],default='host')
     p.add_argument('--steps',type=int,choices=[0,1,2],default=1)
     p.add_argument('--cutoff',type=int,choices=[50,100],default=100)
+    p.add_argument('--adaptive-marginal',action='store_true')
     a=p.parse_args();root=Path(__file__).resolve().parents[1]
     label=f'{a.case}_{a.panel}_{a.storage}_s{a.steps}'+(f'_c{a.cutoff}' if a.cutoff!=100 else '')
+    if a.adaptive_marginal:label+='_adaptive'
     out=root/'reproduction/results/query_host'/label
     out.mkdir(parents=True,exist_ok=True)
     if (out/'results.json').exists():raise FileExistsError('preserve previous results before rerunning')
@@ -39,7 +41,7 @@ def main():
         else:
             x=np.load(root/'reproduction/results/range_compact/scale1m/control.npz')['points']
             y=np.load(root/'reproduction/results/analytic_refinement/million/controls.npz')['normals']
-            if a.panel!='moments' or a.steps!=0 or a.cutoff!=100:raise ValueError('million overlap uses moments/steps0/cutoff100; full application validation requires a separate control')
+            if a.panel!='moments' or a.steps!=0 or a.cutoff!=100 or a.adaptive_marginal:raise ValueError('million overlap uses moments/steps0/cutoff100; full application validation requires a separate control')
         r.update(n=len(x),m=len(q),hashes={k:array_digest(v) for k,v in [('points',x),('normals',y),('queries',q)]})
         condition,r['seconds']['condition_setup']=timed(lambda:AnalyticConditioner(x,
             solver='analytic_cg' if a.case=='B' else 'defect',fit_cutoff=200,rtol=1e-10,
@@ -57,6 +59,14 @@ def main():
                 residual=b-condition.action(w)
                 delta,info=condition.finite_solve(residual);w+=delta;record['corrections'].append(info)
             r['finite_solves'].append(record);return w
+        if a.adaptive_marginal:
+            def adaptive_setup():
+                norm2=(op.ns**2).sum(0)
+                prior_variance=float(cp.where(norm2>0,op.rho/cp.where(norm2>0,norm2,1),0).sum())
+                return DiagonalBudgetSolve(condition.action,condition.finite_solve,.02,prior_variance,
+                    rtol=r['gates']['marginal_variance_relative_max'],initial_corrections=a.steps,max_corrections=4)
+            approximate,r['seconds']['adaptive_setup']=timed(adaptive_setup)
+            r['finite_solves']=approximate.records
         def make_audit():
             if a.storage=='host':return HostQueryResidualAudit(condition.action,approximate,.02,len(x),len(q),row_chunk=4096)
             return QueryResidualAudit(condition.action,approximate,.02)

@@ -113,3 +113,23 @@ def test_host_storage_cap_and_incomplete_capture_fail_explicitly():
     host=HostQueryResidualAudit(lambda x:x,lambda x:x,.1,2,2)
     host(cp.ones((2,3)))
     with pytest.raises(ValueError):host.correct(cp.eye(1))
+
+
+def test_adaptive_marginal_budget_matches_independent_dense_covariance():
+    import cupy as cp
+    from reproduction.query_error import DiagonalBudgetSolve
+    rng=np.random.default_rng(5002);n,m=17,4;noise=.2
+    u=rng.normal(size=(n,n));a=u@u.T+noise*np.eye(n)
+    rhs=rng.normal(size=(n,3*m))*.02;rhs[:,2]=0
+    ad=cp.asarray(a);approx=cp.asarray(a+.1*np.eye(n))
+    solver=DiagonalBudgetSolve(lambda w:ad@w,lambda b:(cp.linalg.solve(approx,b),{}),noise,1.,rtol=1e-7,initial_corrections=0,max_corrections=12)
+    w=solver(cp.asarray(rhs)).get();r=rhs-a@w
+    def product(x,y):return sum(x[:,d::3].T@y[:,d::3] for d in range(3))
+    target=np.eye(m)-product(rhs,np.linalg.solve(a,rhs))
+    raw=np.eye(m)-product(rhs,w);shift=product(w,r);actual=raw-(shift+shift.T)*.5
+    error=np.abs(np.diag(actual-target))/np.diag(target)
+    assert error.max()<=1e-7
+    assert error.max()<=solver.records[-1]['budget_history'][-1]['maximum_relative_marginal_bound']+1e-14
+    assert solver.records[-1]['completed_corrections']>0
+    fail=DiagonalBudgetSolve(lambda w:ad@w,lambda b:(cp.zeros_like(b),{}),noise,1.,rtol=1e-12,initial_corrections=0,max_corrections=0)
+    with pytest.raises(RuntimeError):fail(cp.asarray(rhs))

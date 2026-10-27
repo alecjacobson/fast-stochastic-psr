@@ -41,6 +41,18 @@ def validate(folder):
     assert np.linalg.eigvalsh((u+u.T)*.5).min()>=-100*np.finfo(float).eps*len(u)*np.linalg.norm(u)
     np.testing.assert_allclose(np.diag(u),np.sum(a['residual_norms']**2,axis=1)/.02,rtol=1e-11,atol=1e-28)
     result={'passed':True,'metrics':metrics,'scope':'retained covariance, input hashes and events; not regeneration of every analytic action or all field values'}
+    if r['args'].get('adaptive_marginal'):
+        ratio=np.diag(u)/(np.diag(s)-np.diag(u))
+        assert np.all(np.diag(s)>np.diag(u)) and ratio.max()<=r['gates']['marginal_variance_relative_max']
+        batch=r['query_record']['batch']
+        for begin,solve in zip(range(0,len(s),batch),r['finite_solves'],strict=True):
+            assert solve['converged']
+            np.testing.assert_allclose(ratio[begin:begin+batch].max(),solve['budget_history'][-1]['maximum_relative_marginal_bound'],rtol=1e-8,atol=1e-14)
+        trace=float(np.trace(u));norm=float(np.linalg.norm(s));assert norm>trace
+        bound=trace/(norm-trace)
+        assert metrics['covariance_relative_l2']<=bound+1e-12 and bound<=r['gates']['covariance_relative_l2']
+        result['solve_only_budgets']={'maximum_relative_marginal':float(ratio.max()),'relative_covariance_frobenius':bound,
+            'qualification':'exact-arithmetic solve bounds; numerical and model errors excluded'}
     if panel=='applications':
         o=np.load(folder/'outputs.npz');result['events']={};result['confidence']={}
         for k in ['rays','collision']:

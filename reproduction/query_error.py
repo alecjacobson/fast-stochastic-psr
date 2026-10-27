@@ -158,3 +158,46 @@ class HostQueryResidualAudit(QueryResidualAudit):
     def clear_vectors(self):
         super().clear_vectors()
         self.host_w=self.host_r=None
+
+
+class DiagonalBudgetSolve:
+    """Refine point-query solves until their corrected marginal budgets pass.
+
+    For stationary scalar prior variance v, each query has corrected variance
+    s=v-sum_d(w_d.T b_d+w_d.T r_d) and solve-error upper u=sum_d||r_d||²/noise.
+    If s>u, u/(s-u) bounds relative marginal error in exact arithmetic. This
+    controls marginal solve error, NOT full covariance/field/event error or
+    numerical error in the kernel actions. Every supplied block is refined
+    together, so no new NUFFT plan size is required for a subset of columns.
+    """
+    def __init__(self,action,finite_solve,noise_min,prior_variance,rtol=1e-7,
+                 initial_corrections=1,max_corrections=4):
+        if not all(np.isfinite(v) and v>0 for v in [noise_min,prior_variance,rtol]):
+            raise ValueError('positive finite noise, prior variance and tolerance required')
+        if (initial_corrections!=int(initial_corrections) or max_corrections!=int(max_corrections)
+                or not 0<=initial_corrections<=max_corrections):raise ValueError('invalid correction limits')
+        self.action,self.finite_solve=action,finite_solve
+        self.noise,self.prior,self.rtol=noise_min,prior_variance,rtol
+        self.minimum,self.maximum=int(initial_corrections),int(max_corrections)
+        self.records=[]
+
+    def __call__(self,rhs):
+        import cupy as cp
+        b=cp.asarray(rhs,dtype='d')
+        if b.ndim!=2 or not len(b) or not b.shape[1] or b.shape[1]%3 or not bool(cp.isfinite(b).all()):
+            raise ValueError('expected finite observation-by-(query,component) RHS')
+        w,info=self.finite_solve(b);w=cp.asarray(w,dtype='d')
+        record={'initial':info,'corrections':[],'budget_history':[],'converged':False};self.records.append(record)
+        for step in range(self.maximum+1):
+            residual=b-self.action(w)
+            variance=self.prior-cp.sum(w*(b+residual),axis=0).reshape(-1,3).sum(1)
+            upper=cp.sum(residual**2,axis=0).reshape(-1,3).sum(1)/self.noise
+            informative=bool(cp.all(cp.isfinite(variance)) and cp.all(cp.isfinite(upper)) and cp.all(variance>upper))
+            ratio=float(cp.max(upper/(variance-upper))) if informative else None
+            record['budget_history'].append({'corrections':step,'maximum_relative_marginal_bound':ratio,
+                'informative':informative,'maximum_absolute_marginal_bound':float(upper.max())})
+            if step>=self.minimum and informative and ratio<=self.rtol:
+                record['converged']=True;record['completed_corrections']=step;return w
+            if step==self.maximum:break
+            delta,info=self.finite_solve(residual);w+=delta;record['corrections'].append(info)
+        raise RuntimeError('corrected marginal solve budget did not converge within correction limit')

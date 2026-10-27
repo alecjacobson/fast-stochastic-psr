@@ -1,0 +1,103 @@
+{
+  "scope": "CUDA event stage timings, not hardware counters",
+  "cases": {
+    "A": {
+      "plan": {
+        "n": 691,
+        "leaf_size": 32,
+        "far_groups": 250,
+        "direct_groups": 185,
+        "far_entries": 10199,
+        "direct_entries": 3995,
+        "cpu_plan_seconds": 0.013221949338912964,
+        "device_transfer_seconds": 0.0015246383845806122,
+        "retained_device_bytes": 115235,
+        "max_far_group_entries": 420
+      },
+      "first": {
+        "far": 0.021783231735229492,
+        "direct": 0.00013798399269580842
+      },
+      "next": [
+        {
+          "far": 0.002077600002288818,
+          "direct": 0.00011129599809646607
+        },
+        {
+          "far": 0.002075392007827759,
+          "direct": 0.00011059200018644332
+        },
+        {
+          "far": 0.0020754880905151365,
+          "direct": 0.00011116799712181092
+        }
+      ]
+    },
+    "B": {
+      "plan": {
+        "n": 17419,
+        "leaf_size": 32,
+        "far_groups": 17602,
+        "direct_groups": 10770,
+        "far_entries": 927805,
+        "direct_entries": 183199,
+        "cpu_plan_seconds": 0.955050602555275,
+        "device_transfer_seconds": 0.00841272622346878,
+        "retained_device_bytes": 7900630,
+        "max_far_group_entries": 10388
+      },
+      "first": {
+        "far": 0.08853142547607422,
+        "direct": 0.0044176321029663086
+      },
+      "next": [
+        {
+          "far": 0.08565436553955078,
+          "direct": 0.004404704093933106
+        },
+        {
+          "far": 0.08834937286376954,
+          "direct": 0.0044011201858520504
+        },
+        {
+          "far": 0.08680767822265625,
+          "direct": 0.004412960052490234
+        }
+      ]
+    }
+  },
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 3,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 1.5422701835632324e-05,
+        "seconds": 0.04038082808256149,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.0417002961039543,
+        "seconds": 1.0837749689817429,
+        "pids": [
+          44005
+        ],
+        "own_memory_bytes": 446693376.0
+      },
+      {
+        "started_seconds": 1.5736759416759014,
+        "seconds": 1.615771621465683,
+        "pids": [
+          44005
+        ],
+        "own_memory_bytes": 455081984.0
+      }
+    ],
+    "own_pid": 44005,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

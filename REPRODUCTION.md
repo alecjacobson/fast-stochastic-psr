@@ -816,6 +816,16 @@ claimed. Cube200 NUFFT is recorded separately and fails this experiment's
 strict full-analytic action gate. See the report for derivation, setup/first-use
 costs, all measured runs, archive replay and reproduction commands.
 
+The [cached-range follow-up](reproduction/results/range_scan/README.md) retains
+the unsuccessful uncached warp scan and measures a coefficient-cached variant:
+B actions improve from 90.1 to 21.9 ms with 349 MB retained storage. A full analytic
+CG mean-fit pilot passes independent dense residuals and 20k centered mean queries
+on A/B and the documented short/low-noise B case. Standard B first fitting is
+1.85 s dense versus 1.32 s range including setup; A and the stress case are slower.
+Reused dense factors win, and no SDD or complete application gain is claimed.
+The report includes all timings, setup/storage costs, 20 new tests and saved
+action/fit replay with streamed independent residual checks.
+
 ## Code map
 
 | Path | Purpose |

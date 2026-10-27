@@ -62,27 +62,37 @@ class QueryResidualAudit:
         cn=cp.linalg.norm(b,axis=0);rn=cp.linalg.norm(residual,axis=0)
         self.cross_norms.append(cn.reshape(-1,3).get());self.residual_norms.append(rn.reshape(-1,3).get())
         self.record['blocks'].append({'relative_residual':(rn/cp.where(cn>0,cn,1)).get().tolist()})
-        self.weights.append(w);self.residuals.append(residual)
+        self._store_vectors(w,residual)
         return w
 
-    def correct(self, covariance):
+    def _store_vectors(self,weights,residual):
+        self.weights.append(weights);self.residuals.append(residual)
+
+    def _products(self, m):
         import cupy as cp
-        if self.corrected or not self.weights:raise RuntimeError('audit is empty or already consumed')
         self.w=cp.concatenate(self.weights,axis=1);self.weights.clear()
         self.r=cp.concatenate(self.residuals,axis=1);self.residuals.clear()
-        m=self.w.shape[1]//3;n=len(self.w)
-        if covariance.shape!=(m,m):raise ValueError('query count does not match captured RHS')
+        n=len(self.w)
         cross=cp.zeros((m,m),dtype='d');gram=cp.zeros_like(cross)
         for d in range(3):
             wd=cp.ascontiguousarray(self.w.reshape(n,m,3)[:,:,d]);rd=cp.ascontiguousarray(self.r.reshape(n,m,3)[:,:,d])
             cross+=wd.T@rd;gram+=rd.T@rd
+        self.record.update(vector_storage='gpu',vector_storage_bytes=self.w.nbytes+self.r.nbytes)
+        return cross,gram
+
+    def correct(self, covariance):
+        import cupy as cp
+        if self.corrected or not self.cross_norms:raise RuntimeError('audit is empty or already consumed')
+        m=sum(len(v) for v in self.cross_norms)
+        if covariance.shape!=(m,m):raise ValueError('query count does not match captured RHS')
+        cross,gram=self._products(m)
         self.upper=(gram+gram.T)*(.5/self.noise)
         self.shift=(cross+cross.T)*.5
         result=(covariance+covariance.T)*.5-self.shift
         self.cross_norms=np.concatenate(self.cross_norms);self.residual_norms=np.concatenate(self.residual_norms)
         self.first_envelope,self.quadratic_envelope=residual_envelopes(self.cross_norms,self.residual_norms,self.noise)
         self.record.update(queries=m,noise_min=self.noise,cross_norms=self.cross_norms.tolist(),residual_norms=self.residual_norms.tolist(),
-            vector_storage_bytes=self.w.nbytes+self.r.nbytes,first_order_max_entry_bound=float(self.first_envelope.max()),
+            first_order_max_entry_bound=float(self.first_envelope.max()),
             corrected_max_entry_bound=float(self.quadratic_envelope.max()),
             corrected_operator_error_upper=max(0.,float(cp.linalg.eigvalsh(self.upper).max())),
             corrected_max_marginal_error_upper=float(cp.diag(self.upper).max()),
@@ -93,3 +103,58 @@ class QueryResidualAudit:
     def clear_vectors(self):
         self.weights.clear();self.residuals.clear()
         self.w=self.r=None
+
+
+class HostQueryResidualAudit(QueryResidualAudit):
+    """Keep O(3NM) vectors on the host; form products in bounded GPU row chunks.
+
+    This changes storage and accumulation order, not the correction or bound.
+    Host allocation is capped explicitly. GPU product workspace is O(M*rows),
+    plus O(M*M) matrices and the caller's analytic/NUFFT plans. No N*M GPU
+    concatenation or repeated analytic action is needed. Host memory is NOT
+    bounded independently of the problem size; this is not a low-rank method.
+    """
+    def __init__(self,action,approximate,noise_min,observations,queries,
+                 row_chunk=8192,max_host_bytes=128*2**30):
+        super().__init__(action,approximate,noise_min)
+        for v in [observations,queries,row_chunk]:
+            if v!=int(v) or v<1:raise ValueError('positive integer dimensions required')
+        self.n,self.m,self.row_chunk=int(observations),int(queries),int(row_chunk)
+        storage=2*3*self.n*self.m*8
+        if storage>max_host_bytes:raise MemoryError(f'host vectors need {storage} bytes, cap {max_host_bytes}')
+        self.host_w=np.empty((3,self.m,self.n),dtype='d');self.host_r=np.empty_like(self.host_w)
+        self.stored=0
+        self.record.update(vector_storage='host',vector_storage_bytes=storage,
+            row_chunk=self.row_chunk,host_byte_cap=max_host_bytes,
+            gpu_product_vector_bytes_upper=2*min(self.n,self.row_chunk)*self.m*8,
+            storage_qualification='GPU bound covers two product operands only; excludes M*M matrices, GEMM workspace, capture blocks and caller kernel/NUFFT plans')
+
+    def _store_vectors(self,weights,residual):
+        import cupy as cp
+        count=weights.shape[1]//3
+        if len(weights)!=self.n or self.stored+count>self.m:raise ValueError('captured vectors exceed configured shape')
+        if self.host_w is None:raise RuntimeError('host vectors have been cleared')
+        end=self.stored+count
+        for d in range(3):
+            cp.ascontiguousarray(weights[:,d::3].T).get(out=self.host_w[d,self.stored:end])
+            cp.ascontiguousarray(residual[:,d::3].T).get(out=self.host_r[d,self.stored:end])
+        self.stored=end
+
+    def _products(self,m):
+        import cupy as cp
+        if self.stored!=self.m or m!=self.m:raise ValueError('incomplete host query capture')
+        cross=cp.zeros((m,m),dtype='d');gram=cp.zeros_like(cross)
+        for d in range(3):
+            for start in range(0,self.n,self.row_chunk):
+                end=min(start+self.row_chunk,self.n)
+                wd=cp.asarray(np.ascontiguousarray(self.host_w[d,:,start:end]))
+                rd=cp.asarray(np.ascontiguousarray(self.host_r[d,:,start:end]))
+                cross+=wd@rd.T;gram+=rd@rd.T
+                # Release operands before allocating the next chunk, including
+                # the last short chunk. CuPy may retain freed pool capacity.
+                del wd,rd
+        return cross,gram
+
+    def clear_vectors(self):
+        super().clear_vectors()
+        self.host_w=self.host_r=None

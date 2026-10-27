@@ -76,3 +76,40 @@ def test_gpu_component_layout_and_retained_residual_correction():
     np.testing.assert_allclose(audit.upper.get(),product(res,res)/noise,rtol=1e-7,atol=1e-18)
     np.testing.assert_allclose(audit.residual_norms,np.linalg.norm(res,axis=0).reshape(m,3),rtol=1e-7,atol=1e-18)
     audit.clear_vectors();assert audit.w is None and audit.r is None
+
+
+@pytest.mark.parametrize('row_chunk',[1,7,100])
+def test_host_products_match_gpu_and_dense_with_partial_blocks(row_chunk):
+    import cupy as cp
+    from reproduction.query_error import QueryResidualAudit,HostQueryResidualAudit
+    rng=np.random.default_rng(5001);n,m=19,7;noise=.02
+    u=rng.normal(size=(n,n));a=u@u.T+noise*np.eye(n)
+    rhs=rng.normal(size=(n,3*m))*np.tile([1.,1e-18,0.],m)
+    rhs[:,3:6]=rhs[:,:3]  # Duplicate query, with zero and tiny components.
+    ad=cp.asarray(a);approx=cp.asarray(a+.01*np.eye(n))
+    action=lambda w:ad@w;solve=lambda b:cp.linalg.solve(approx,b)
+    gpu=QueryResidualAudit(action,solve,noise)
+    host=HostQueryResidualAudit(action,solve,noise,n,m,row_chunk=row_chunk)
+    for start in range(0,3*m,9):
+        b=cp.asarray(rhs[:,start:start+9]);gpu(b);host(b)
+    raw=cp.eye(m,dtype='d')*100
+    expected=gpu.correct(raw);actual=host.correct(raw)
+    np.testing.assert_allclose(actual.get(),expected.get(),rtol=1e-13,atol=1e-13)
+    for name in ['upper','shift']:
+        np.testing.assert_allclose(getattr(host,name).get(),getattr(gpu,name).get(),rtol=1e-12,atol=1e-14)
+    np.testing.assert_array_equal(host.cross_norms,gpu.cross_norms)
+    np.testing.assert_array_equal(host.residual_norms,gpu.residual_norms)
+    np.testing.assert_array_equal(host.host_w.transpose(2,1,0).reshape(n,3*m),gpu.w.get())
+    assert not host.weights and not host.residuals
+    assert host.record['gpu_product_vector_bytes_upper']==2*min(n,row_chunk)*m*8
+    host.clear_vectors();assert host.host_w is None and host.host_r is None
+    with pytest.raises(RuntimeError):host(cp.asarray(rhs))
+
+
+def test_host_storage_cap_and_incomplete_capture_fail_explicitly():
+    import cupy as cp
+    from reproduction.query_error import HostQueryResidualAudit
+    with pytest.raises(MemoryError):HostQueryResidualAudit(lambda x:x,lambda x:x,.1,1000,1000,max_host_bytes=1)
+    host=HostQueryResidualAudit(lambda x:x,lambda x:x,.1,2,2)
+    host(cp.ones((2,3)))
+    with pytest.raises(ValueError):host.correct(cp.eye(1))

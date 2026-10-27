@@ -46,21 +46,22 @@ disagreements under an arbitrary shared-root coupling.
 
 The saved controls use 17,419 observations, three 256-node rays (0,8,17),
 one 256-node sphere (8), and 32,768 independent Gaussian draws. We evaluate
-two explicit scenarios: equal means, and the observed difference from the
-independent dense mean reference. That observed difference is an oracle
-diagnostic, not a certified mean-error interval or a production selection
-rule. Results below include the observed mean difference.
+three explicit scenarios: equal means, the observed difference from the
+independent dense mean reference, and a solve-only mean bound derived from
+all-observation residuals. The observed difference remains an oracle
+diagnostic. Results below use the residual-derived bound, without using the
+dense fitted answer.
 
 | Rank | Full ray 0 | Full ray 8 | Full ray 17 | Sphere 8 | Original numerical gate |
 | --- | ---: | ---: | ---: | ---: | --- |
-| 478 | 0.00084825 | 0.00100482 | 0.00029847 | 0.00640590 | Pass |
-| 384 | 0.01323839 | 0.01414119 | 0.00658588 | 0.11109806 | **Fail** |
+| 478 | 0.00084846 | 0.00100494 | 0.00029854 | 0.00640655 | Pass |
+| 384 | 0.01323861 | 0.01414131 | 0.00658595 | 0.11109872 | **Fail** |
 
 Values are probability fractions. Rank 478's sphere-law budget is about
 0.641 percentage points; rank 384's is 11.11 points. The simultaneous
 95% Monte Carlo radius is 1.256 percentage points over 769 events.
 Adding these quantities gives sphere-8 intervals of approximately
-[0.513660, 0.551586] and [0.408968, 0.656279], respectively, under the stated
+[0.513660, 0.551587] and [0.408967, 0.656279], respectively, under the stated
 assumptions. They exclude additional numerical, model and geometry errors.
 
 Prefix-specific law bounds plus the simultaneous Monte Carlo radius yield
@@ -69,14 +70,41 @@ scanning-score intervals `[0.333333,0.352941]`, `[0.019608,0.019608]`, and
 retained three-ray grid, not a guarantee for the full application scene or
 for continuous rays, and it does not rescue rank 384's failed numerical gate.
 
+## Mean fitting and empirical centering
+
+Let `r_d=y_d-A alpha_d` be the mean-fit residual for vector component d.
+Joint-prior positivity and `A>=noise_min I` imply
+
+```
+|mean_fit_error(q)|
+ <= sqrt(kff(q,q)) * sqrt(sum_d ||r_d||^2 / noise_min).
+```
+
+The implementation subtracts the empirical mean field over all observations
+to choose its isovalue. Triangle inequality includes that error by adding the
+average scalar-prior standard deviation at those observations to the first
+factor. For a stationary prior this doubles the factor. This bound requires
+no dense fitted reference and no new query-conditioning solves.
+
+For B, the recorded all-row residual norms are approximately
+`[2.9492e-9, 4.2910e-9, 9.5597e-10]`, the noise floor is 0.02, and the scalar
+prior standard deviation is 0.00169531. The centered mean error bound is
+**1.2693e-10** after rounding upward for display. Including it changes the
+rank-478 sphere-law bound to **0.00640655**, with the same separated best
+view. Residual norms use the analytic action in ordinary floating point;
+this is a conditional solve-only bound. Action error and mean/centering
+field-evaluation error are still excluded, so this is not a numerical
+interval certificate.
+
 ## Validation and reproduction
 
-Fourteen CPU tests pass. They include the analytic centered bivariate-normal
+Nineteen CPU tests pass. They include the analytic centered bivariate-normal
 sign formula, independent scalar quadrature with unequal means, correlated
 Gaussian perturbations and duplicate nodes, an indefinite covariance
 *difference* with a valid factor coupling, zero errors/variances, tiny scales,
 invalid inputs, and scanning-score interval enclosure on a nonuniform grid.
-Two initial test expectations were corrected: the finite threshold grid
+Four additional tests compare the centered/uncentered mean bound against
+independent nonstationary feature models at two noise levels. Two initial test expectations were corrected: the finite threshold grid
 retains a positive 30-sigma tail, and floating-point 0.1+0.2 is not exactly
 0.3. No algorithm or application gate was changed for those corrections.
 
@@ -86,7 +114,7 @@ retains a positive 30-sigma tail, and floating-point 0.1+0.2 is not exactly
 ```
 
 Fetch the release controls as described in the parent report first. Each
-`event_budget.json` retains node/prefix bounds, both mean scenarios, source
+`event_budget.json` retains node/prefix bounds, all three mean scenarios, source
 and control hashes, and all exclusions. Issue #52 remains open for justified
 mean/numerical covariance budgets and prospective application-driven rank/
 solve selection. No extra GPU benchmark was run concurrently with the live

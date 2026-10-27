@@ -3,7 +3,35 @@ import pytest
 from scipy.integrate import quad
 from scipy.special import ndtr
 from reproduction.event_probability_budget import (
-    sign_probability_budget, prefix_probability_budget, scanning_score_intervals)
+    sign_probability_budget, prefix_probability_budget, scanning_score_intervals, mean_solve_budget)
+
+
+@pytest.mark.parametrize('centered',[False,True])
+@pytest.mark.parametrize('noise',[1e-5,.02])
+def test_mean_solve_budget_against_independent_nonstationary_feature_model(centered,noise):
+    rng=np.random.default_rng(5204);n,m,p,d=23,17,13,3
+    v=rng.normal(size=(n,p));f=rng.normal(size=(d,m,p))*.1
+    center=rng.normal(size=(d,7,p))*.2;weight=np.arange(1,8)/28
+    a=v@v.T+noise*np.eye(n);y=rng.normal(size=(n,d))
+    approximate=np.linalg.solve(a+.01*np.eye(n),y);exact=np.linalg.solve(a,y)
+    residual=y-a@approximate
+    cross=np.einsum('dmp,np->dmn',f,v)
+    error=np.einsum('dmn,nd->m',cross,approximate-exact)
+    center_std=0.
+    if centered:
+        c=np.einsum('dmp,np->dmn',center,v)
+        error-=weight@np.einsum('dmn,nd->m',c,approximate-exact)
+        center_std=weight@np.sqrt(np.sum(center**2,axis=(0,2)))
+    bound=mean_solve_budget(np.sum(f*f,axis=(0,2)),np.linalg.norm(residual,axis=0),noise,center_std)
+    assert np.all(np.abs(error)<=bound)
+    np.testing.assert_array_equal(mean_solve_budget([0.,1.],[0.,0.,0.],noise,center_std),[0.,0.])
+
+
+def test_mean_budget_tiny_residuals_and_invalid_inputs():
+    bound=mean_solve_budget(1.,[1e-200,1e-200,1e-200],1.,1.)
+    np.testing.assert_allclose(bound,2*np.sqrt(3)*1e-200,rtol=1e-15,atol=0)
+    for args in [(1.,[-1.],1.),(1.,[1.],0.),(-1.,[1.],1.),(1.,[],1.),(1.,[1.],1.,-1.)]:
+        with pytest.raises(ValueError):mean_solve_budget(*args)
 
 
 @pytest.mark.parametrize('ratio',[1e-12,1e-7,.001,.1,.9])

@@ -12,6 +12,30 @@ import numpy as np
 from scipy.special import log_ndtr
 
 
+def mean_solve_budget(prior_variance, residual_norms, noise_min, center_prior_std=0.):
+    """Conditional mean-fit error bound without an exact fitted reference.
+
+    For independent vector components, A>=noise_min I and r_d=y_d-A alpha_d.
+    Joint-prior positivity gives |sum C_d A^-1 r_d| <= sqrt(kff(q,q))
+    * sqrt(sum ||r_d||^2/noise_min). For an empirical centering average,
+    center_prior_std can be the average of the scalar prior standard
+    deviations at those observation points. Triangle inequality then adds
+    this term. A stationary prior can use its single standard deviation.
+
+    Residual norms must cover all observations. Recorded finite-precision
+    residuals give a solve-only diagnostic; numerical actions and field/
+    centering evaluation errors still need their own justified bounds.
+    """
+    v=np.asarray(prior_variance,dtype=float);r=np.asarray(residual_norms,dtype=float)
+    if (not np.isfinite(v).all() or np.any(v<0) or r.ndim!=1 or not len(r)
+        or not np.isfinite(r).all() or np.any(r<0) or not np.isfinite(noise_min)
+        or noise_min<=0 or not np.isfinite(center_prior_std) or center_prior_std<0):
+        raise ValueError('nonnegative variances/residual norms and positive noise floor required')
+    scale=float(r.max())
+    energy=0. if scale==0 else (scale/np.sqrt(noise_min))*np.linalg.norm(r/scale)
+    return (np.sqrt(v)+center_prior_std)*energy
+
+
 def sign_probability_budget(mean, variance, error_diagonal, mean_error=0., z_grid=None,
                             method='approximate_marginal'):
     """Bound each sign mismatch in the existence coupling.

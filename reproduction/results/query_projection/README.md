@@ -102,10 +102,11 @@ equal-mean diagnostics there are not total numerical/model error certificates.
 Geometry/Monte Carlo convergence and the full application suite remain open.
 
 The [event-budget diagnostic](EVENT_BUDGET.md) now propagates conditional
-solve/truncation bounds to ray-prefix and collision probabilities. Fourteen
+solve/truncation bounds to ray-prefix and collision probabilities. Nineteen
 CPU tests pass, and the retained best-view choice remains separated after
-adding these bounds to the Monte Carlo intervals. Mean/numerical/model and
-geometry qualifications remain explicit; rank 384 is still rejected.
+adding these bounds and an all-row-residual mean-fit budget to the Monte
+Carlo intervals. Numerical/model and geometry qualifications remain explicit;
+rank 384 is still rejected.
 
 ## Reproduce
 

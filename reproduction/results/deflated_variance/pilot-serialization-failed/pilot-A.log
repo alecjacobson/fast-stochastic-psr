@@ -1,0 +1,89 @@
+pilot A 401 16 precision 5.629883361519524e-07
+pilot A 401 64 precision 1.2372457516437974e-06
+pilot A 401 256 precision 1.8907640960693997e-06
+checkpoint A 401 0 32 0.31046355879542 0.10382673889398575
+checkpoint A 401 16 32 0.2521351594932159 0.3862532377243042
+checkpoint A 401 64 32 0.13138646153055045 0.6742140762507915
+checkpoint A 401 256 32 0.019268526003603473 2.1397541873157024
+checkpoint A 401 0 128 0.14897268678062545 0.37030527740716934
+checkpoint A 401 16 128 0.11820664499881683 0.6540939696133137
+checkpoint A 401 64 128 0.06192403359696491 0.9431541375815868
+checkpoint A 401 256 128 0.009380271260649798 2.414460137486458
+checkpoint A 401 0 512 0.06610479143983644 1.4374836310744286
+checkpoint A 401 16 512 0.056258821801124265 1.7234448418021202
+checkpoint A 401 64 512 0.03178202925828904 2.016988482326269
+checkpoint A 401 256 512 0.004722152882438358 3.512407172471285
+checkpoint A 401 0 2048 0.036699173006332166 5.710967089980841
+checkpoint A 401 16 2048 0.029163696955481256 6.005839195102453
+checkpoint A 401 64 2048 0.015641253872304833 6.317287772893906
+checkpoint A 401 256 2048 0.00239932382652491 7.9089952409267426
+Traceback (most recent call last):
+  File "/home/horde/projects/stochastic-psr/reproduction/benchmark_deflated_variance.py", line 129, in main
+    r['runs'].append(run);save()
+                          ^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/benchmark_deflated_variance.py", line 36, in save
+    def save():(a.output/'results.json').write_text(json.dumps(r,indent=2)+'\n')
+                                                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bool is not JSON serializable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/projects/stochastic-psr/reproduction/benchmark_deflated_variance.py", line 144, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/benchmark_deflated_variance.py", line 141, in main
+    r['seconds']['work_wall']=time.perf_counter()-wall;r['gpu_process_audit']=audit.stop();save()
+                                                                                           ^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/benchmark_deflated_variance.py", line 36, in save
+    def save():(a.output/'results.json').write_text(json.dumps(r,indent=2)+'\n')
+                                                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/opt/geospsr-runtime/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bool is not JSON serializable

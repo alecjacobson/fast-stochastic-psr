@@ -76,6 +76,10 @@ at controlled application error ([#5](https://github.com/alecjacobson/fast-stoch
 Exact variance remains a bottleneck. A [full-slice sampling study](reproduction/results/correction_contrast/README.md)
 still misses the 1% spatial-contrast target at 8,192 draws on both A and B;
 deterministic variance passes. No matched-quality variance speedup is established by this study.
+A [covariance-deflation follow-up](reproduction/results/deflated_variance/README.md)
+now passes the same full-slice gates on independent seeds with 256 pilot draws
+plus 128/512 evaluation draws on A/B. Preparation included, it remains slower
+than deterministic variance (**2.52 vs 1.67 s** / **9.65 vs 6.49 s**).
 A [matrix-free correction-sampling control](reproduction/results/inverse_root/README.md)
 now reaches three million observations with numerical checks; it has not established
 a variance speedup. [Verified solve refinement](reproduction/results/verified_posterior/README.md)

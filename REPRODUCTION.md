@@ -275,6 +275,20 @@ are retained. The contended timings establish no matched-quality speedup.
 [Issue #35](https://github.com/alecjacobson/fast-stochastic-psr/issues/35) proposes
 matrix-free inverse-root sampling, with covariance/error validation still required.
 
+The [fixed-query covariance-deflation study](reproduction/results/deflated_variance/README.md)
+resolves an independently chosen subspace of the correction covariance before
+sampling its projected residual. Independent three-seed confirmations pass the
+same full-slice gates using 256 pilot plus 128/512 evaluation draws on A/B.
+Including pilot generation, QR, covariance actions, plan setup and evaluation,
+costs are 2.52/9.65 s versus 1.67/6.49 s for deterministic variance. One filtering
+step improves the subspace but costs more overall. Seven targeted tests and
+replay of 240 saved estimates / 216 archived control arrays pass. This remains
+a dense-factor, direct-Fourier marginal estimator, not a coherent event sampler
+or a replacement for the matched-interpolant teaser. Protocols, reproduction
+commands, calibration curves, failures and independent confirmation data are
+in the report; [#39](https://github.com/alecjacobson/fast-stochastic-psr/issues/39)
+tracks the remaining quality/scaling work.
+
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
 Legacy manifests hashed the float64 RHS before storage conversion; read-only

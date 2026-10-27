@@ -20,15 +20,19 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser();p.add_argument('--case',choices=['A','B'],required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True)
+    p.add_argument('--power-steps',type=int,choices=[0,1],default=0)
     p.add_argument('--confirm',type=Path,help='pilot results.json; use its selected rank/count and new seeds')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True);a.archive.mkdir(parents=True,exist_ok=True)
     ranks,looks,seeds=[16,64,256],[32,128,512,2048],[(1401,401),(1503,503),(1607,607)]
+    power_steps=a.power_steps
+    if power_steps:ranks=[32,64,128,256]
     if a.confirm:
         pilot=json.loads(a.confirm.read_text())
         if not pilot['complete'] or pilot['case']!=a.case or pilot['selected'] is None:raise ValueError('no eligible pilot setting')
+        power_steps=pilot.get('power_steps',0)
         ranks=[pilot['selected']['rank']];looks=[pilot['selected']['count']];seeds=[(1709,709),(1801,801),(1907,907)]
     r={'complete':False,'case':a.case,'phase':'confirmation' if a.confirm else 'pilot','ranks':ranks,'looks':looks,
-       'seeds':seeds,'seconds':{},'runs':[],'selected':None,
+       'seeds':seeds,'power_steps':power_steps,'seconds':{},'runs':[],'selected':None,
        'gates':{'contrast_relative_l2':.01,'probability_rms':.0005,'probability_max':.005},
        'control_precision_gate':.001,'model':'full analytic vector covariance; scalar/cross cutoff50; noise .02; direct Fourier',
        'scope':'first fixed-query marginal variance estimate; pilot/action costs included; not posterior event samples',
@@ -87,6 +91,10 @@ def main():
                 fields,gen_time=timed(pilot_fields)
                 basis,qr_time=timed(lambda:cp.linalg.qr(fields.astype('d'),mode='reduced')[0]);del fields
                 bq,action_time=timed(lambda:action(basis))
+                filtering_qr=filtering_action=0.
+                for _ in range(power_steps):
+                    basis,seconds=timed(lambda:cp.linalg.qr(bq.astype('d'),mode='reduced')[0]);qr_time+=seconds;filtering_qr+=seconds
+                    bq,seconds=timed(lambda:action(basis));action_time+=seconds;filtering_action+=seconds
                 state,control_time=timed(lambda:DeflatedCovarianceMoments(basis,bq,xp=cp))
                 bq64,reference_time=timed(lambda:reference_action(basis))
                 control64=DeflatedCovarianceMoments(basis,bq64,xp=cp)
@@ -94,6 +102,7 @@ def main():
                 hashes={'basis':archive(f'{seed}_{rank}_basis',basis),'covariance_basis':archive(f'{seed}_{rank}_covariance_basis',bq),
                         'control':archive(f'{seed}_{rank}_control',state.deterministic),'reference_control':archive(f'{seed}_{rank}_reference_control',control64.deterministic)}
                 run['settings'][str(rank)]={'pilot_seconds':gen_time,'qr_seconds':qr_time,'action_seconds':action_time,
+                    'filtering_qr_seconds':filtering_qr,'filtering_action_seconds':filtering_action,
                     'control_seconds':control_time,'reference_action_seconds':reference_time,'precision_discrepancy_over_contrast':discrepancy,
                     'precision_pass':discrepancy<=r['control_precision_gate'],'record':state.record,'hashes':hashes}
                 states[rank]=state

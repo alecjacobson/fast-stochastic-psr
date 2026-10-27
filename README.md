@@ -128,8 +128,12 @@ these action timings do not establish an SDD or application speedup.
 [Analytic refinement of NUFFT fits](reproduction/results/analytic_refinement/README.md)
 now passes strict million-point mean-fit gates: setup+fit improves **130.4 → 36.1 s
 (3.61×)** in confirmation versus our analytic range CG. A/B are slower with this
-combination. This is neither an SDD nor an application speedup; coherent omitted
-prior sampling remains open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46). FMM has no implemented backend or measured speedup. A dense matrix's memory
+combination. This is neither an SDD nor an application speedup.
+A [matrix-free omitted-prior root](reproduction/results/analytic_tail/README.md)
+passes small covariance and scorpion draw checks, but is slower on A; complete
+posterior/application gains remain open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46)
+and [#47](https://github.com/alecjacobson/fast-stochastic-psr/issues/47).
+FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects

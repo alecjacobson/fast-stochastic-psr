@@ -89,7 +89,7 @@ class FixedChebyshevInverseRoot:
         if progress is not None:
             progress(self.degree,self.degree)
         if not bool(xp.all(xp.isfinite(result))):
-            raise FloatingPointError('inverse-root recurrence produced nonfinite values')
+            raise FloatingPointError('matrix-function recurrence produced nonfinite values')
         return result
 
 

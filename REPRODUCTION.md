@@ -858,6 +858,16 @@ runtime reset; retained means/samples and separate confirmation weights are
 clearly distinguished. Confirmation weights are durable release assets with
 hashes. Issue46 tracks coherent analytic tail-plus-noise prior sampling.
 
+The [analytic tail-root prototype](reproduction/results/analytic_tail/README.md)
+uses a fixed Chebyshev approximation of the omitted-spectrum-plus-noise
+covariance square root, with PSD/trace and spatial-box bounds. Small complete
+covariance controls and three released-scorpion paired-draw cases pass, including
+independent CPU replay; the matrix-free root is slower than dense Cholesky at A.
+At one million points the current bounds select 281 actions at cutoff50 or147
+at cutoff200 (standard settings, relative root tolerance1e-7). These are computed
+degrees, not measured massive root times. Issue47 tracks reducing this cost;
+full posterior integration and application comparisons remain open.
+
 ## Code map
 
 | Path | Purpose |

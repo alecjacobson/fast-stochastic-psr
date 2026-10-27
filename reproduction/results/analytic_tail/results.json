@@ -1,0 +1,652 @@
+{
+  "complete": true,
+  "scope": "tail-plus-noise root component; no posterior/application speedup",
+  "root_relative_tolerance": 1e-07,
+  "paired_draw_count": 3,
+  "seed": 4624,
+  "gates": {
+    "action_relative_l2": 1e-08,
+    "paired_root_relative_l2": 1e-07,
+    "dense_polynomial_whitened_covariance_operator_error": 2.1e-07
+  },
+  "source_sha256": {
+    "geospsr/square_root.py": "4ac8762c3b2d076261c085f7869bbe4df3bd379dc87668218aa8a10539466883",
+    "geospsr/inverse_root.py": "6edb851834e6c860d703e6bb4f64a2e563a0987fb89df35fee7aabb1d4451c45",
+    "geospsr/analytic_tail.py": "3693cf6fa834384f0fac521315ea10711fb67705809ed1a958611418bf3b44ad",
+    "geospsr/training_spectrum.py": "f2ce19ea56871aee2b9008984acf34f5588745967d76b7e58573e8ac1b80176d",
+    "geospsr/spectral.py": "368c5abf43b50d66b0b4433712376a5fee76e0022c9b2a6d1c6c2fb0927e3cbb",
+    "geospsr/periodic_leaf_cache.py": "2321661e47db266f43f231327a7be8a9affe69ef558a35f10a31487ece3cd5e1",
+    "reproduction/benchmark_analytic_tail.py": "8070a68772e49cf71750a6cf6edf85a1573875cb1d80707815bc4aabcc0eb2de"
+  },
+  "cases": {
+    "A": {
+      "n": 691,
+      "lengthscale": 0.01,
+      "noise_variance": 0.02,
+      "cutoff": 50,
+      "variance_per_axis": 0.1,
+      "input_sha256": "f9361c57542ebd07fdfce5ec215c63ebfc958b4371039ad3f5c974aa6d6543ae",
+      "runs": [
+        {
+          "root_seconds": 0.15824871510267258,
+          "dense_cholesky_draw_seconds": 8.344650268554688e-05,
+          "paired_root_relative_l2": 2.1904150312181506e-11
+        },
+        {
+          "root_seconds": 0.15818151459097862,
+          "dense_cholesky_draw_seconds": 8.759275078773499e-05,
+          "paired_root_relative_l2": 2.1904150902882274e-11
+        },
+        {
+          "root_seconds": 0.1581847183406353,
+          "dense_cholesky_draw_seconds": 8.149445056915283e-05,
+          "paired_root_relative_l2": 2.1904150596322425e-11
+        },
+        {
+          "root_seconds": 0.15835052356123924,
+          "dense_cholesky_draw_seconds": 0.00010340660810470581,
+          "paired_root_relative_l2": 2.1904150792337647e-11
+        }
+      ],
+      "bound_seconds": 0.05328427255153656,
+      "polynomial_setup_seconds": 0.00041187554597854614,
+      "bound": {
+        "lower": 0.02,
+        "upper": 0.030664552941382747,
+        "tail_diagonal": 0.00014359330359859043,
+        "tail_trace_upper": 0.09922297969662598,
+        "cutoff": 50,
+        "normalization": "analytic",
+        "analytic_box": {
+          "lower": 0.02,
+          "upper": 0.030664552941382747,
+          "grid": 128,
+          "box_width": 0.04908738521234052,
+          "occupied_boxes": 689,
+          "max_box_count": 2,
+          "box_row_sum_upper": 0.010664552941382749,
+          "trace_upper": 0.6910000000000002,
+          "numerical_pad": 1e-08,
+          "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+        },
+        "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+      },
+      "polynomial": {
+        "degree": 8,
+        "lower": 0.02,
+        "upper": 0.030664552941382747,
+        "requested_relative_error": 1e-07,
+        "relative_scalar_error_bound": 3.3816532268069114e-08,
+        "relative_covariance_error_bound": 6.763306567969609e-08,
+        "ellipse_rho": 8.399511498442473,
+        "ellipse_left_real_part": 0.0026206018381953328,
+        "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+      },
+      "finite_spectrum_seconds": 0.01826161891222,
+      "finite_plan_seconds": 0.053896207362413406,
+      "analytic_plan_seconds": 0.04997463896870613,
+      "dense_covariance_seconds": 0.004759062081575394,
+      "dense_cholesky_seconds": 0.051785342395305634,
+      "reference_eigh_seconds": 0.03400092571973801,
+      "eigenvalue_range": [
+        0.020075065694566845,
+        0.020255941894774455
+      ],
+      "action_relative_l2": 1.3542525224030923e-14,
+      "dense_polynomial_whitened_covariance_operator_error": 4.587640749333227e-11,
+      "dense_setup_first_draw_seconds": 0.07488946989178658,
+      "matrix_free_setup_first_draw_seconds": 0.3340773284435272,
+      "quality_pass": true
+    },
+    "A_short_low_noise": {
+      "n": 691,
+      "lengthscale": 0.005,
+      "noise_variance": 0.0004,
+      "cutoff": 50,
+      "variance_per_axis": 0.1,
+      "input_sha256": "f9361c57542ebd07fdfce5ec215c63ebfc958b4371039ad3f5c974aa6d6543ae",
+      "runs": [
+        {
+          "root_seconds": 0.8709030970931053,
+          "dense_cholesky_draw_seconds": 0.0001822635531425476,
+          "paired_root_relative_l2": 3.1302155686862066e-12
+        },
+        {
+          "root_seconds": 0.8910114802420139,
+          "dense_cholesky_draw_seconds": 0.00015240907669067383,
+          "paired_root_relative_l2": 3.130210206809803e-12
+        },
+        {
+          "root_seconds": 0.8703993186354637,
+          "dense_cholesky_draw_seconds": 0.00022118166089057922,
+          "paired_root_relative_l2": 3.130209940820115e-12
+        },
+        {
+          "root_seconds": 0.8708613999187946,
+          "dense_cholesky_draw_seconds": 0.00014293193817138672,
+          "paired_root_relative_l2": 3.1302096462288602e-12
+        }
+      ],
+      "bound_seconds": 0.058506179600954056,
+      "polynomial_setup_seconds": 0.0004178956151008606,
+      "bound": {
+        "lower": 0.0004,
+        "upper": 0.007344451034232793,
+        "tail_diagonal": 0.0005084672261616521,
+        "tail_trace_upper": 0.35135086018770156,
+        "cutoff": 50,
+        "normalization": "analytic",
+        "analytic_box": {
+          "lower": 0.0004,
+          "upper": 0.007344451034232793,
+          "grid": 128,
+          "box_width": 0.04908738521234052,
+          "occupied_boxes": 689,
+          "max_box_count": 2,
+          "box_row_sum_upper": 0.006944451034232793,
+          "trace_upper": 0.6910000000000002,
+          "numerical_pad": 1e-08,
+          "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+        },
+        "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+      },
+      "polynomial": {
+        "degree": 44,
+        "lower": 0.0004,
+        "upper": 0.007344451034232793,
+        "requested_relative_error": 1e-07,
+        "relative_scalar_error_bound": 7.171750228928842e-08,
+        "relative_covariance_error_bound": 1.4343500972197697e-07,
+        "ellipse_rho": 1.571030719217178,
+        "ellipse_left_real_part": 3.966023082866213e-05,
+        "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+      },
+      "finite_spectrum_seconds": 0.0003071501851081848,
+      "finite_plan_seconds": 0.01607484742999077,
+      "analytic_plan_seconds": 0.0025133974850177765,
+      "dense_covariance_seconds": 0.004192762076854706,
+      "dense_cholesky_seconds": 0.0022851787507534027,
+      "reference_eigh_seconds": 0.01752699539065361,
+      "eigenvalue_range": [
+        0.0007924758870744157,
+        0.0010542709349559444
+      ],
+      "action_relative_l2": 1.738608883763733e-13,
+      "dense_polynomial_whitened_covariance_operator_error": 8.412218183203727e-12,
+      "dense_setup_first_draw_seconds": 0.006967354565858841,
+      "matrix_free_setup_first_draw_seconds": 0.948722567409277,
+      "quality_pass": true
+    },
+    "A_long": {
+      "n": 691,
+      "lengthscale": 1.0,
+      "noise_variance": 1e-05,
+      "cutoff": 50,
+      "variance_per_axis": 0.1,
+      "input_sha256": "f9361c57542ebd07fdfce5ec215c63ebfc958b4371039ad3f5c974aa6d6543ae",
+      "runs": [
+        {
+          "root_seconds": 0.03986811637878418,
+          "dense_cholesky_draw_seconds": 9.497255086898804e-05,
+          "paired_root_relative_l2": 1.0041945292346643e-09
+        },
+        {
+          "root_seconds": 0.03980482742190361,
+          "dense_cholesky_draw_seconds": 9.414181113243103e-05,
+          "paired_root_relative_l2": 1.0042796595026023e-09
+        },
+        {
+          "root_seconds": 0.03977731615304947,
+          "dense_cholesky_draw_seconds": 0.00010444596409797668,
+          "paired_root_relative_l2": 1.0042232835710264e-09
+        },
+        {
+          "root_seconds": 0.04001861438155174,
+          "dense_cholesky_draw_seconds": 0.0001318603754043579,
+          "paired_root_relative_l2": 1.0041656617492136e-09
+        }
+      ],
+      "bound_seconds": 0.05767032131552696,
+      "polynomial_setup_seconds": 0.0004310496151447296,
+      "bound": {
+        "lower": 1e-05,
+        "upper": 1.0068194341706176e-05,
+        "tail_diagonal": 8.868935123903743e-11,
+        "tail_trace_upper": 6.819434170617486e-08,
+        "cutoff": 50,
+        "normalization": "analytic",
+        "analytic_box": {
+          "lower": 1e-05,
+          "upper": 0.687085780925847,
+          "grid": 128,
+          "box_width": 0.04908738521234052,
+          "occupied_boxes": 689,
+          "max_box_count": 2,
+          "box_row_sum_upper": 0.6870757809258471,
+          "trace_upper": 0.6910000000000002,
+          "numerical_pad": 1e-08,
+          "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+        },
+        "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+      },
+      "polynomial": {
+        "degree": 2,
+        "lower": 1e-05,
+        "upper": 1.0068194341706176e-05,
+        "requested_relative_error": 1e-07,
+        "relative_scalar_error_bound": 6.738433847021438e-08,
+        "relative_covariance_error_bound": 1.3476868148107783e-07,
+        "ellipse_rho": 427.857612778746,
+        "ellipse_left_real_part": 2.739690262597933e-06,
+        "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+      },
+      "finite_spectrum_seconds": 0.0003244839608669281,
+      "finite_plan_seconds": 0.006409052759408951,
+      "analytic_plan_seconds": 0.0026966482400894165,
+      "dense_covariance_seconds": 0.000872097909450531,
+      "dense_cholesky_seconds": 0.0023143962025642395,
+      "reference_eigh_seconds": 0.01605987176299095,
+      "eigenvalue_range": [
+        1.0000000113381436e-05,
+        1.000387905117437e-05
+      ],
+      "action_relative_l2": 2.0066812758935436e-09,
+      "dense_polynomial_whitened_covariance_operator_error": 9.359609851011314e-10,
+      "dense_setup_first_draw_seconds": 0.0036059506237506866,
+      "matrix_free_setup_first_draw_seconds": 0.10739967226982117,
+      "quality_pass": true
+    }
+  },
+  "scale_bounds": {
+    "B": {
+      "n": 17419,
+      "input_sha256": "be16fe0a787a27a1e58cdac5170f8157469fc02f246484435f3b1f0be4688ccc",
+      "settings": [
+        {
+          "cutoff": 50,
+          "lengthscale": 0.01,
+          "noise_variance": 0.02,
+          "bound_seconds": 0.055309396237134933,
+          "bound": {
+            "lower": 0.02,
+            "upper": 0.29233263142805427,
+            "tail_diagonal": 0.00014359330359859043,
+            "tail_trace_upper": 2.5012519295738467,
+            "cutoff": 50,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.02,
+              "upper": 0.29233263142805427,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 7026,
+              "max_box_count": 13,
+              "box_row_sum_upper": 0.27233263142805425,
+              "trace_upper": 17.419000000000004,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 38,
+            "lower": 0.02,
+            "upper": 0.29233263142805427,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.529463416400526e-08,
+            "relative_covariance_error_bound": 1.9058927740907783e-07,
+            "ellipse_rho": 1.6632814370102695,
+            "ellipse_left_real_part": 0.001991827728093948,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 50,
+          "lengthscale": 0.005,
+          "noise_variance": 0.0004,
+          "bound_seconds": 0.05587064474821091,
+          "bound": {
+            "lower": 0.0004,
+            "upper": 0.14748730571476443,
+            "tail_diagonal": 0.0005084672261616521,
+            "tail_trace_upper": 8.856990786699818,
+            "cutoff": 50,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.0004,
+              "upper": 0.14748730571476443,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 7026,
+              "max_box_count": 13,
+              "box_row_sum_upper": 0.14708730571476442,
+              "trace_upper": 17.419000000000004,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 230,
+            "lower": 0.0004,
+            "upper": 0.14748730571476443,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.458703657376074e-08,
+            "relative_covariance_error_bound": 1.8917408209422898e-07,
+            "ellipse_rho": 1.1041076235655745,
+            "ellipse_left_real_part": 3.903187044147771e-05,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 200,
+          "lengthscale": 0.01,
+          "noise_variance": 0.02,
+          "bound_seconds": 0.05444524437189102,
+          "bound": {
+            "lower": 0.02,
+            "upper": 0.07629832298036389,
+            "tail_diagonal": 3.231996600859056e-06,
+            "tail_trace_upper": 0.05629832298036389,
+            "cutoff": 200,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.02,
+              "upper": 0.29233263142805427,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 7026,
+              "max_box_count": 13,
+              "box_row_sum_upper": 0.27233263142805425,
+              "trace_upper": 17.419000000000004,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 17,
+            "lower": 0.02,
+            "upper": 0.07629832298036389,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 5.271085065926047e-08,
+            "relative_covariance_error_bound": 1.0542170409695473e-07,
+            "ellipse_rho": 2.9279182356471263,
+            "ellipse_left_real_part": 0.0021329133004289666,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 200,
+          "lengthscale": 0.005,
+          "noise_variance": 0.0004,
+          "bound_seconds": 0.054633934050798416,
+          "bound": {
+            "lower": 0.0004,
+            "upper": 0.14748730571476443,
+            "tail_diagonal": 2.405541928811536e-05,
+            "tail_trace_upper": 0.41902152276968146,
+            "cutoff": 200,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.0004,
+              "upper": 0.14748730571476443,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 7026,
+              "max_box_count": 13,
+              "box_row_sum_upper": 0.14708730571476442,
+              "trace_upper": 17.419000000000004,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 230,
+            "lower": 0.0004,
+            "upper": 0.14748730571476443,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.458703657376074e-08,
+            "relative_covariance_error_bound": 1.8917408209422898e-07,
+            "ellipse_rho": 1.1041076235655745,
+            "ellipse_left_real_part": 3.903187044147771e-05,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        }
+      ]
+    },
+    "million": {
+      "n": 1000000,
+      "input_sha256": "6ce9f00b1380a8343b5a1e1dd56c1e619051d9d6887b84f4fba20d2a3d1415a4",
+      "settings": [
+        {
+          "cutoff": 50,
+          "lengthscale": 0.01,
+          "noise_variance": 0.02,
+          "bound_seconds": 0.13760322332382202,
+          "bound": {
+            "lower": 0.02,
+            "upper": 10.634560452612938,
+            "tail_diagonal": 0.00014359330359859043,
+            "tail_trace_upper": 143.5933135985904,
+            "cutoff": 50,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.02,
+              "upper": 10.634560452612938,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 15609,
+              "max_box_count": 292,
+              "box_row_sum_upper": 10.614560452612938,
+              "trace_upper": 1000.0000000000002,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 281,
+            "lower": 0.02,
+            "upper": 10.634560452612938,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.318630641019099e-08,
+            "relative_covariance_error_bound": 1.8637262150406968e-07,
+            "ellipse_rho": 1.0859424456547648,
+            "ellipse_left_real_part": 0.001951104462123432,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 50,
+          "lengthscale": 0.005,
+          "noise_variance": 0.0004,
+          "bound_seconds": 0.13187537714838982,
+          "bound": {
+            "lower": 0.0004,
+            "upper": 5.525233536395506,
+            "tail_diagonal": 0.0005084672261616521,
+            "tail_trace_upper": 508.46723616165207,
+            "cutoff": 50,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.0004,
+              "upper": 5.525233536395506,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 15609,
+              "max_box_count": 292,
+              "box_row_sum_upper": 5.524833536395506,
+              "trace_upper": 1000.0000000000002,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 1633,
+            "lower": 0.0004,
+            "upper": 5.525233536395506,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.878348666223318e-08,
+            "relative_covariance_error_bound": 1.975669830826436e-07,
+            "ellipse_rho": 1.016297988993379,
+            "ellipse_left_real_part": 3.9000849411774396e-05,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 200,
+          "lengthscale": 0.01,
+          "noise_variance": 0.02,
+          "bound_seconds": 0.13193373382091522,
+          "bound": {
+            "lower": 0.02,
+            "upper": 3.2520066008590556,
+            "tail_diagonal": 3.231996600859056e-06,
+            "tail_trace_upper": 3.2320066008590556,
+            "cutoff": 200,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.02,
+              "upper": 10.634560452612938,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 15609,
+              "max_box_count": 292,
+              "box_row_sum_upper": 10.614560452612938,
+              "trace_upper": 1000.0000000000002,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 147,
+            "lower": 0.02,
+            "upper": 3.2520066008590556,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.329134495175453e-08,
+            "relative_covariance_error_bound": 1.865826986067841e-07,
+            "ellipse_rho": 1.1610315310197097,
+            "ellipse_left_real_part": 0.0019536208534554067,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        },
+        {
+          "cutoff": 200,
+          "lengthscale": 0.005,
+          "noise_variance": 0.0004,
+          "bound_seconds": 0.12935643643140793,
+          "bound": {
+            "lower": 0.0004,
+            "upper": 5.525233536395506,
+            "tail_diagonal": 2.405541928811536e-05,
+            "tail_trace_upper": 24.05542928811536,
+            "cutoff": 200,
+            "normalization": "analytic",
+            "analytic_box": {
+              "lower": 0.0004,
+              "upper": 5.525233536395506,
+              "grid": 128,
+              "box_width": 0.04908738521234052,
+              "occupied_boxes": 15609,
+              "max_box_count": 292,
+              "box_row_sum_upper": 5.524833536395506,
+              "trace_upper": 1000.0000000000002,
+              "numerical_pad": 1e-08,
+              "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+            },
+            "qualification": "PSD/trace enclosure in exact arithmetic; float64 padded evaluations, not interval arithmetic; numerical action errors separate"
+          },
+          "polynomial": {
+            "degree": 1633,
+            "lower": 0.0004,
+            "upper": 5.525233536395506,
+            "requested_relative_error": 1e-07,
+            "relative_scalar_error_bound": 9.878348666223318e-08,
+            "relative_covariance_error_bound": 1.975669830826436e-07,
+            "ellipse_rho": 1.016297988993379,
+            "ellipse_left_real_part": 3.9000849411774396e-05,
+            "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+          },
+          "root_measured": false
+        }
+      ]
+    }
+  },
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:1B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 7,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 1.4722347259521484e-05,
+        "seconds": 0.04144492745399475,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.041684240102768,
+        "seconds": 1.0970472805202007,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 1619001344.0
+      },
+      {
+        "started_seconds": 2.0971746258437634,
+        "seconds": 2.1545374020934105,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 1623195648.0
+      },
+      {
+        "started_seconds": 3.15464211627841,
+        "seconds": 3.1741531528532505,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 1623195648.0
+      },
+      {
+        "started_seconds": 4.174260046333075,
+        "seconds": 4.195041071623564,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 1623195648.0
+      },
+      {
+        "started_seconds": 5.195159014314413,
+        "seconds": 5.250403754413128,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 520093696.0
+      },
+      {
+        "started_seconds": 6.03843791782856,
+        "seconds": 6.081669498234987,
+        "pids": [
+          5035
+        ],
+        "own_memory_bytes": 520093696.0
+      }
+    ],
+    "own_pid": 5035,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

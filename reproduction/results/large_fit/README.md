@@ -65,6 +65,11 @@ surface/probability checks before treating its global mean agreement as
 application equivalence. Pointwise signs on this grid are not a continuous
 surface or topology certificate; these numbers do not measure probability error.
 
+A [subsequent frozen-fit contour study](../large_contours/README.md) evaluates
+both planes on nested grids through 2049 squared. It reports refined boundary
+distances, retaining all components, without changing these historical gates
+or treating two slices as full surface/probability validation.
+
 NUFFT uses a requested CG tolerance of 1e-5; the actual recomputed finite-system
 residuals are retained in each raw record and can exceed that requested value
 within the existing solver's floating-point acceptance criterion of twice the

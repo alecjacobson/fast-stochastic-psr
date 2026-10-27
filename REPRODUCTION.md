@@ -176,8 +176,14 @@ differ by 0.0011%. First fit through 20,000 mean queries takes 27.70/29.75 s und
 contention. The transferred SDD setting reaches its 600-second update budget
 without passing the strict training-residual gate, yet its displayed mean is
 already within 0.145% of the cutoff-250 result globally, with six sampled sign
-changes. Local surface/probability quality remains unchecked. No speedup ratio or upstream
-intractability claim follows. Issue #36 tracks application-aware stopping, and
+changes. A [frozen-fit slice-contour study](reproduction/results/large_contours/README.md)
+now refines both displayed planes through 2049-square grids, retaining every
+component. All six final refinement checks pass. The two NUFFT contours agree
+within 0.0032% of domain width; SDD's lower-slice Hausdorff distance is bracketed
+at 0.0614–0.0646% of that width. These are distances between extracted polylines,
+not continuous-surface or probability guarantees, and no application tolerance
+has been selected. Full 3D surface/probability quality remains unchecked.
+No speedup ratio or upstream intractability claim follows. Issue #36 tracks application-aware stopping, and
 larger-scale covariance, sampling and application validation remain open.
 The compiled SDD/upstream-equivalence and folded-spectrum tests also pass.
 

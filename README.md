@@ -125,8 +125,11 @@ versus double dense Cholesky on B, including setup with the native library cache
 observations, repeated analytic actions improve **2.23 → 1.28 s (1.74×)**, but
 retained storage grows **18.5 → 27.3 GB**. The 1,024 sampled analytic rows pass;
 massive fitting, SDD comparison and application gains remain open.
-[Full-model refinement of NUFFT fits (#45)](https://github.com/alecjacobson/fast-stochastic-psr/issues/45)
-is the next combined approach to test. FMM has no implemented backend or measured speedup. A dense matrix's memory
+[Analytic refinement of NUFFT fits](reproduction/results/analytic_refinement/README.md)
+now passes strict million-point mean-fit gates: setup+fit improves **130.4 → 36.1 s
+(3.61×)** in confirmation versus our analytic range CG. A/B are slower with this
+combination. This is neither an SDD nor an application speedup; coherent omitted
+prior sampling remains open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46). FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects

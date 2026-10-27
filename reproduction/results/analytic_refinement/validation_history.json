@@ -1,0 +1,22 @@
+{
+  "restored_environment_tests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "first_confirmation_replay": {
+    "status": "failed on finite-only sampled residual replay after plain passed",
+    "mismatched_elements": 39,
+    "total_elements": 3072,
+    "maximum_difference_among_violations": 4.05311584e-08,
+    "cause": "Benchmark sampled audit multiplies finite-only float32 weights by noise in float32; validator had promoted that term to double. Accepted methods already use double weights.",
+    "resolution": "Replay the recorded expression exactly and separately recompute the fully double sampled residual for all methods. Do not relax numerical gates or alter benchmark records."
+  },
+  "pilot_runtime_loss": "Original million full-weight archives were ephemeral and lost; retained inputs/means/samples and raw records survive. Separate fresh-runtime confirmation retains complete weights for durable publication.",
+  "corrected_replay": {
+    "status": "passed",
+    "AB_stress_full_fits": 12,
+    "original_million_retained_mean_sample_controls": 4,
+    "confirmation_full_fits": 4,
+    "gpu_audits": "independent full-row direct checks at A/B; full-row range plus1024 independent direct rows at1M; fully double diagonal check also retained"
+  }
+}

@@ -847,6 +847,17 @@ at a million), with 23 new tests and complete archive replay. No SDD, posterior
 or complete application speedup is claimed. Issue45 tracks using the analytic
 action selectively to verify/refine fast NUFFT solutions.
 
+The [analytic-refinement study](reproduction/results/analytic_refinement/README.md)
+combines cube200 NUFFT fits with full analytic residual checks and defect
+corrections. A/B and stress B pass but are slower than analytic CG from zero.
+At one million identical observations, three corrections pass all-row range
+residuals, independent sampled direct rows and20k mean-query gates. Pilot and
+fresh-runtime confirmation setup+fit gains are3.54x and3.61x versus our analytic
+CG, not SDD or full applications. Original pilot full weights were lost in a
+runtime reset; retained means/samples and separate confirmation weights are
+clearly distinguished. Confirmation weights are durable release assets with
+hashes. Issue46 tracks coherent analytic tail-plus-noise prior sampling.
+
 ## Code map
 
 | Path | Purpose |

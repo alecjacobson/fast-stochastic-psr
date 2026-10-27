@@ -71,10 +71,11 @@ coherent posterior samples at arbitrary queries. We retain a compatibility mode
 for the released interpolated kernel and investigate direct Fourier evaluation
 at controlled application error ([#5](https://github.com/alecjacobson/fast-stochastic-psr/issues/5)).
 
-Exact variance remains a bottleneck. A new [marginal-variance estimator pilot](reproduction/results/complement_variance/README.md)
-reduces error at fixed draw count; spatial-contrast and action-quality validation
-remain open, with no measured application speedup yet. Matrix-free conditioning
-now reaches a million observations with independently checked training-bandwidth convergence,
+Exact variance remains a bottleneck. A [full-slice sampling study](reproduction/results/correction_contrast/README.md)
+still misses the 1% spatial-contrast target at 8,192 draws on both A and B;
+deterministic variance passes. No matched-quality variance speedup is established by this study.
+Matrix-free conditioning reaches a million observations with independently checked
+training-bandwidth convergence,
 but the full application quality bridge remains open. The authors' iterative
 method also fits this million-point input; this scale is **not intractable for SDD**.
 Compiled SDD wins the warm A/B fits in this comparison, motivating

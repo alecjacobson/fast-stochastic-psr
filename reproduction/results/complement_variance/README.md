@@ -85,6 +85,14 @@ previously reported range-normalized errors remain available in the
 [matched reproduction report](../matched/README.md). The new stochastic pilot
 does not replace those images or their stronger deterministic quality evidence.
 
+## Full-slice follow-up
+
+The [subsequent A/B study](../correction_contrast/README.md) uses all 20,000 slice
+queries, a cheaper inverse-factor correction sampler and fixed counts through
+8,192 draws. It still misses a prospective 1% contrast target on both datasets;
+the deterministic baseline passes. This confirms that the small total-variance
+error above does not yet establish matching-quality application gains.
+
 ## Cost and next steps
 
 Recorded preparation, component-query and reference timings are retained in

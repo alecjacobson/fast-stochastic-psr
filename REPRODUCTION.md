@@ -184,6 +184,19 @@ claim. The report includes a prior-only baseline and the extra-query cost;
 action rankings, B/million-point validation and fixed-quality timing remain open
 in [#34](https://github.com/alecjacobson/fast-stochastic-psr/issues/34).
 
+The subsequent [full-slice contrast study](reproduction/results/correction_contrast/README.md)
+uses all 20,000 queries in both A and B, three independent seeds and fixed counts
+through 8,192 draws. `DenseCorrectionSampler` draws `L^-T xi` and caches its
+Fourier correction coefficients batch by batch, avoiding the full prior;
+`CorrectionMoments` retains only query-sized second moments. These are correction
+fields, not coherent posterior samples for ray/collision events. The dense factor
+still costs quadratic memory. Source/query transform plans are reused.
+Neither case reaches the prospective 1% contrast gate; the deterministic streamed
+cross-factor baseline passes. All failures, component costs and convergence plots
+are retained. The contended timings establish no matched-quality speedup.
+[Issue #35](https://github.com/alecjacobson/fast-stochastic-psr/issues/35) proposes
+matrix-free inverse-root sampling, with covariance/error validation still required.
+
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
 Legacy manifests hashed the float64 RHS before storage conversion; read-only

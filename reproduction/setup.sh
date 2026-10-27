@@ -11,5 +11,7 @@ if [ ! -x "$GEOSPSR_RUNTIME/venv/bin/python" ]; then
 fi
 uv pip install --python "$GEOSPSR_RUNTIME/venv/bin/python" -r reproduction/requirements-lock.txt
 if [ ! -e "$GEOSPSR_RUNTIME/upstream" ]; then
-    git worktree add --detach "$GEOSPSR_RUNTIME/upstream" 2352f1ef98aab20e0303611c1fa2b0948acd2a05
+    # Runtime disks may be ephemeral while the main .git registration persists.
+    # A single --force recovers a missing registration, but not a locked worktree.
+    git worktree add --force --detach "$GEOSPSR_RUNTIME/upstream" 2352f1ef98aab20e0303611c1fa2b0948acd2a05
 fi

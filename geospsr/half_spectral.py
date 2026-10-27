@@ -46,10 +46,10 @@ class HalfCubeSpectrum:
 class HalfCubeKernel:
     """Reusable real-RHS cube action with 3D positive-half and 2D plane plans."""
 
-    def solve(self,rhs,rtol=1e-5,maxiter=500,x0=None,preconditioner=None):
+    def solve(self,rhs,rtol=1e-5,maxiter=500,x0=None,preconditioner=None,callback=None):
         if cp.iscomplexobj(rhs) or (x0 is not None and cp.iscomplexobj(x0)):
             raise ValueError('conjugate half-cube solves require real RHS and initial weights')
-        return FourierKernel.solve(self,rhs,rtol=rtol,maxiter=maxiter,x0=x0,preconditioner=preconditioner)
+        return FourierKernel.solve(self,rhs,rtol=rtol,maxiter=maxiter,x0=x0,preconditioner=preconditioner,callback=callback)
 
     def __init__(self,points,op,noise_variance,rhs_count=3,axis=0):
         if axis not in (0,1,2) or axis!=int(axis):

@@ -132,15 +132,20 @@ class FourierKernel:
         values=self.backward.execute(cp.ascontiguousarray(modes*self.op.rho[None]))
         return values.real.T+self.noise_variance*weights
 
-    def solve(self, rhs, rtol=1e-5, maxiter=500, x0=None,preconditioner=None):
+    def solve(self, rhs, rtol=1e-5, maxiter=500, x0=None,preconditioner=None,callback=None):
         """Independent CG recurrences, batched over RHS; true residual reported.
 
         An optional starting solution preserves the tolerance relative to the
         original RHS, not the smaller initial residual. x0 is never mutated.
         A supplied preconditioner opts into PCG without changing this action;
         it must apply a fixed symmetric positive definite inverse approximation.
+        For unpreconditioned CG, callback(iteration, x) observes each completed
+        iteration, including the final one. It must not modify the borrowed x;
+        copy it to retain a snapshot. Callback exceptions propagate to the caller.
         """
         if preconditioner is not None:
+            if callback is not None:
+                raise ValueError('iteration callbacks currently require unpreconditioned CG')
             from geospsr.preconditioning import pcg
             return pcg(self,rhs,preconditioner,rtol=rtol,maxiter=maxiter,x0=x0)
         rhs=cp.asarray(rhs,dtype=self.op.dtype)
@@ -165,6 +170,8 @@ class FourierKernel:
             step=cp.where(active,rr/cp.where(denom!=0,denom,1),0)
             x+=p*step;r-=ap*step
             newrr=(r*r).sum(0)
+            if callback is not None:
+                callback(iteration+1,x)
             if bool(cp.all(newrr<=threshold)):
                 converged=True;break
             p=r+p*cp.where(active,newrr/cp.where(rr!=0,rr,1),0)

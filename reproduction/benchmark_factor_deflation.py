@@ -20,6 +20,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser();p.add_argument('--case',choices=['A','B'],required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True)
+    p.add_argument('--factor-batch',type=int,choices=[4,16],default=4)
     p.add_argument('--confirm',type=Path,help='pilot results.json; use its selected rank/count and new seeds')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True);a.archive.mkdir(parents=True,exist_ok=True)
     ranks,looks,seeds=[64,128,256,512],[32,128,512,2048],[(2401,401),(2503,503),(2607,607)]
@@ -28,7 +29,7 @@ def main():
         if not pilot['complete'] or pilot['case']!=a.case or pilot['selected'] is None:raise ValueError('no eligible pilot setting')
         ranks=[pilot['selected']['rank']];looks=[pilot['selected']['count']];seeds=[(2709,709),(2801,801),(2907,907)]
     r={'complete':False,'case':a.case,'phase':'confirmation' if a.confirm else 'pilot','ranks':ranks,'looks':looks,
-       'seeds':seeds,'estimator':'factor-space','seconds':{},'runs':[],'selected':None,
+       'seeds':seeds,'estimator':'factor-space','factor_batch':a.factor_batch,'seconds':{},'runs':[],'selected':None,
        'gates':{'contrast_relative_l2':.01,'probability_rms':.0005,'probability_max':.005},
        'control_precision_gate':.001,'model':'full analytic vector covariance; scalar/cross cutoff50; noise .02; direct Fourier',
        'scope':'first fixed-query marginal variance estimate; sketch/factor-action costs included; not posterior event samples',
@@ -67,7 +68,7 @@ def main():
             return op,cp.linalg.cholesky(matrix)
         (double,chol),r['seconds']['reference_factor_setup']=timed(reference_setup)
         def make_factor(op,chol):
-            factor=FourierCorrectionFactor(x,q,op,chol,batch=4);factor.prepare(4);return factor
+            factor=FourierCorrectionFactor(x,q,op,chol,batch=a.factor_batch);factor.prepare(a.factor_batch);return factor
         factor,r['seconds']['action_setup']=timed(lambda:make_factor(model.op,model.L))
         reference_factor,r['seconds']['reference_action_setup']=timed(lambda:make_factor(double,chol))
         sampler=DenseCorrectionSampler(x,model.L,model.op)

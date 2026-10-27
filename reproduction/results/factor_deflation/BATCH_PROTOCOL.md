@@ -23,3 +23,9 @@ not selection of faster repetitions from the original confirmation.
 Only launch after all earlier GPU jobs finish. Record source manifests for
 both versions. Limit the candidate to batch16; testing other widths is separate
 future work. Dense-factor and fixed-query scope remains unchanged.
+
+Before the batch16 runs, also fix a paired numerical check: per confirmation
+seed, batch16 versus batch4 variance discrepancy must be ≤0.1% of reference
+spatial contrast. Inputs, rank/count and sketch/evaluation seeds must match.
+This checks execution-granularity error independently of each output's distance
+to the reference. It is an additional requirement for batch16 timing ratios.

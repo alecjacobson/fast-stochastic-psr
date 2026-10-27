@@ -289,6 +289,20 @@ commands, calibration curves, failures and independent confirmation data are
 in the report; [#39](https://github.com/alecjacobson/fast-stochastic-psr/issues/39)
 tracks the remaining quality/scaling work.
 
+The [whitened-factor follow-up](reproduction/results/factor_deflation/README.md)
+uses `H=C L3^-T`, an independent basis `V=orth(H^T Omega)` and cached `U=HV`.
+Paired residuals `H xi-U(V^T xi)` avoid a separate pilot-field generation stage.
+All independent A/B confirmations pass the same full-slice gates. With factor
+batch16, B's first-estimate stages cost **6.15 vs 6.44 s (1.05×)**, including
+preparation; A remains slower at **1.78 vs 1.63 s**. B uses a rank512 sketch,
+512 adjoint plus 512 forward factor columns, and 32 evaluation draws; preparation
+still consumes about 5.88 s. Eight targeted tests, 144 archived array checks and
+144 exact saved-estimate replays pass. A paired batching check preserves the
+numerical result. This modest direct-model gain does not establish massive-scale
+or application speedups. [#40](https://github.com/alecjacobson/fast-stochastic-psr/issues/40)
+tracks factor costs and scaling; [#41](https://github.com/alecjacobson/fast-stochastic-psr/issues/41)
+proposes exact planar Fourier contractions.
+
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.
 Legacy manifests hashed the float64 RHS before storage conversion; read-only

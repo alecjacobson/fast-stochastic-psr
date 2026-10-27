@@ -101,6 +101,12 @@ tracks finite-grid event-law bounds from PSD covariance budgets; the preliminary
 equal-mean diagnostics there are not total numerical/model error certificates.
 Geometry/Monte Carlo convergence and the full application suite remain open.
 
+The [event-budget diagnostic](EVENT_BUDGET.md) now propagates conditional
+solve/truncation bounds to ray-prefix and collision probabilities. Fourteen
+CPU tests pass, and the retained best-view choice remains separated after
+adding these bounds to the Monte Carlo intervals. Mean/numerical/model and
+geometry qualifications remain explicit; rank 384 is still rejected.
+
 ## Reproduce
 
 ```
@@ -127,3 +133,6 @@ B controls and all paired event arrays are public release assets listed in
 
 The shared fetch command accepts either study's manifest. The massive run is
 not included in this release while it is incomplete.
+All four public assets were freshly downloaded, hash-checked and replayed;
+[publication_check.json](publication_check.json) records the release target and
+the preserved passing/rejected quality outcomes.

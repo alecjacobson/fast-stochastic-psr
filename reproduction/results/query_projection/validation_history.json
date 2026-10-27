@@ -1,4 +1,10 @@
 {
   "retained_failure": "B_r384_c50_s2_b4 fails marginal output gate and both budgets; paired events happen to agree",
-  "replay_fix": "Input queries are float32; saved model queries are their exact float64 promotion. Original byte hashes and exact value promotion are both independently checked. No data/hash or output gate was changed."
+  "replay_fix": "Input queries are float32; saved model queries are their exact float64 promotion. Original byte hashes and exact value promotion are both independently checked. No data/hash or output gate was changed.",
+  "event_budget_tests": {
+    "initial": "10 passed, 2 failed because test expectations incorrectly demanded an exact zero tail and exact decimal sum",
+    "correction": "Tests retain the positive 30-sigma tail and compare floating-point sums with 1e-15 relative tolerance; no application gate changed",
+    "final": "14 passed, including stronger approximate-marginal derivation and an indefinite covariance-difference coupling"
+  },
+  "event_budget_public_replay": "Both event_budget.json files reproduce byte-for-byte from freshly downloaded public controls."
 }

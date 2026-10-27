@@ -806,8 +806,15 @@ boundary handling, setup/rebuild costs, and real surface-supported scans.
 [Issue #18](https://github.com/alecjacobson/fast-stochastic-psr/issues/18) also
 tracks exact sorted-range sums, motivated by
 [Langrené, Warin and Gruet's product-Matérn decomposition](https://arxiv.org/abs/2508.01864).
-A scalar periodic decomposition has been checked numerically; a stable GPU
-implementation and measured conditioning/application gains remain unimplemented.
+A [stable 3D periodic GPU prototype](reproduction/results/periodic_range/README.md)
+now passes independent analytic A/B action controls with covariance errors below
+7e-15. Its 13 tests include periodic seams, ties, an independent image sum and
+explicit pair coverage. B retains 7.90 MB of geometry versus a 2.43 GB dense
+matrix, but takes 90.17 ms per action versus 16.41 ms for cached dense. The
+serial z sweep needs optimization; no conditioning/application speedup is
+claimed. Cube200 NUFFT is recorded separately and fails this experiment's
+strict full-analytic action gate. See the report for derivation, setup/first-use
+costs, all measured runs, archive replay and reproduction commands.
 
 ## Code map
 

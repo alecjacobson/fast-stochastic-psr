@@ -1,0 +1,221 @@
+{
+  "complete": true,
+  "case": "A",
+  "model": {
+    "lengthscale": 0.01,
+    "variance_per_axis": 0.1,
+    "noise_variance": 0.02
+  },
+  "seed": 4501,
+  "rhs_count": 3,
+  "repetitions_after_first": 3,
+  "relative_l2_gate": 1e-07,
+  "scope": "matrix action only; no CG, posterior, or application speedup",
+  "device": "NVIDIA L40",
+  "methods": {
+    "dense": {
+      "setup_seconds": 0.020437829196453094,
+      "first_action_seconds": 0.044341087341308594,
+      "retained_matrix_bytes": 3819848,
+      "subsequent_seconds": [
+        0.00013405829668045044,
+        7.002055644989014e-05,
+        6.263330578804016e-05
+      ]
+    },
+    "range": {
+      "setup_seconds": 0.01388721913099289,
+      "first_action_seconds": 0.11717512086033821,
+      "subsequent_seconds": [
+        0.0023749880492687225,
+        0.002322562038898468,
+        0.002295568585395813
+      ],
+      "quality": [
+        {
+          "action_relative_l2_per_rhs": [
+            2.8524028032122857e-16,
+            2.663802595469044e-16,
+            2.621102691304637e-16
+          ],
+          "covariance_relative_l2_per_rhs": [
+            5.536891100229066e-15,
+            5.1354408270459844e-15,
+            5.149340617829914e-15
+          ],
+          "quality_pass": true
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            2.85557930474298e-16,
+            2.6645196483883893e-16,
+            2.623908022920312e-16
+          ],
+          "covariance_relative_l2_per_rhs": [
+            5.543023340108721e-15,
+            5.136821791954522e-15,
+            5.1548826304459535e-15
+          ],
+          "quality_pass": true
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            2.853347836308812e-16,
+            2.6584571310645645e-16,
+            2.629737289707169e-16
+          ],
+          "covariance_relative_l2_per_rhs": [
+            5.538683250278317e-15,
+            5.125135652457799e-15,
+            5.166318675661049e-15
+          ],
+          "quality_pass": true
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            2.850193263078699e-16,
+            2.6738156351136187e-16,
+            2.618565280715414e-16
+          ],
+          "covariance_relative_l2_per_rhs": [
+            5.532610883043752e-15,
+            5.154742928208528e-15,
+            5.144355948008113e-15
+          ],
+          "quality_pass": true
+        }
+      ],
+      "plan": {
+        "n": 691,
+        "leaf_size": 32,
+        "far_groups": 250,
+        "direct_groups": 185,
+        "far_entries": 10199,
+        "direct_entries": 3995,
+        "cpu_plan_seconds": 0.013429835438728333,
+        "device_transfer_seconds": 0.0003711506724357605,
+        "retained_device_bytes": 115235,
+        "max_far_group_entries": 420
+      }
+    },
+    "packed_nufft200": {
+      "setup_seconds": 2.1151054836809635,
+      "first_action_seconds": 0.05793343484401703,
+      "subsequent_seconds": [
+        0.05179082229733467,
+        0.051680658012628555,
+        0.05177503079175949
+      ],
+      "quality": [
+        {
+          "action_relative_l2_per_rhs": [
+            0.0001545533658743915,
+            0.000155688594135572,
+            0.00015483715826504612
+          ],
+          "covariance_relative_l2_per_rhs": [
+            0.003000033949076024,
+            0.0030014395554926123,
+            0.0030418148340262204
+          ],
+          "quality_pass": false
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            0.00015455431210868327,
+            0.00015568777893020533,
+            0.00015483670930276503
+          ],
+          "covariance_relative_l2_per_rhs": [
+            0.0030000523164210703,
+            0.0030014238395716934,
+            0.003041806014049531
+          ],
+          "quality_pass": false
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            0.0001545543494025717,
+            0.00015568843452063843,
+            0.00015483694738145965
+          ],
+          "covariance_relative_l2_per_rhs": [
+            0.003000053040332392,
+            0.003001436478359198,
+            0.003041810691165238
+          ],
+          "quality_pass": false
+        },
+        {
+          "action_relative_l2_per_rhs": [
+            0.00015455423639776687,
+            0.00015568799098233339,
+            0.00015483646522372634
+          ],
+          "covariance_relative_l2_per_rhs": [
+            0.003000050846797175,
+            0.003001427927614549,
+            0.0030418012190555586
+          ],
+          "quality_pass": false
+        }
+      ],
+      "dtype": "float32",
+      "cutoff": 200,
+      "upsampfac": 1.25,
+      "eps": 1e-06
+    }
+  },
+  "source_sha256": {
+    "geospsr/periodic_range.py": "7abc2ec923ff0f1a743b0130f5786c6bb146407497062d4d9ad0bc19c6857596",
+    "reproduction/benchmark_periodic_range.py": "ce14b95cc015ededd1897fe3924a9ff3e7b265844425c554867825b2da3bbd6d"
+  },
+  "n": 691,
+  "hashes": {
+    "points": "f9361c57542ebd07fdfce5ec215c63ebfc958b4371039ad3f5c974aa6d6543ae",
+    "weights": "608a50834b8aed215a411ffc7c4e90b8c7edb34f5acd564da607f3ea79300f96"
+  },
+  "shared_input_transfer_seconds": 0.0014274083077907562,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 4,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 1.2584030628204346e-05,
+        "seconds": 0.06501208618283272,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.0652756467461586,
+        "seconds": 1.1489827446639538,
+        "pids": [
+          43578
+        ],
+        "own_memory_bytes": 457179136.0
+      },
+      {
+        "started_seconds": 2.149102110415697,
+        "seconds": 2.187140118330717,
+        "pids": [
+          43578
+        ],
+        "own_memory_bytes": 1231028224.0
+      },
+      {
+        "started_seconds": 2.7223855033516884,
+        "seconds": 2.777383219450712,
+        "pids": [
+          43578
+        ],
+        "own_memory_bytes": 4794089472.0
+      }
+    ],
+    "own_pid": 43578,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

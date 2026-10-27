@@ -118,7 +118,10 @@ An optional [compact basis](reproduction/results/nystrom_storage/README.md)
 halves retained preconditioner storage to **1.9 GiB**; recomputed setup avoids
 the full double-precision feature array. It establishes memory savings, with
 no new speedup claimed.
-FMM has no implemented backend or measured speedup. A dense matrix's memory
+An [exact periodic range-sum GPU prototype](reproduction/results/periodic_range/README.md)
+now matches the full analytic A/B kernel actions to roundoff. It saves matrix
+storage but is slower than cached dense actions; conditioning/application gains
+remain open. FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects

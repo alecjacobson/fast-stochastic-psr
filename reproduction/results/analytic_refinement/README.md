@@ -138,7 +138,7 @@ The locked environment was restored, and all12 targeted solver/leaf-kernel tests
 passed. A separate one-pass confirmation of all four methods uses the surviving
 identical input arrays and unchanged settings. It has its own timing record and
 full-weight hashes; it does not overwrite or purport to recreate the lost pilot
-weights. Confirmation full weights will be published as durable release assets.
+weights. Confirmation full weights are published as durable release assets.
 
 The [confirmation record](confirmation/results.json) passes every analytic gate
 for plain, warm-CG and defect-correction fits; finite-only fails again. Its solve
@@ -156,6 +156,9 @@ are release assets, with file sizes, SHA-256 file hashes and array hashes in the
 [manifest](confirmation/release_manifest.json). This preserves auditability
 without relying on ephemeral runtime storage. Inputs, means, sampled residuals
 and sampled weights remain in the repository's control archives.
+All four assets were downloaded from the release and verified against their
+file hashes and sizes; the downloaded arrays also passed the CPU replay.
+The [publication record](confirmation/publication.json) retains these checks.
 
 Replay also caught a precision mismatch in the finite-only sampled audit: the
 original benchmark multiplied that method's float32 weights by the noise in

@@ -124,7 +124,7 @@ versus double dense Cholesky on B, including setup with the native library cache
 (a separate cold build costs .98 s). Reused dense factors win. At one million
 observations, repeated analytic actions improve **2.23 → 1.28 s (1.74×)**, but
 retained storage grows **18.5 → 27.3 GB**. The 1,024 sampled analytic rows pass;
-massive fitting, SDD comparison and application gains remain open.
+these action timings do not establish an SDD or application speedup.
 [Analytic refinement of NUFFT fits](reproduction/results/analytic_refinement/README.md)
 now passes strict million-point mean-fit gates: setup+fit improves **130.4 → 36.1 s
 (3.61×)** in confirmation versus our analytic range CG. A/B are slower with this

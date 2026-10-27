@@ -58,11 +58,13 @@ class FourierCorrectionFactor:
     Latent rows use observation-major (observation,component) order. L3 is
     three independent copies of the supplied N by N Cholesky factor.
     """
-    def __init__(self, points, queries, operator, cholesky, batch=4, coefficients=None):
+    def __init__(self, points, queries, operator, cholesky, batch=4, coefficients=None, query_plan_factory=None, source_plan_factory=None):
         import cupy as cp
         if batch != int(batch) or batch < 1:
             raise ValueError('positive integer batch required')
         self.op, self.batch = operator, int(batch)
+        self.query_plan_factory = operator.plan if query_plan_factory is None else query_plan_factory
+        self.source_plan_factory = operator.plan if source_plan_factory is None else source_plan_factory
         self.points = cp.array(points, dtype=operator.dtype, copy=True)
         self.queries = cp.array(queries, dtype=operator.dtype, copy=True)
         for a in [self.points,self.queries]:
@@ -81,8 +83,8 @@ class FourierCorrectionFactor:
     def prepare(self, count):
         if count not in self.plans:
             op = self.op
-            self.plans[count] = (op.plan(1,self.queries,count),op.plan(2,self.points,3*count),
-                                 op.plan(1,self.points,3*count),op.plan(2,self.queries,count))
+            self.plans[count] = (self.query_plan_factory(1,self.queries,count),op.plan(2,self.points,3*count),
+                                 self.source_plan_factory(1,self.points,3*count),self.query_plan_factory(2,self.queries,count))
         return self.plans[count]
 
     def _apply(self, values, adjoint):

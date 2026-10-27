@@ -12,10 +12,11 @@ from scipy.stats import chi2
 
 
 class DenseCorrectionSampler:
-    def __init__(self, points, cholesky, operator):
+    def __init__(self, points, cholesky, operator, source_plan_factory=None):
         self.points = cp.asarray(points, dtype=operator.dtype)
         self.cholesky = cp.asarray(cholesky)
         self.operator = operator
+        self.source_plan_factory = operator.plan if source_plan_factory is None else source_plan_factory
         n = len(self.points)
         if self.points.shape != (n,3) or n == 0:
             raise ValueError('expected nonempty (N,3) points')
@@ -38,7 +39,7 @@ class DenseCorrectionSampler:
             xi = rng.standard_normal((n,3*p),dtype=self.operator.dtype)
             weights = cla.solve_triangular(self.cholesky.T,xi,lower=False)
             weights = weights.reshape(n,p,3).transpose(1,0,2)
-            if p not in plans: plans[p] = self.operator.plan(1,self.points,3*p)
+            if p not in plans: plans[p] = self.source_plan_factory(1,self.points,3*p)
             modes = plans[p].execute(cp.ascontiguousarray(weights.transpose(0,2,1).reshape(3*p,n),
                                                           dtype=self.operator.cdtype))
             modes = modes.reshape(p,3,*self.operator.shape)

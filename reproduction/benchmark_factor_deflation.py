@@ -10,6 +10,8 @@ from geospsr.spectral_tail import analytic_covariance_rows64
 from reproduction.posterior import Posterior,sync
 from reproduction.correction_sampling import DenseCorrectionSampler
 from reproduction.factor_deflation import FourierCorrectionFactor,FactorDeflatedMoments
+from reproduction.planar_fourier import PlanarFourierPlan
+from geospsr.packed_sources import PackedRealSourcePlan
 from reproduction.benchmark_correction_contrast import deterministic_variance,metrics
 from reproduction.common_rhs_integrity import array_digest
 from reproduction.gpu_audit import GpuProcessAudit
@@ -21,6 +23,8 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--case',choices=['A','B'],required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True)
     p.add_argument('--factor-batch',type=int,choices=[4,16],default=4)
+    p.add_argument('--pack-sources',action='store_true')
+    p.add_argument('--planar',action='store_true')
     p.add_argument('--confirm',type=Path,help='pilot results.json; use its selected rank/count and new seeds')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True);a.archive.mkdir(parents=True,exist_ok=True)
     ranks,looks,seeds=[64,128,256,512],[32,128,512,2048],[(2401,401),(2503,503),(2607,607)]
@@ -29,7 +33,8 @@ def main():
         if not pilot['complete'] or pilot['case']!=a.case or pilot['selected'] is None:raise ValueError('no eligible pilot setting')
         ranks=[pilot['selected']['rank']];looks=[pilot['selected']['count']];seeds=[(2709,709),(2801,801),(2907,907)]
     r={'complete':False,'case':a.case,'phase':'confirmation' if a.confirm else 'pilot','ranks':ranks,'looks':looks,
-       'seeds':seeds,'estimator':'factor-space','factor_batch':a.factor_batch,'seconds':{},'runs':[],'selected':None,
+       'seeds':seeds,'estimator':'factor-space','factor_batch':a.factor_batch,
+       'source_packing':a.pack_sources,'planar_queries':a.planar,'seconds':{},'runs':[],'selected':None,
        'gates':{'contrast_relative_l2':.01,'probability_rms':.0005,'probability_max':.005},
        'control_precision_gate':.001,'model':'full analytic vector covariance; scalar/cross cutoff50; noise .02; direct Fourier',
        'scope':'first fixed-query marginal variance estimate; sketch/factor-action costs included; not posterior event samples',
@@ -67,12 +72,17 @@ def main():
             matrix=analytic_covariance_rows64(x,x)+.02*cp.eye(len(x),dtype='d')
             return op,cp.linalg.cholesky(matrix)
         (double,chol),r['seconds']['reference_factor_setup']=timed(reference_setup)
-        def make_factor(op,chol):
-            factor=FourierCorrectionFactor(x,q,op,chol,batch=a.factor_batch);factor.prepare(a.factor_batch);return factor
-        factor,r['seconds']['action_setup']=timed(lambda:make_factor(model.op,model.L))
+        source_factory=(lambda kind,points,count:PackedRealSourcePlan(model.op,points,count)) if a.pack_sources else None
+        query_factory=(lambda kind,points,count:PlanarFourierPlan(kind,model.op,points,count)) if a.planar else model.op.plan
+        def make_factor(op,chol,native=False):
+            factor=FourierCorrectionFactor(x,q,op,chol,batch=a.factor_batch,
+                source_plan_factory=source_factory if native else None,
+                query_plan_factory=query_factory if native else None)
+            factor.prepare(a.factor_batch);return factor
+        factor,r['seconds']['action_setup']=timed(lambda:make_factor(model.op,model.L,native=True))
         reference_factor,r['seconds']['reference_action_setup']=timed(lambda:make_factor(double,chol))
-        sampler=DenseCorrectionSampler(x,model.L,model.op)
-        query_plan,r['seconds']['query_plan']=timed(lambda:model.op.plan(2,q,8))
+        sampler=DenseCorrectionSampler(x,model.L,model.op,source_plan_factory=source_factory)
+        query_plan,r['seconds']['query_plan']=timed(lambda:query_factory(2,q,8))
         contrast_norm=float(np.linalg.norm(reference-reference.mean()))
         for pilot_seed,seed in seeds:
             run={'pilot_seed':pilot_seed,'seed':seed,'settings':{},'checkpoints':[],'cumulative':{'generation':0.,'queries':0.}}

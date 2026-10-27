@@ -122,3 +122,8 @@ def test_poisson_fourier_coefficients_with_full_analytic_training(cutoff,rank):
     np.testing.assert_array_equal(coefficients[~positive],0)
     via_coefficients=(np.exp(1j*(query@freq.T))@coefficients).real
     np.testing.assert_allclose(via_coefficients,phi@(white-d@t),rtol=1e-10,atol=1e-13)
+    # Exercise the implementation against the independently derived coefficients.
+    from geospsr.projected_field import CompressedJointField
+    sampler=CompressedJointField(scalar,l_coeff.T,b_coeff.T,g,frequency_chunk=23)
+    cached=sampler.draw(7,white=(white[:len(freq)]-1j*white[len(freq):]).T,extra_white=other.T)
+    np.testing.assert_allclose(cached,coefficients.T,rtol=1e-9,atol=1e-12)

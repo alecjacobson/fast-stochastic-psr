@@ -70,3 +70,28 @@ def test_native_failure_repaired_and_failed_verification_rejected(monkeypatch):
     with pytest.raises(RuntimeError):
         with closing(model.draw_batches(1,pack_rhs=True)) as stream:next(stream)
     assert not model._drawing and model._packed_kernel is None
+
+
+@pytest.mark.parametrize('refine,target',[(False,2e-6),(True,0.),(True,float('nan')),(True,1.)])
+def test_invalid_independent_verification_budget(refine,target):
+    with pytest.raises(ValueError,match='verification_rtol'):
+        HalfCubePosterior(None,None,refine_solves=refine,verification_rtol=target)
+
+
+def test_stricter_verification_budget_repairs_a_native_accepted_solution():
+    rng=np.random.default_rng(17);x=rng.uniform(-.4,.4,(13,3)).astype('f')
+    for target,corrections in [(None,0),(2e-6,1)]:
+        model=HalfCubePosterior(x,x,training_cutoff=4,cutoff=2,lengthscale=.12,
+                               refine_solves=True,verification_rtol=target)
+        solve=model.K.solve
+        def native(rhs,rtol,**kw):
+            weights,info=solve(rhs,rtol=rtol,**kw)
+            # Simulate an accepted 1e-5 relative solution error. It is within
+            # the old threshold but must trigger the tighter independent check.
+            return (weights*(1+1e-5) if rtol==model.rtol else weights),info
+        model.K.solve=native
+        _,info=model._solve_system(model.K,model.normals,4)
+        assert info['native_solve']['converged'] and info['converged']
+        assert info['refinement']['corrections']==corrections
+        assert info['refinement']['target_rtol']==(2e-5 if target is None else target)
+        assert max(info['refinement']['relative_residual_history'][-1])<=info['refinement']['target_rtol']

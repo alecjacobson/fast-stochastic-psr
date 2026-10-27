@@ -57,6 +57,7 @@ def main():
     p.add_argument('--validation-rows',type=int,default=32)
     p.add_argument('--retained-control',action='store_true')
     p.add_argument('--refine-solves',action='store_true',help='verify same-cube mean and conditioning in float64; repair native defects')
+    p.add_argument('--verification-rtol',type=float,help='actual residual threshold; requires --refine-solves, default 2*rtol')
     p.add_argument('--preconditioner-rank',type=int,help='prepare once, then precondition streamed draws; retained control stays unpreconditioned')
     p.add_argument('--basis-dtype',choices=['float16','float32','float64'])
     p.add_argument('--recompute-features',action='store_true')
@@ -65,6 +66,8 @@ def main():
     p.add_argument('--coefficient-dir',type=Path,help='optional CPU/disk blocks for later moving-query replay; not a resume protocol')
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
+    if a.verification_rtol is not None and (not a.refine_solves or not 0<a.verification_rtol<1):
+        p.error("verification tolerance requires refinement and must lie strictly between zero and one")
     if min(a.samples,a.batch,a.validation_rows)<1 or a.samples<2:
         p.error('require at least two samples and positive batch/row counts')
     if a.preconditioner_rank is not None and a.preconditioner_rank<1:
@@ -103,7 +106,7 @@ def main():
         fine_rays,fine_objects=refined_geometry(rays,objects)
         record['hashes']={k:hashlib.sha256(v.tobytes()).hexdigest() for k,v in [('points',x),('normals',y),('query',q),('rays',rays),('objects',objects)]}
         record['N']=len(x)
-        model=timed('fit',lambda:HalfCubePosterior(x,y,refine_solves=a.refine_solves))
+        model=timed('fit',lambda:HalfCubePosterior(x,y,refine_solves=a.refine_solves,verification_rtol=a.verification_rtol))
         record['mean_solve']=model.mean_solve
         if a.preconditioner_rank is not None:
             coarse=timed('preconditioner_setup',lambda:model.prepare_conditioning_preconditioner(a.preconditioner_rank,

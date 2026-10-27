@@ -12,14 +12,16 @@ from reproduction.paired_applications import events,field_quality,quality
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--method',choices=['plain','float32','fused16'],required=True)
+    p.add_argument('--verification-rtol',type=float,default=2e-5)
     p.add_argument('--source',type=Path,default=Path('reproduction/results/verified_posterior/three_million'))
     p.add_argument('--source-archive',type=Path,default=Path('/opt/geospsr-runtime/verified-posterior/three_million'))
     p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True)
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True);a.archive.mkdir(parents=True,exist_ok=True)
+    if not 0<a.verification_rtol<1:p.error('verification tolerance must lie strictly between zero and one')
     source=json.loads((a.source/'results.json').read_text())
     if not source['complete'] or not source['numerical_gate_pass']:raise ValueError('invalid source run')
     r={'complete':False,'method':a.method,'N':source['N'],'samples':8,'seed':701,'batch':1,
-       'model':source['model'],'seconds':{},'draws':[],
+       'model':{**source['model'],'actual_residual_threshold':a.verification_rtol},'seconds':{},'draws':[],
        'scope':'same archived coherent RHS/prior; verified conditional solves, aggregation and queries; excludes prior generation',
        'reference':'archived tighter same-finite-cube numerical control from verified_posterior/three_million',
        'source_hashes':source['source_hashes'],'source_record_sha256':array_digest(np.frombuffer((a.source/'results.json').read_bytes(),dtype='u1')),
@@ -40,7 +42,7 @@ def main():
         if any(array_digest(geo[k])!=v for k,v in r['source_geometry_hashes'].items()):raise ValueError('geometry hashes differ')
         positions=np.concatenate([q,rays.reshape(-1,3),objects.reshape(-1,3)])
         reference=np.load(a.source/'fields.npz')
-        model,r['seconds']['fit']=timed('fit',lambda:HalfCubePosterior(x,y,refine_solves=True))
+        model,r['seconds']['fit']=timed('fit',lambda:HalfCubePosterior(x,y,refine_solves=True,verification_rtol=a.verification_rtol))
         r['mean_solve']=model.mean_solve;r['offset']=float(model.offset)
         np.save(a.archive/'mean_coeff.npy',cp.asnumpy(model.mean_coeff));r['mean_coeff_sha256']=array_digest(cp.asnumpy(model.mean_coeff))
         r['seconds']['coarse_setup']=0.

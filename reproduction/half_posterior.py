@@ -18,13 +18,16 @@ class HalfCubePosterior(BlockPosterior):
 
     refine_solves=True checks mean and sample conditioning against serial
     float64 transforms of the same finite cube, repairing defects with at most
-    two loose native solves. Acceptance uses an actual residual <= 2*rtol.
+    two loose native solves. Acceptance uses an actual residual <= verification_rtol
+    (default 2*rtol), independently of the native recurrence tolerance.
     This adds time and a large cached double FFT workspace; it does not validate
     truncation, prior sampling or Monte Carlo error. Default solves are unchanged.
     """
     def __init__(self,x,normals,training_cutoff=200,cutoff=50,lengthscale=.01,
                  variance=.1,noise_variance=.02,rtol=1e-5,eps=1e-6,dtype='float32',
-                 upsampfac=1.25,normalization='analytic',axis=0,refine_solves=False):
+                 upsampfac=1.25,normalization='analytic',axis=0,refine_solves=False,verification_rtol=None):
+        if verification_rtol is not None and (not refine_solves or not 0<verification_rtol<1):
+            raise ValueError('verification_rtol requires refinement and a value strictly between zero and one')
         if cutoff>training_cutoff:
             raise ValueError('training cutoff must cover every scalar mode')
         self.x=cp.asarray(x,dtype=dtype)
@@ -35,6 +38,7 @@ class HalfCubePosterior(BlockPosterior):
         self.op=FourierPoisson(cutoff,lengthscale,variance,eps=eps,dtype=dtype,normalization=normalization)
         self.training=HalfCubeSpectrum(training_cutoff,lengthscale,variance,eps,dtype,upsampfac,normalization)
         self.refine_solves=bool(refine_solves)
+        self.verification_rtol=2*rtol if verification_rtol is None else float(verification_rtol)
         self._verification_kernel=None
         self.K=self._make_kernel(3)
         self.alpha,self.mean_solve=self._solve_system(self.K,self.normals,training_cutoff)
@@ -120,7 +124,7 @@ class HalfCubePosterior(BlockPosterior):
         weights,check=refine_solution(
             lambda defect:kernel.solve(defect,rtol=.1,maxiter=1000,**options),
             lambda value:self._verification_action(value,cutoff),rhs,weights,
-            target_rtol=2*self.rtol,max_corrections=2,xp=cp)
+            target_rtol=self.verification_rtol,max_corrections=2,xp=cp)
         # Keep native recurrence/iteration fields explicitly scoped to the initial
         # solve; only independent verification determines overall convergence.
         return weights,{'converged':check['converged'],'native_solve':native,

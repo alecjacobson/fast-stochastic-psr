@@ -1,0 +1,109 @@
+{
+  "scope": "CUDA event stage timings, not hardware counters",
+  "cases": {
+    "A": {
+      "plan": {
+        "n": 691,
+        "leaf_size": 32,
+        "far_groups": 250,
+        "direct_groups": 185,
+        "far_entries": 10199,
+        "direct_entries": 3995,
+        "cpu_plan_seconds": 0.013445202261209488,
+        "device_transfer_seconds": 0.0016125105321407318,
+        "retained_device_bytes": 115235,
+        "max_far_group_entries": 420,
+        "cache_setup_seconds": 0.04291090369224548,
+        "cache_bytes": 3753232,
+        "cached_total_device_bytes": 3868467
+      },
+      "first": {
+        "far": 0.0005877119898796082,
+        "direct": 0.00043375998735427856
+      },
+      "next": [
+        {
+          "far": 0.00025587201118469237,
+          "direct": 0.000111455999314785
+        },
+        {
+          "far": 0.0002620159983634949,
+          "direct": 0.00011078400164842605
+        },
+        {
+          "far": 0.0002507520020008087,
+          "direct": 0.00011097600311040878
+        }
+      ]
+    },
+    "B": {
+      "plan": {
+        "n": 17419,
+        "leaf_size": 32,
+        "far_groups": 17602,
+        "direct_groups": 10770,
+        "far_entries": 927805,
+        "direct_entries": 183199,
+        "cpu_plan_seconds": 0.9384810775518417,
+        "device_transfer_seconds": 0.0048270560801029205,
+        "retained_device_bytes": 7900630,
+        "max_far_group_entries": 10388,
+        "cache_setup_seconds": 0.00418858602643013,
+        "cache_bytes": 341432240,
+        "cached_total_device_bytes": 349332870
+      },
+      "first": {
+        "far": 0.017355327606201173,
+        "direct": 0.004406303882598877
+      },
+      "next": [
+        {
+          "far": 0.01734147262573242,
+          "direct": 0.0044035520553588866
+        },
+        {
+          "far": 0.017344991683959962,
+          "direct": 0.00440447998046875
+        },
+        {
+          "far": 0.017342464447021484,
+          "direct": 0.00440172815322876
+        }
+      ]
+    }
+  },
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 3,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 1.9200146198272705e-05,
+        "seconds": 0.040293000638484955,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.041070755571127,
+        "seconds": 1.1393776573240757,
+        "pids": [
+          44612
+        ],
+        "own_memory_bytes": 452984832.0
+      },
+      {
+        "started_seconds": 1.2500317506492138,
+        "seconds": 1.3147069588303566,
+        "pids": [
+          44612
+        ],
+        "own_memory_bytes": 822083584.0
+      }
+    ],
+    "own_pid": 44612,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

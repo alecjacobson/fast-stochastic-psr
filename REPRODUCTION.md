@@ -826,6 +826,17 @@ Reused dense factors win, and no SDD or complete application gain is claimed.
 The report includes all timings, setup/storage costs, 20 new tests and saved
 action/fit replay with streamed independent residual checks.
 
+The [compact/native follow-up](reproduction/results/range_compact/README.md)
+reduces B retained storage from 349 MB to 149 MB, with a 21.9 to 24.7 ms action
+slowdown. A byte-identical C++ planner cuts B CPU planning from .934 to .067 s.
+The first-fit pilot becomes .523 s versus 1.849 s dense double Cholesky, with
+the native library cached; a separate cold build takes .980 s. The stress-case
+first fit also improves, while reused dense factors still win. The analytic
+million-point action passes 1,024 independently summed rows, but takes 2.23 s
+per call and retains 18.5 GB: no massive fitting/application gain is established.
+See the report for caps, setup/memory qualifications, 22 new tests, retained
+negative evidence and archive replay. The native option requires C++17/g++.
+
 ## Code map
 
 | Path | Purpose |

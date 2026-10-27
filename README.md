@@ -118,12 +118,13 @@ An optional [compact basis](reproduction/results/nystrom_storage/README.md)
 halves retained preconditioner storage to **1.9 GiB**; recomputed setup avoids
 the full double-precision feature array. It establishes memory savings, with
 no new speedup claimed.
-An [exact periodic range-sum GPU prototype](reproduction/results/range_scan/README.md)
-now matches full analytic A/B actions to roundoff. Caching reduces B actions
-**90.1 → 21.9 ms** with 349 MB retained storage. A first full-analytic mean-fit
-pilot gives **1.85 → 1.32 s (1.40×)** versus double dense Cholesky on B, including
-setup; A and the short-scale/low-noise case are slower, and reused dense factors
-win. Massive-scale memory, SDD comparison and application validation remain open. FMM has no implemented backend or measured speedup. A dense matrix's memory
+An [exact periodic range-sum GPU prototype](reproduction/results/range_compact/README.md)
+now uses **149 MB** at B, down from 349 MB, with a modest action slowdown.
+Compiled planning gives a first mean-fit pilot of **1.85 → .523 s (3.54×)**
+versus double dense Cholesky on B, including setup with the native library cached
+(a separate cold build costs .98 s). Reused dense factors win. The full analytic
+million-point action runs in **2.23 s** with **18.5 GB** retained storage and passes
+1,024 sampled rows; massive fitting, SDD comparison and application gains remain open. FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects

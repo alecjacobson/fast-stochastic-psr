@@ -17,6 +17,7 @@ def main():
     for label,v in record['cases'].items():
         assert array_digest(x)==v['input_sha256']
         saved=np.load(out/f'{label}_controls.npz')
+        np.testing.assert_array_equal(saved['white_noise'],np.random.default_rng(record['seed']).normal(size=(len(x),3)))
         distance=np.remainder(np.abs(x.astype('d')[:,None]-x.astype('d')[None]),2*np.pi)
         distance=np.minimum(distance,2*np.pi-distance)
         analytic=periodic_matern_axis(distance,v['lengthscale'],v['variance_per_axis']).prod(2)

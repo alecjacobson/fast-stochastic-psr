@@ -17,8 +17,10 @@ def main():
     p.add_argument('--panel',choices=['moments','applications'],required=True)
     p.add_argument('--storage',choices=['host','gpu'],default='host')
     p.add_argument('--steps',type=int,choices=[0,1,2],default=1)
+    p.add_argument('--cutoff',type=int,choices=[50,100],default=100)
     a=p.parse_args();root=Path(__file__).resolve().parents[1]
-    out=root/f'reproduction/results/query_host/{a.case}_{a.panel}_{a.storage}_s{a.steps}'
+    label=f'{a.case}_{a.panel}_{a.storage}_s{a.steps}'+(f'_c{a.cutoff}' if a.cutoff!=100 else '')
+    out=root/'reproduction/results/query_host'/label
     out.mkdir(parents=True,exist_ok=True)
     if (out/'results.json').exists():raise FileExistsError('preserve previous results before rerunning')
     r={'complete':False,'args':vars(a),'seconds':{},'finite_solves':[],
@@ -37,7 +39,7 @@ def main():
         else:
             x=np.load(root/'reproduction/results/range_compact/scale1m/control.npz')['points']
             y=np.load(root/'reproduction/results/analytic_refinement/million/controls.npz')['normals']
-            if a.panel!='moments' or a.steps!=0:raise ValueError('million overlap uses moments/steps0; full application validation requires a separate control')
+            if a.panel!='moments' or a.steps!=0 or a.cutoff!=100:raise ValueError('million overlap uses moments/steps0/cutoff100; full application validation requires a separate control')
         r.update(n=len(x),m=len(q),hashes={k:array_digest(v) for k,v in [('points',x),('normals',y),('queries',q)]})
         condition,r['seconds']['condition_setup']=timed(lambda:AnalyticConditioner(x,
             solver='analytic_cg' if a.case=='B' else 'defect',fit_cutoff=200,rtol=1e-10,
@@ -48,7 +50,7 @@ def main():
         coeff,r['seconds']['mean_aggregate']=timed(lambda:op.aggregate(x,alpha))
         offset,r['seconds']['mean_center']=timed(lambda:op.evaluate(x,coeff).mean())
         condition.kernel=condition.spectrum=None;condition.rhs_count=None;cp.get_default_memory_pool().free_all_blocks()
-        condition.spectrum,r['seconds']['finite_setup']=timed(lambda:FourierCovariance(100,upsampfac=1.25))
+        condition.spectrum,r['seconds']['finite_setup']=timed(lambda:FourierCovariance(a.cutoff,upsampfac=1.25))
         def approximate(b):
             w,info=condition.finite_solve(b);record={'initial':info,'corrections':[]}
             for _ in range(a.steps):

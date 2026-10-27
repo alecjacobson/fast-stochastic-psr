@@ -187,6 +187,20 @@ No speedup ratio or upstream intractability claim follows. Issue #36 tracks appl
 larger-scale covariance, sampling and application validation remain open.
 The compiled SDD/upstream-equivalence and folded-spectrum tests also pass.
 
+The [output-stopping study](reproduction/results/output_stopping/README.md)
+now records complete iteration schedules on two new calibration planes and
+two held-out planes. It keeps mean amplitude, extracted-contour distance,
+component counts and grid refinement as separate checks. NUFFT first meets
+both declared joint targets at iteration 64, and confirms on the held-out
+planes; its residual-based solve ends at 97. The calibration path costs about
+21.37 s through iteration 64, including all earlier calibration checks.
+These are sums of instrumented costs, not a fresh early-termination timing.
+The saved higher-bandwidth oracle and its preparation are explicit; no
+deployable stopping rule or new timing ratio follows. Two SDD seeds retain
+every scheduled endpoint and held-out failures. Fifteen solver/upstream tests
+and six geometry/selection tests pass, and saved-array replay verifies the
+reported numerical checks. Posterior applications still need separate validation.
+
 The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
 uses the independent centered posterior and conditioning correction from coherent
 pathwise draws. `reproduction.complement_variance` combines their second moments

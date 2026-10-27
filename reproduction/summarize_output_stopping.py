@@ -22,14 +22,19 @@ def main():
     p.add_argument('--results', type=Path, default=Path(__file__).resolve().parent/'results/output_stopping')
     a = p.parse_args(); out = a.results
     names = ['half200', 'sdd0', 'sdd1']; raw = {}
+    source = json.loads((Path(__file__).resolve().parent/'results/large_inputs/scorpion_3000000/manifest.json').read_text())
     for name in names:
         directory = out/name
         r = json.loads((directory/'results.json').read_text())
         v = json.loads((directory/'verification.json').read_text())
         assert r['complete'] and v['complete']
+        assert r['N'] == 3000000
+        assert all(r['source_hashes'][k] == source['arrays'][k]['payload_sha256'] for k in ['points','normals'])
         assert v['results_sha256'] == hashlib.sha256((directory/'results.json').read_bytes()).hexdigest()
         assert v['contours_sha256'] == hashlib.sha256((directory/'contours.npz').read_bytes()).hexdigest()
         raw[name] = r
+    assert raw['half200']['method'] == 'half200'
+    assert [(raw[n]['method'],raw[n]['seed']) for n in ['sdd0','sdd1']] == [('sdd',0),('sdd',1)]
     assert all(r['source_hashes'] == raw['half200']['source_hashes'] and
                r['reference_weights_sha256'] == raw['half200']['reference_weights_sha256'] and
                r['grids'] == raw['half200']['grids'] and r['heights'] == raw['half200']['heights'] and
@@ -58,28 +63,41 @@ def main():
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    fig,axes=plt.subplots(1,2,figsize=(10,3.8),layout='constrained')
+    fig,axes=plt.subplots(2,2,figsize=(10,7),layout='constrained',sharex='col')
+    labels={'half200':'NUFFT cutoff 200','sdd0':'SDD seed 0','sdd1':'SDD seed 1'}
     for name,r in raw.items():
         checkpoints=r['checkpoints']; x=[c['calibration_path_seconds'] for c in checkpoints]
         for column,ids in enumerate([[0,1],[2,3]]):
             error=[max(c['planes'][str(h)]['distance']['hausdorff_upper'] if c['planes'][str(h)]['distance'] else float('inf') for h in ids) for c in checkpoints]
-            axes[column].loglog(x,100*np.array(error)/np.pi,marker='o',ms=3,label=name)
-    for column,ax in enumerate(axes):
+            means=[max(c['planes'][str(h)]['mean_relative_l2'] for h in ids) for c in checkpoints]
+            axes[0,column].loglog(x,100*np.array(means),marker='o',ms=3,label=labels[name])
+            axes[1,column].loglog(x,100*np.array(error)/np.pi,marker='o',ms=3,label=labels[name])
+    for column,ax in enumerate(axes[1]):
         ax.axhline(.1,color='.4',ls='--',label='coarse boundary target')
         ax.axhline(.01,color='.4',ls=':',label='strict boundary target')
         ax.set(xlabel='Cumulative calibration-path time (s)',ylabel='Max contour-distance upper / domain width (%)',
-               title=['Calibration planes','Held-out planes'][column]);ax.grid(alpha=.2)
-    axes[0].legend(fontsize=8)
+               title=['Calibration boundaries','Held-out boundaries'][column]);ax.grid(alpha=.2)
+    for column,ax in enumerate(axes[0]):
+        ax.axhline(.2,color='.4',ls='--',label='mean target')
+        ax.set(ylabel='Maximum relative L2 mean error (%)',
+               title=['Calibration mean fields','Held-out mean fields'][column]);ax.grid(alpha=.2)
+    axes[0,0].legend(fontsize=8);axes[1,0].legend(fontsize=8)
     fig.savefig(out/'accuracy.png',dpi=180);fig.savefig(out/'accuracy.pdf');plt.close(fig)
-    runrows=[]
+    runrows=[]; finalrows=[]
     for name,r in raw.items():
         last=r['checkpoints'][-1]
         runrows.append(f'| {name} | {r["seconds"]["method_setup"]:.3f} | {r["seconds"]["updates"]:.3f} | '
                        f'{last["calibration_path_seconds"]:.3f} | {r["seconds"]["reference_prepare_verify_and_save"]:.3f} | '
                        f'{r["seconds"]["instrumented_work_wall"]:.3f} | {r["gpu_process_audit"]["sampled_isolation_pass"]} |')
+        fields=[last['planes'][str(h)] for h in range(4)]
+        values=[max(100*p['mean_relative_l2'] for p in fields[:2]),
+                max(100*p['mean_relative_l2'] for p in fields[2:]),
+                max(100*p['distance']['hausdorff_upper']/np.pi if p['distance'] else float('inf') for p in fields[:2]),
+                max(100*p['distance']['hausdorff_upper']/np.pi if p['distance'] else float('inf') for p in fields[2:])]
+        finalrows.append(f'| {name} | {last["iteration"]:,} | '+' | '.join(f'{v:.5f}%' for v in values)+' |')
     (out/'README.md').write_text(f'''# Three-million-point output-aware checkpoint study
 
-This measures when fixed solver checkpoints meet numerical mean and 2D boundary
+This measures when fixed solver checkpoints meet joint mean and 2D boundary
 targets on new slice geometry. Checkpoint selection uses calibration planes;
 held-out planes confirm the same selected endpoint. It is an **oracle study**
 using a saved higher-bandwidth mean, not a deployable stopping rule or full
@@ -109,14 +127,25 @@ targets, not physically justified tolerances for a particular application.
 `none` means no scheduled checkpoint passed both calibration planes. A failed
 held-out result is retained at the selected endpoint; a later passing result
 does not replace it. Every checkpoint remains in the raw records.
+The schedule always runs to its end: selected costs are sums of measured
+components, not fresh wall-time measurements of early-terminated runs.
 
-![Boundary accuracy at every scheduled checkpoint](accuracy.png)
+![Mean and boundary accuracy at every scheduled checkpoint](accuracy.png)
 
-The plot shows only the boundary-distance criterion; mean, component and
-refinement checks also affect the table. Distances are between **extracted
+Component and refinement checks also affect the table. Distances are between **extracted
 polylines**, with sample-cover brackets, not bounds on continuous zero sets.
 These new planes are held out from checkpoint selection, but share the same
 scene; this is not independent-scene validation or a 3D surface guarantee.
+
+To distinguish field-amplitude failures from boundary failures, the maxima
+over each pair of planes at the **last scheduled endpoint** are:
+
+| Method | Final iteration | Calibration mean error | Held-out mean error | Calibration boundary / width | Held-out boundary / width |
+| --- | ---: | ---: | ---: | ---: | ---: |
+{chr(10).join(finalrows)}
+
+A joint-target failure is not necessarily a boundary failure. These final
+diagnostics do not change the first-calibration-pass selection or its gates.
 
 ## Costs and timing eligibility
 
@@ -152,6 +181,11 @@ No historical-machine ratio or claim of upstream intractability is made.
 
 ## Validation and remaining work
 
+The **21 targeted tests pass**: [15 solver/upstream checks](solver-tests.log)
+and [six geometry/selection checks](selection-tests.log). Measured run records
+and bound replay verifications are in [NUFFT](half200), [SDD seed 0](sdd0)
+and [SDD seed 1](sdd1).
+
 The production CG observer is checked against the same solve without an
 observer, including intermediate/final iterates and convergence metadata.
 Compiled SDD has pinned-upstream equivalence tests. Saved field hashes, mean
@@ -165,6 +199,9 @@ next-view decisions, ContactFusion semantics, or full analytic/scalar-bandwidth
 convergence. Mean-only stopping cannot be transferred to those tasks without
 their own accuracy measurements. Subsequent work should test an implementable
 stopping rule and its failure modes, and repeat on independent scenes.
+The joint mean-and-boundary target is also stricter than a boundary-only task:
+a pure surface-extraction benchmark should assess geometry without imposing
+an unrelated field-amplitude requirement.
 
 ## Reproduce
 

@@ -15,7 +15,7 @@ def main():
     results={}
     for name,dtype,up,planar in [('generic32','float32',1.25,False),('planar32','float32',1.25,True),('planar32_up2','float32',2.,True),('planar64','float64',2.,True)]:
         op=FourierPoisson(50,dtype=dtype,eps=1e-12 if dtype=='float64' else 1e-6,upsampfac=up)
-        plan=PlanarFourierPlan(1,op,q,16) if planar else op.plan(1,q,16)
+        plan=PlanarFourierPlan(1,op,q,16,upsampfac=up) if planar else op.plan(1,q,16)
         out=plan.execute(cp.asarray(w,dtype=op.cdtype));values=out[:,ns[:,0]+50,ns[:,1]+50,ns[:,2]+50]
         error=cp.asnumpy(cp.linalg.norm(values-truth,axis=0)/cp.maximum(cp.linalg.norm(truth,axis=0),1e-300))
         results[name]={'relative_l2':float(cp.linalg.norm(values-truth)/cp.linalg.norm(truth)),

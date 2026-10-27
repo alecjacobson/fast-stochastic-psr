@@ -16,7 +16,7 @@ class PlanarFourierPlan:
     grouping uses exact equality after the same precision cast as op.plan.
     Reject more than max_planes rather than approximating general geometry.
     """
-    def __init__(self, kind, operator, points, n_trans, axis=1, max_planes=8):
+    def __init__(self, kind, operator, points, n_trans, axis=1, max_planes=8, upsampfac=2.0):
         if kind not in (1,2) or axis not in (0,1,2):
             raise ValueError('require kind1/2 and axis0/1/2')
         if n_trans != int(n_trans) or n_trans < 1 or max_planes != int(max_planes) or max_planes < 1:
@@ -42,7 +42,7 @@ class PlanarFourierPlan:
             coords=[cp.ascontiguousarray(self.points[indices,i]) for i in horizontal]
             plan=cufinufft.Plan(kind,self.plane_shape,n_trans=self.count,eps=operator.eps,
                                isign=-1 if kind==1 else 1,dtype=operator.cdtype.name,
-                               upsampfac=operator.upsampfac)
+                               upsampfac=upsampfac)
             plan.setpts(*coords)
             phase=cp.asarray(cp.exp(1j*freq*height),dtype=operator.cdtype)
             self.groups.append((indices,coords,phase,plan))

@@ -289,19 +289,26 @@ commands, calibration curves, failures and independent confirmation data are
 in the report; [#39](https://github.com/alecjacobson/fast-stochastic-psr/issues/39)
 tracks the remaining quality/scaling work.
 
-The [whitened-factor follow-up](reproduction/results/factor_deflation/README.md)
+The [whitened-factor estimator](reproduction/results/factor_deflation/README.md)
 uses `H=C L3^-T`, an independent basis `V=orth(H^T Omega)` and cached `U=HV`.
 Paired residuals `H xi-U(V^T xi)` avoid a separate pilot-field generation stage.
-All independent A/B confirmations pass the same full-slice gates. With factor
-batch16, B's first-estimate stages cost **6.15 vs 6.44 s (1.05×)**, including
-preparation; A remains slower at **1.78 vs 1.63 s**. B uses a rank512 sketch,
-512 adjoint plus 512 forward factor columns, and 32 evaluation draws; preparation
-still consumes about 5.88 s. Eight targeted tests, 144 archived array checks and
-144 exact saved-estimate replays pass. A paired batching check preserves the
-numerical result. This modest direct-model gain does not establish massive-scale
-or application speedups. [#40](https://github.com/alecjacobson/fast-stochastic-psr/issues/40)
-tracks factor costs and scaling; [#41](https://github.com/alecjacobson/fast-stochastic-psr/issues/41)
-proposes exact planar Fourier contractions.
+The [packed-source/planar-query follow-up](reproduction/results/packed_factor_sources/README.md)
+passes all original full-slice gates at the same fixed ranks/counts. Setup-inclusive
+variance medians are **1.17 vs 1.62 s (1.38×)** on A and **3.58 vs 6.43 s (1.80×)**
+on B. Generic, source-only and combined variants retain every seed, including a
+slow 4.82 s first seed for source-only A. Eighteen tests and replay of 72 control
+arrays / 36 saved estimates pass. An initial planar unweighted-spectrum failure
+is retained; the corrected diagnostic uses an independent double reference and
+planar oversampling 2, without changing posterior gates or Fourier bandwidth.
+
+With all three million observations and eight archived coherent weights/priors,
+source packing preserves tested fields/events and improves repeated aggregation
+plus queries **0.396 → 0.278 s (1.43×)**. Setup plus the first pass is slower
+(0.473 → 0.485 s); no solve or prior generation is rerun. Replay checks 33 arrays
+and 16 coherent field blocks. These controls do not establish massive-scale
+variance or complete-application speedups. [#40](https://github.com/alecjacobson/fast-stochastic-psr/issues/40)
+tracks variance scaling; [#42](https://github.com/alecjacobson/fast-stochastic-psr/issues/42)
+tracks production aggregation and downstream validation.
 
 Common-RHS preparation now hashes the serialized float32 RHS and scalar prior
 arrays (schema2), and conditioning verifies source bytes, shapes and dtypes.

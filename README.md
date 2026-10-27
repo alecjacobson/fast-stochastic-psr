@@ -76,11 +76,14 @@ at controlled application error ([#5](https://github.com/alecjacobson/fast-stoch
 Exact variance remains a bottleneck. A [full-slice sampling study](reproduction/results/correction_contrast/README.md)
 still misses the 1% spatial-contrast target at 8,192 draws on both A and B;
 deterministic variance passes. No matched-quality variance speedup is established by this study.
-A [factor-space deflation follow-up](reproduction/results/factor_deflation/README.md)
-passes the full-slice gates on independent seeds. Including preparation, the
-direct-Fourier B variance stage takes **6.15 vs 6.44 s (1.05×)**; A remains
-slower (**1.78 vs 1.63 s**). This small gain is a fixed-slice result with dense
-conditioning, separate from the matched-interpolant teaser and full applications.
+[Packed sources and planar queries](reproduction/results/packed_factor_sources/README.md)
+now pass the fixed full-slice gates with variance-stage medians of
+**1.17 vs 1.62 s (1.38×)** on A and **3.58 vs 6.43 s (1.80×)** on B, including
+estimator preparation. These direct-Fourier results use dense conditioning and
+remain separate from the matched-interpolant teaser. At three million observations,
+eight prepared coherent fields preserve tested ray/collision events while repeated
+aggregation plus queries improves **0.396 → 0.278 s (1.43×)**. Setup plus the first
+pass is slower; conditioning and complete-application gains remain unestablished.
 A [matrix-free correction-sampling control](reproduction/results/inverse_root/README.md)
 now reaches three million observations with numerical checks; it has not established
 a variance speedup. [Verified solve refinement](reproduction/results/verified_posterior/README.md)

@@ -8,6 +8,7 @@ from reproduction.planar_fourier import PlanarFourierPlan
 from reproduction.correction_sampling import DenseCorrectionSampler
 from reproduction.common_rhs_integrity import array_digest
 from reproduction.gpu_audit import GpuProcessAudit
+from geospsr.spectral import FourierPoisson
 
 
 def main():
@@ -25,6 +26,9 @@ def main():
         coefficients=next(sampler.draw_batches(16,seed=43,batch=16))['coefficients']
         strengths=cp.random.RandomState(43).standard_normal((16,len(q)),dtype=model.op.dtype).astype(model.op.cdtype)
         reference={}
+        double=FourierPoisson(50,dtype='float64',eps=1e-12,upsampfac=2.)
+        for kind,values in [(1,strengths),(2,coefficients)]:
+            reference[kind]=double.plan(kind,q,16).execute(values.astype(double.cdtype))
         for name,make in [('generic',lambda kind:model.op.plan(kind,q,16)),('planar',lambda kind:PlanarFourierPlan(kind,model.op,q,16))]:
             record={};r['methods'][name]=record
             for kind,values in [(1,strengths),(2,coefficients)]:
@@ -32,10 +36,9 @@ def main():
                 for repeat in range(3):out,seconds=timed(lambda:plan.execute(values));times.append(seconds)
                 item={'setup_seconds':setup,'execute_seconds':times,'median_seconds':float(np.median(times))}
                 record[str(kind)]=item
-                if name=='generic':reference[kind]=out.copy()
-                else:
-                    item['relative_complex_l2']=float(cp.linalg.norm(out-reference[kind])/cp.linalg.norm(reference[kind]))
-                    if item['relative_complex_l2']>1e-5:raise ValueError('planar numerical mismatch')
+                item['relative_complex_l2']=float(cp.linalg.norm(out-reference[kind])/cp.linalg.norm(reference[kind]))
+                item['precision_pass']=bool(item['relative_complex_l2']<=1e-5)
+                if name=='planar' and not item['precision_pass']:raise ValueError('planar mismatch to double reference')
                 del plan
         r['complete']=True
     finally:r['gpu_process_audit']=audit.stop();output.write_text(json.dumps(r,indent=2)+'\n')

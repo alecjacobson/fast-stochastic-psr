@@ -48,6 +48,52 @@ class DenseCorrectionSampler:
             yield result
 
 
+class PolynomialCorrectionSampler:
+    """Matrix-free correction draws from a fixed inverse-root polynomial.
+
+    covariance_factory(rhs_count) must return the SAME symmetric covariance
+    action at each RHS count. The polynomial and its interval remain fixed
+    throughout the stream. Approximation errors are not included in the exact-
+    Gaussian target intervals from CorrectionMoments. These draws are not
+    posterior functions and must not be used for correlated posterior events.
+    """
+    def __init__(self, points, operator, polynomial, covariance_factory):
+        self.points=cp.asarray(points,dtype=operator.dtype)
+        if self.points.ndim!=2 or self.points.shape[1]!=3 or not len(self.points):
+            raise ValueError('expected nonempty (N,3) points')
+        self.operator,self.polynomial,self.covariance_factory=operator,polynomial,covariance_factory
+        self.kernels,self.plans={},{}
+
+    def prepare(self,batch):
+        if batch!=int(batch) or batch<1:
+            raise ValueError('batch must be a positive integer')
+        if batch not in self.kernels:
+            self.kernels[batch]=self.covariance_factory(3*batch)
+            self.plans[batch]=self.operator.plan(1,self.points,3*batch)
+
+    def aggregate(self,weights):
+        if weights.ndim!=2 or weights.shape[0]!=len(self.points) or weights.shape[1]%3:
+            raise ValueError('expected weights (N,3*batch)')
+        p=weights.shape[1]//3;self.prepare(p)
+        modes=self.plans[p].execute(cp.ascontiguousarray(weights.T,dtype=self.operator.cdtype))
+        modes=modes.reshape(p,3,*self.operator.shape)
+        return cp.ascontiguousarray(-1j*(modes*self.operator.multiplier[None]).sum(1))
+
+    def draw_batches(self,count,seed=0,batch=1,retain_weights=False,progress=None):
+        if count!=int(count) or count<1 or batch!=int(batch) or batch<1:
+            raise ValueError('count and batch must be positive integers')
+        rng=cp.random.RandomState(seed);n=len(self.points)
+        for start in range(0,count,batch):
+            p=min(batch,count-start);self.prepare(p)
+            xi=rng.standard_normal((n,3*p),dtype=self.operator.dtype)
+            weights=self.polynomial.apply(self.kernels[p],xi,xp=cp,progress=progress)
+            coefficients=self.aggregate(weights)
+            result={'start':start,'stop':start+p,'coefficients':coefficients}
+            if retain_weights:
+                result.update(weights=weights.reshape(n,p,3).transpose(1,0,2),standard_normal=xi)
+            yield result
+
+
 class CorrectionMoments:
     """O(query count) zero-mean second moments; no retained ensemble."""
     def __init__(self):

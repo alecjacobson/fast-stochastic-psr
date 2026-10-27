@@ -1,0 +1,36 @@
+.....F..                                                                 [100%]
+=================================== FAILURES ===================================
+_________ test_retained_normals_preserve_draws_and_match_factor_layout _________
+
+    def test_retained_normals_preserve_draws_and_match_factor_layout():
+        rng=np.random.default_rng(22);n=7;q=rng.normal(size=(6,3));x=rng.normal(size=(n,3))
+        a=rng.normal(size=(n,n));chol=cp.asarray(np.linalg.cholesky(a@a.T+.5*np.eye(n)))
+        op=FourierPoisson(3,lengthscale=.2,dtype='float64',eps=1e-12)
+        sampler=DenseCorrectionSampler(x,chol,op);factor=FourierCorrectionFactor(x,q,op,chol,batch=2)
+        plain=list(sampler.draw_batches(5,seed=59,batch=3))
+        paired=list(sampler.draw_batches(5,seed=59,batch=3,retain_standard_normal=True))
+        for old,new in zip(plain,paired):
+>           np.testing.assert_array_equal(old['coefficients'].get(),new['coefficients'].get())
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 183 / 1029 (17.8%)
+E           First 5 mismatches are at indices:
+E            [0, 0, 0, 1]: (-1.6912735120477495e-09+2.864196278300013e-09j) (ACTUAL), (-1.6912735120477495e-09+2.8641962783000124e-09j) (DESIRED)
+E            [0, 0, 0, 2]: (4.456191402806927e-09+6.009099830112493e-09j) (ACTUAL), (4.456191402806927e-09+6.0090998301124926e-09j) (DESIRED)
+E            [0, 0, 0, 5]: (-5.008894307734697e-09+1.5230472870439201e-09j) (ACTUAL), (-5.008894307734697e-09+1.5230472870439203e-09j) (DESIRED)
+E            [0, 0, 2, 1]: (4.273058536263819e-08+1.7906358626618328e-08j) (ACTUAL), (4.273058536263819e-08+1.790635862661832e-08j) (DESIRED)
+E            [0, 0, 2, 5]: (-1.9001726812046015e-08-3.815088313799321e-09j) (ACTUAL), (-1.9001726812046015e-08-3.815088313799322e-09j) (DESIRED)
+E           Max absolute difference among violations: 3.38813179e-21
+E           Max relative difference among violations: 7.87770692e-16
+E            ACTUAL: array([[[[-6.333663e-10+9.653271e-10j, -1.691274e-09+2.864196e-09j,
+E                      4.456191e-09+6.009100e-09j, ...,
+E                     -1.629605e-08-2.899988e-08j, -5.008894e-09+1.523047e-09j,...
+E            DESIRED: array([[[[-6.333663e-10+9.653271e-10j, -1.691274e-09+2.864196e-09j,
+E                      4.456191e-09+6.009100e-09j, ...,
+E                     -1.629605e-08-2.899988e-08j, -5.008894e-09+1.523047e-09j,...
+
+tests/test_factor_deflation_gpu.py:47: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_factor_deflation_gpu.py::test_retained_normals_preserve_draws_and_match_factor_layout
+1 failed, 7 passed in 13.37s

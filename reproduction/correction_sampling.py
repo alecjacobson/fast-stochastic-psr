@@ -22,7 +22,7 @@ class DenseCorrectionSampler:
         if self.cholesky.shape != (n,n) or self.cholesky.dtype != operator.dtype:
             raise ValueError('factor must be (N,N) at operator precision')
 
-    def draw_batches(self, count, seed=0, batch=8, retain_weights=False):
+    def draw_batches(self, count, seed=0, batch=8, retain_weights=False, retain_standard_normal=False):
         """Seeded draws reproducible for a fixed batch schedule; bounded storage.
 
         The caller owns each yielded block; retaining blocks defeats the memory
@@ -45,6 +45,9 @@ class DenseCorrectionSampler:
             coefficients = cp.ascontiguousarray(-1j*(modes*self.operator.multiplier[None]).sum(1))
             result = {'start':start,'stop':start+p,'coefficients':coefficients}
             if retain_weights: result['weights'] = weights
+            if retain_standard_normal:
+                # Observation-major (observation,component,draw) layout.
+                result['standard_normal'] = xi.reshape(n,p,3).transpose(0,2,1).reshape(3*n,p)
             yield result
 
 

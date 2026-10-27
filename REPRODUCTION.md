@@ -882,6 +882,20 @@ probability standard errors can reach6.25 percentage points. Issue48 tracks
 query-space coherent sampling for small candidate panels as an alternative to
 the expensive source-space tail draw.
 
+The [fixed-query posterior prototype](reproduction/results/query_posterior/README.md)
+assembles the full scalar posterior covariance through streamed NUFFT correction
+actions and verified analytic solves. Seven tests and all four A/B control
+replays pass. The 32-query B pilot needs 9.01 s for preparation plus 8,192 draws,
+versus 491.4 s for cached dense source-space sampling and 2.26 s for the stronger
+dense query-space method. The larger 1,024-query panels retain three rays and
+one sphere at 256 spatial samples each. Their query methods agree on all 32,768
+draw events; a finite-grid Monte Carlo bound of 1.256 percentage points separates
+the best of the three tested views. Matrix-free covariance preparation remains
+slower than dense query covariance on A/B. No massive or full flagship speedup
+is claimed. Issue 49 tracks residual-based query-covariance error budgets for
+the next scaling step. Initial mean/inner-CG failures and explicit roundoff-only
+PSD projections are retained in the report.
+
 ## Code map
 
 | Path | Purpose |

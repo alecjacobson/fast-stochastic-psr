@@ -1,0 +1,18 @@
+{
+  "initial_test": {
+    "passed": 2,
+    "failed": 1,
+    "failure": "defect solver passed covariance checks but failed the fixed per-query mean gate near zero; maximum absolute mean discrepancy3.52949146e-9",
+    "solve_rtol": 1e-08,
+    "source_sha256": "b8d45ed781c4527d03d2da3a649fd03668bc1aeaee7c2eb2e09cb508f89e82a8"
+  },
+  "response": "Tighten query-space conditioner default relative residual tolerance to1e-10; retain the original output gates and PSD roundoff budget.",
+  "tightened_test": {
+    "passed": 5,
+    "failed": 1,
+    "solve_rtol": 1e-10,
+    "failure": "float32 inner CG reported nonpositive curvature for residual RHS about1e-14; its dot products underflow at the requested relative tolerance",
+    "source_sha256": "e8c8d61db0efe57e7e3f41aa5b0e44de93ad130d97322d6b4e62c699e0349b00"
+  },
+  "second_response": "Normalize each finite inner RHS in float64 before the float32 solve, then restore its scale. Keep outer full analytic residual and output gates unchanged."
+}

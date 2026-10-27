@@ -135,6 +135,10 @@ preparation/query stages are slower than cached dense Cholesky. Massive posterio
 and application gains remain open under [#46](https://github.com/alecjacobson/fast-stochastic-psr/issues/46),
 [#47](https://github.com/alecjacobson/fast-stochastic-psr/issues/47) and
 [#48](https://github.com/alecjacobson/fast-stochastic-psr/issues/48).
+A [fixed-query covariance prototype](reproduction/results/query_posterior/README.md)
+passes A/B joint-field and selected ray/collision checks with 32,768 draws.
+It avoids source-space prior sampling, but cached dense query covariance still
+wins at these sizes; massive query-space validation remains open.
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 

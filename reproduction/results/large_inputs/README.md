@@ -29,3 +29,8 @@ Use a new output directory when reproducing: the preparer refuses to overwrite
 an existing input. It checks finiteness, shape/dtype, distinct observed positions
 and hashes after saving/reloading. Preparation runs on CPU; no posterior fit
 or GPU job is launched by this command.
+
+The later [full mean-fit study](../large_fit/README.md) uses this exact input
+and validates cutoff-200/250 means with independent analytic rows. It retains
+a budget-limited SDD comparison and the distinction between mean agreement
+and training residual. Complete application quality remains open.

@@ -169,8 +169,17 @@ fresh-cache compilation costs and all timing/quality records.
 
 A [three-million-point visible scorpion input](reproduction/results/large_inputs/README.md)
 is prepared with distinct observed positions and verified saved payload hashes.
-Only the preconditioner action has been profiled at that size; no three-million-point
-reconstruction, complete-application speedup or upstream resource-limit result is claimed.
+The [full mean-fit study](reproduction/results/large_fit/README.md) now checks
+complete finite cubes at cutoffs 200/250 against independent analytic residuals
+on 1,024 held-out rows, with every observation included. Both pass; their means
+differ by 0.0011%. First fit through 20,000 mean queries takes 27.70/29.75 s under
+contention. The transferred SDD setting reaches its 600-second update budget
+without passing the strict training-residual gate, yet its displayed mean is
+already within 0.145% of the cutoff-250 result globally, with six sampled sign
+changes. Local surface/probability quality remains unchecked. No speedup ratio or upstream
+intractability claim follows. Issue #36 tracks application-aware stopping, and
+larger-scale covariance, sampling and application validation remain open.
+The compiled SDD/upstream-equivalence and folded-spectrum tests also pass.
 
 The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
 uses the independent centered posterior and conditioning correction from coherent

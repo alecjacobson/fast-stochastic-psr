@@ -219,6 +219,22 @@ application speedups. Nineteen targeted tests pass. Initial failures and the
 batched double-plan failure remain archived; adoption in posterior applications
 is tracked in #37.
 
+The [coherent posterior follow-up](reproduction/results/verified_posterior/README.md)
+integrates `HalfCubePosterior(..., refine_solves=True)` and
+`stream_applications --refine-solves`. Mean and sample solves use the same
+finite-cube double verification; hybrid draws verify centered fluctuations at
+their actual inverse bandwidth. Eight shared draws pass dense conditioning on A
+and tighter double-stored conditioning at three million observations. The large
+run has 0.00230% empirical covariance difference, identical tested ray/collision
+events and the same view choice. All eight native sample solves initially fail;
+one correction each repairs them. The large mean also needs correction despite
+native success. Production fit + eight draws + queries totals 232.03 s in
+instrumented components under contention, including independent checks; no
+upstream speedup or absolute event-probability accuracy follows. Large RHS,
+weights and coefficients are hashed in runtime archives; small query artifacts
+and coefficient-replay checks are published. See #37 and #3 for remaining
+model, Monte Carlo and geometry validation.
+
 The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
 uses the independent centered posterior and conditioning correction from coherent
 pathwise draws. `reproduction.complement_variance` combines their second moments

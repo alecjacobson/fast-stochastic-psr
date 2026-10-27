@@ -27,6 +27,7 @@ scopes; kernel-action timings are not complete-application speedups.
 | **Million-point mean fitting** | Independent analytic residuals; [16-probe covariance-tail diagnostic](reproduction/results/spectral_tail/README.md) provides separate limited covariance evidence | [First fit **27.2× faster**](reproduction/results/iterative_baseline/README.md). Single confirmation; full application quality remains open. |
 | **Three-million-point mean fitting** | Two bandwidths pass sampled analytic checks; [64-step NUFFT mean/contour targets confirm on held-out planes](reproduction/results/output_stopping/README.md) | [Initial fits + queries **27.70–29.75 s**](reproduction/results/large_fit/README.md), under contention. Earlier stopping is an oracle study; no new timing ratio or complete-application claim. [Follow-up #36](https://github.com/alecjacobson/fast-stochastic-psr/issues/36). |
 | **Million-point posterior conditioning** | Fused compact preconditioner: 128 shared draws pass numerical gates; held-out covariance discrepancy 0.00219% | [Warmed conditioning **30.54 → 21.44 s (1.42×)**](reproduction/results/nystrom_fused/README.md) versus plain packed CG; **1.04×** versus the stronger float32 preconditioner. Eight-draw pilot; setup adds **11.89 s**, making first use slower. Full-model/application convergence remains open. |
+| **Three-million-point coherent applications** | [Eight shared draws pass tighter conditioning controls](reproduction/results/verified_posterior/README.md): covariance difference **0.00230%**, identical tested ray/collision events and view choice | Independently verified conditioning now works at this scale. No new speedup claim; Monte Carlo, prior-bandwidth and geometry convergence remain open. |
 | **Million-point application convergence** | [256 coherent draws and five nested query resolutions](reproduction/results/query_refinement/README.md); checked archive replay passes numerical controls | Matching-quality speedup **not established**: sphere refinement changes collision probabilities by up to **21.875 percentage points**. Absolute Monte Carlo accuracy and continuous-geometry convergence remain open. |
 
 Application query ratios use 128 shared **corrected** posterior draws and a strong
@@ -77,7 +78,8 @@ still misses the 1% spatial-contrast target at 8,192 draws on both A and B;
 deterministic variance passes. No matched-quality variance speedup is established by this study.
 A [matrix-free correction-sampling control](reproduction/results/inverse_root/README.md)
 now reaches three million observations with numerical checks; it has not established
-a variance speedup. The study also adds independently verified solve refinement.
+a variance speedup. [Verified solve refinement](reproduction/results/verified_posterior/README.md)
+now also supports coherent posterior applications.
 Matrix-free conditioning reaches a million observations with independently checked
 training-bandwidth convergence,
 but the full application quality bridge remains open. The authors' iterative

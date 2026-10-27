@@ -88,6 +88,16 @@ class HalfCubePosterior(BlockPosterior):
             raise RuntimeError('cannot clear a preconditioner during an active stream')
         self.conditioning_preconditioner=self._conditioning_preconditioner_key=None
 
+    def clear_verification_cache(self):
+        """Release verifier plans; the next verified solve rebuilds them.
+
+        CuPy may retain freed arrays in its allocator pool. Callers controlling
+        GPU memory can trim that pool after releasing this cache.
+        """
+        if getattr(self,'_drawing',False):
+            raise RuntimeError('cannot clear verification during an active stream')
+        self._verification_kernel=None
+
     def _make_kernel(self,rhs_count):
         return HalfCubeKernel(self.x,self.training,self.noise_variance,rhs_count,axis=self.axis)
 

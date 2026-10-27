@@ -11,7 +11,7 @@ from reproduction.paired_applications import events,field_quality,quality
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--method',choices=['plain','float32','fused16'],required=True)
+    p=argparse.ArgumentParser();p.add_argument('--method',choices=['plain','float32','fused16','float32_onepass'],required=True)
     p.add_argument('--verification-rtol',type=float,default=2e-5)
     p.add_argument('--source',type=Path,default=Path('reproduction/results/verified_posterior/three_million'))
     p.add_argument('--source-archive',type=Path,default=Path('/opt/geospsr-runtime/verified-posterior/three_million'))
@@ -47,9 +47,15 @@ def main():
         np.save(a.archive/'mean_coeff.npy',cp.asnumpy(model.mean_coeff));r['mean_coeff_sha256']=array_digest(cp.asnumpy(model.mean_coeff))
         r['seconds']['coarse_setup']=0.
         if a.method!='plain':
-            coarse,r['seconds']['coarse_setup']=timed('coarse_setup',lambda:model.prepare_conditioning_preconditioner(
-                rank=1024,seed=41,row_batch=8192,basis_dtype='float16' if a.method=='fused16' else 'float32',
-                recompute_features=True,fused_apply=a.method=='fused16'))
+            def prepare():
+                if a.method=='float32_onepass':
+                    model.clear_verification_cache()
+                    cp.get_default_memory_pool().free_all_blocks()
+                return model.prepare_conditioning_preconditioner(
+                    rank=1024,seed=41,row_batch=8192,basis_dtype='float16' if a.method=='fused16' else 'float32',
+                    recompute_features=a.method!='float32_onepass',fused_apply=a.method=='fused16')
+            coarse,r['seconds']['coarse_setup']=timed('coarse_setup',prepare)
+            r['verification_cache_released_for_setup']=a.method=='float32_onepass'
             r['preconditioner']=coarse.record
         save()
         output={k:[] for k in ['fields','rays','collision']}

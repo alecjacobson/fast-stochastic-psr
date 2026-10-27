@@ -9,8 +9,10 @@ SOURCE=ROOT.parent/'verified_posterior/three_million'
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,default=ROOT);a=p.parse_args();root=a.root
-    records={k:json.loads((root/k/'results.json').read_text()) for k in ['plain','float32','fused16']}
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,default=ROOT)
+    p.add_argument('--one-pass-baseline',action='store_true');a=p.parse_args();root=a.root
+    methods=['plain','float32','fused16']+(['float32_onepass'] if a.one_pass_baseline else [])
+    records={k:json.loads((root/k/'results.json').read_text()) for k in methods}
     output={};arrays={};pairs={}
     distance=np.load(SOURCE/'geometry.npz')['distance']
     reference=np.load(SOURCE/'fields.npz')
@@ -44,8 +46,8 @@ def main():
     complete=all(v['complete'] for v in output.values())
     common=False
     if complete:
-        for name in ['float32','fused16']:
-            for baseline in (['plain'] if name=='float32' else ['plain','float32']):
+        for i,name in enumerate(methods):
+            for baseline in methods[:i]:
                 key=name+'_vs_'+baseline
                 pairs[key]={'fields':field_quality(arrays[baseline]['fields'],arrays[name]['fields']),
                             'events':quality(arrays[baseline],arrays[name],distance)}
@@ -58,7 +60,7 @@ def main():
              'scope':'single eight-draw pilot of verified conditional solves; prior generation excluded; no upstream or complete-application speedup'}
     if eligible:
         f=output['fused16']['seconds'];ratios={}
-        for baseline in ['plain','float32']:
+        for baseline in [k for k in methods if k!='fused16']:
             b=output[baseline]['seconds']
             ratios[baseline]={k:b[k]/f[k] for k in ['eight_solves','setup_plus_eight_solves','fit_setup_solves_queries']}
             saving_per_draw=(b['eight_solves']-f['eight_solves'])/8

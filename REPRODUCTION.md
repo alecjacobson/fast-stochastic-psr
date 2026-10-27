@@ -235,6 +235,21 @@ weights and coefficients are hashed in runtime archives; small query artifacts
 and coefficient-replay checks are published. See #37 and #3 for remaining
 model, Monte Carlo and geometry validation.
 
+The [verified preconditioning comparison](reproduction/results/verified_preconditioning/README.md)
+retains an initial packed-CG covariance failure despite passing residual checks.
+An explicit `verification_rtol=2e-6` then brings all four conditioning methods
+through identical numerical and sampled-isolation gates. Fused compact storage
+reduces eight prepared-RHS solves from 167.35 to 136.05 s versus plain packed CG,
+but 35.30 s coarse setup makes first eight slower. Both float32 construction
+baselines are measured: releasing the verifier cache permits one-pass setup at
+26.39 s, giving a stronger first-use comparison than bounded two-pass setup.
+`clear_verification_cache()` preserves the fit and rebuilds verification lazily;
+`stream_applications --refine-solves --verification-rtol 2e-6` exposes the accuracy
+budget. Twenty-eight targeted tests pass. All seven experiments' archived fields
+replay exactly, including the initial failed-quality run. These are single
+finite-model conditioning pilots with prepared priors; absolute sampling,
+bandwidth and geometry accuracy and complete-application gains remain open.
+
 The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
 uses the independent centered posterior and conditioning correction from coherent
 pathwise draws. `reproduction.complement_variance` combines their second moments

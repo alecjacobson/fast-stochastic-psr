@@ -95,3 +95,22 @@ def test_stricter_verification_budget_repairs_a_native_accepted_solution():
         assert info['refinement']['corrections']==corrections
         assert info['refinement']['target_rtol']==(2e-5 if target is None else target)
         assert max(info['refinement']['relative_residual_history'][-1])<=info['refinement']['target_rtol']
+
+
+def test_verification_cache_release_preserves_fit_and_rebuilds_for_solves():
+    rng=np.random.default_rng(38);x=rng.uniform(-.4,.4,(13,3)).astype('f')
+    model=HalfCubePosterior(x,x,training_cutoff=4,cutoff=2,lengthscale=.12,
+                           refine_solves=True,verification_rtol=2e-6)
+    mean=model.mean_coeff.copy();alpha=model.alpha.copy();old=model._verification_kernel
+    model.clear_verification_cache()
+    assert model._verification_kernel is None and model.refine_solves
+    np.testing.assert_array_equal(cp.asnumpy(model.mean_coeff),cp.asnumpy(mean))
+    np.testing.assert_array_equal(cp.asnumpy(model.alpha),cp.asnumpy(alpha))
+    result=model.solve(model.normals)
+    assert model._verification_kernel is not None and model._verification_kernel is not old
+    assert float(cp.linalg.norm(result-alpha)/cp.linalg.norm(alpha))<1e-5
+    with closing(model.draw_batches(2)) as stream:
+        next(stream)
+        with pytest.raises(RuntimeError,match='active stream'):model.clear_verification_cache()
+    model.clear_verification_cache()
+    assert not model._drawing and model._verification_kernel is None

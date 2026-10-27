@@ -61,3 +61,17 @@ def test_float32_high_condition_polynomial_roundoff_is_measured():
     value=polynomial.apply(lambda x:cp.asarray(matrix,dtype='f')@x,cp.eye(41,dtype='f'),xp=cp).get()
     expected=(q/np.sqrt(eig))@q.T
     assert np.linalg.norm(value-expected)/np.linalg.norm(expected)<2e-4
+
+
+def test_mixed_precision_defect_correction_matches_independent_dense_target():
+    from geospsr.refinement import refine_solution
+    rng=np.random.default_rng(924);x=rng.uniform(-.1,.1,(17,3));rhs=rng.normal(size=(17,3)).astype('f')
+    # Deliberately bias the native action; acceptance must use the target below.
+    native=HalfCubeKernel(x,HalfCubeSpectrum(6,lengthscale=.2),.00001001)
+    exact=HalfCubeKernel(x,HalfCubeSpectrum(6,lengthscale=.2,dtype='float64',eps=1e-12,upsampfac=2.),.00001)
+    initial,_=native.solve(cp.asarray(rhs),rtol=1e-5)
+    result,info=refine_solution(lambda r:native.solve(r,rtol=.01),exact,cp.asarray(rhs),initial,xp=cp)
+    matrix=dense_finite(x,6,.2,.00001)
+    assert info['converged'] and info['corrections']>=1
+    assert result.dtype==cp.float32
+    assert np.max(np.linalg.norm(matrix@result.get()-rhs,axis=0)/np.linalg.norm(rhs,axis=0))<=2e-5

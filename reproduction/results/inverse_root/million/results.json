@@ -1,0 +1,834 @@
+{
+  "complete": true,
+  "case": "million",
+  "seconds": {
+    "source": 0.04494540020823479,
+    "polynomial_setup": 0.14430011063814163,
+    "shared_operator_plans": 0.18252579867839813,
+    "work_wall": 88.19145362451673
+  },
+  "polynomial_draws": [
+    {
+      "draw": 0,
+      "gaussian_seconds": 0.003190077841281891,
+      "inverse_root_seconds": 19.21206633374095,
+      "aggregation_seconds": 0.019983310252428055,
+      "query_seconds": 0.0017047934234142303,
+      "draw_through_query_seconds": 19.236944515258074,
+      "validation_seconds": 19.265562999993563,
+      "roundtrip_relative_errors": [
+        1.1669731065921951e-05,
+        1.1249923772993498e-05,
+        1.1577070836210623e-05
+      ],
+      "quality_pass": true,
+      "xi_sha256": "ebd0e5113b65e9fb68a43e25ccc29c109fd020feb0d63322aaeb2a59d0a29fc6",
+      "weights_sha256": "77a11f7af057c9ba7ca0a31ce356f0a83a788be292f5a673738177752e70e081",
+      "coefficients_sha256": "89252087c2f62c66f10d8110b27c25be770d96e02bc738980ed0e244379795e2"
+    },
+    {
+      "draw": 1,
+      "gaussian_seconds": 0.0001423768699169159,
+      "inverse_root_seconds": 19.175507940351963,
+      "aggregation_seconds": 0.0183054581284523,
+      "query_seconds": 0.0015434660017490387,
+      "draw_through_query_seconds": 19.19549924135208,
+      "validation_seconds": 19.268304709345102,
+      "roundtrip_relative_errors": [
+        1.0670541087165475e-05,
+        1.1038538104912732e-05,
+        1.2089003575965762e-05
+      ],
+      "quality_pass": true,
+      "xi_sha256": "6c1f584dbd100eaee90a9369b2145b49ddec14011081ec10ed73f569dee2616d",
+      "weights_sha256": "fb94ac355418a64c3127e3d088b11b000a00f61b0696dfeb11a5f4a9c4b3ebac",
+      "coefficients_sha256": "31e1de2b2722c82e96ae05348f4bb8882dacd60319dae243ed35b4043e69020a"
+    }
+  ],
+  "pathwise_draws": [
+    {
+      "draw": 0,
+      "joint_prior_noise_seconds": 0.04154270887374878,
+      "solve_seconds": 5.261634934693575,
+      "aggregation_seconds": 0.01820441335439682,
+      "query_seconds": 0.001506611704826355,
+      "solve": {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          2.02380251721479e-05,
+          2.114022572641261e-05,
+          2.0921479517710395e-05
+        ],
+        "converged": false
+      },
+      "quality_pass": false,
+      "draw_through_query_seconds": 5.322888668626547
+    },
+    {
+      "draw": 1,
+      "joint_prior_noise_seconds": 0.03254956007003784,
+      "solve_seconds": 5.252863921225071,
+      "aggregation_seconds": 0.018183313310146332,
+      "query_seconds": 0.0015051290392875671,
+      "solve": {
+        "iterations": 56,
+        "recurrence_converged": true,
+        "relative_residual": [
+          2.14907468034653e-05,
+          2.0383056835271418e-05,
+          2.1092080714879557e-05
+        ],
+        "converged": false
+      },
+      "quality_pass": false,
+      "draw_through_query_seconds": 5.305101923644543
+    }
+  ],
+  "model": {
+    "training_cutoff": 200,
+    "scalar_cutoff": 50,
+    "noise_variance": 0.02,
+    "lengthscale": 0.01,
+    "variance": 0.1,
+    "eps": 1e-06
+  },
+  "seeds": {
+    "polynomial": 401,
+    "pathwise": 509
+  },
+  "draws": 2,
+  "batch": 1,
+  "scope": "correction preparation only; not posterior event samples or marginal Monte Carlo convergence",
+  "device": "NVIDIA L40",
+  "N": 1000000,
+  "source": {
+    "kind": "prefix of published three-million-point source",
+    "parent_source_sha256": "fa13db198d30305b3d22bb96c72ca018a5fdc1a07a9b7ad217c570e11b00ac39",
+    "prefix_count": 1000000
+  },
+  "source_sha256": "6ce9f00b1380a8343b5a1e1dd56c1e619051d9d6887b84f4fba20d2a3d1415a4",
+  "query_sha256": "5f224f9df68cdc3dc4b764ed461980bb590ee7461282ce6d168e9cbcea15e162",
+  "spatial_bound": {
+    "lower": 0.02,
+    "upper": 10.634560452612938,
+    "grid": 128,
+    "box_width": 0.04908738521234052,
+    "occupied_boxes": 15609,
+    "max_box_count": 292,
+    "box_row_sum_upper": 10.614560452612938,
+    "trace_upper": 1000.0000000000002,
+    "numerical_pad": 1e-08,
+    "qualification": "analytic enclosure in exact arithmetic; float64 FFT/kernel evaluations padded heuristically, not interval arithmetic; finite analytic-normalized kernel only, NUFFT error separate"
+  },
+  "polynomial": {
+    "degree": 211,
+    "lower": 0.02,
+    "upper": 10.634560452612938,
+    "requested_relative_error": 0.0001,
+    "relative_scalar_error_bound": 9.568309206401029e-05,
+    "ellipse_rho": 1.0859424456547648,
+    "ellipse_left_real_part": 0.001951104462123432,
+    "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+  },
+  "trace_control": {
+    "degree": 2582,
+    "lower": 0.02,
+    "upper": 1000.02,
+    "requested_relative_error": 0.0001,
+    "relative_scalar_error_bound": 9.949507366857609e-05,
+    "ellipse_rho": 1.0085332322150433,
+    "ellipse_left_real_part": 0.0019500117323900668,
+    "qualification": "exact-arithmetic interpolation bound; excludes coefficient rounding, matrix-action error and recurrence roundoff"
+  },
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:19:00.0",
+    "interval_seconds": 1.0,
+    "samples": 85,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 2.0131468772888184e-05,
+        "seconds": 0.03680095076560974,
+        "pids": [],
+        "own_memory_bytes": null
+      },
+      {
+        "started_seconds": 1.0370284132659435,
+        "seconds": 1.1165729723870754,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 2.116683393716812,
+        "seconds": 2.1588542200624943,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 3.1589525267481804,
+        "seconds": 3.2440144158899784,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 4.244112554937601,
+        "seconds": 4.315495822578669,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 5.315616469830275,
+        "seconds": 5.412125039845705,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 6.412249311804771,
+        "seconds": 6.4960850439965725,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 7.496208347380161,
+        "seconds": 7.537251856178045,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 8.537346985191107,
+        "seconds": 8.60020811483264,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 9.600310489535332,
+        "seconds": 9.641681551933289,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 10.641770903021097,
+        "seconds": 10.6774325594306,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 11.677543949335814,
+        "seconds": 11.716821126639843,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 12.716912619769573,
+        "seconds": 12.757396649569273,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 13.75749296322465,
+        "seconds": 13.794943768531084,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 14.795032434165478,
+        "seconds": 14.875983655452728,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 15.87609477341175,
+        "seconds": 15.921704676002264,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 16.921808406710625,
+        "seconds": 17.010938327759504,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 18.011025093495846,
+        "seconds": 18.053780991584063,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 19.05391474440694,
+        "seconds": 19.13216546550393,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5177868288.0
+      },
+      {
+        "started_seconds": 20.132252655923367,
+        "seconds": 20.16949774324894,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 21.169604044407606,
+        "seconds": 21.252132680267096,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 22.252221401780844,
+        "seconds": 22.313357777893543,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 23.313442941755056,
+        "seconds": 23.354979511350393,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 24.355096764862537,
+        "seconds": 24.39565249532461,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 25.395778078585863,
+        "seconds": 25.43330952525139,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 26.433403618633747,
+        "seconds": 26.47587178274989,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 27.4759587533772,
+        "seconds": 27.513895343989134,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 28.514002814888954,
+        "seconds": 28.55666670203209,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 29.55675409734249,
+        "seconds": 29.597488820552826,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 30.597581788897514,
+        "seconds": 30.640850625932217,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 31.640934322029352,
+        "seconds": 31.69588517397642,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 32.69596568867564,
+        "seconds": 32.751932349056005,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 33.75204135477543,
+        "seconds": 33.84244471415877,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 34.8425333276391,
+        "seconds": 34.88546049594879,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 35.88555313274264,
+        "seconds": 35.928379364311695,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 36.92847794666886,
+        "seconds": 37.01874462142587,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 38.018844060599804,
+        "seconds": 38.08549579977989,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 39.08563590049744,
+        "seconds": 39.132538329809904,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 40.132630445063114,
+        "seconds": 40.180818632245064,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 41.180912256240845,
+        "seconds": 41.22198838740587,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 42.22208245098591,
+        "seconds": 42.308462385088205,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 43.30855232849717,
+        "seconds": 43.36864272877574,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 44.36874270439148,
+        "seconds": 44.40592283755541,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 45.40603011101484,
+        "seconds": 45.45257277786732,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 46.452661603689194,
+        "seconds": 46.49468280002475,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 47.49477433785796,
+        "seconds": 47.54175391793251,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 48.5418465398252,
+        "seconds": 48.581293910741806,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 49.58139156550169,
+        "seconds": 49.624291364103556,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 50.62438829615712,
+        "seconds": 50.66556774824858,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 51.6656581684947,
+        "seconds": 51.71170925348997,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 52.71179961785674,
+        "seconds": 52.773716904222965,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 53.77380753681064,
+        "seconds": 53.85179536789656,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 54.85188511013985,
+        "seconds": 54.89410227537155,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 55.89425941929221,
+        "seconds": 55.942081801593304,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 56.94217782840133,
+        "seconds": 57.01577638089657,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 58.0159005895257,
+        "seconds": 58.07183172553778,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 59.071926306933165,
+        "seconds": 59.13935820758343,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 60.13944437727332,
+        "seconds": 60.22306687384844,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 61.223158556967974,
+        "seconds": 61.31477703526616,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 62.31487154588103,
+        "seconds": 62.4150015860796,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 63.415104776620865,
+        "seconds": 63.48797147348523,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 64.48805781453848,
+        "seconds": 64.54796475917101,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 65.54806939139962,
+        "seconds": 65.58540272340178,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 66.58549221605062,
+        "seconds": 66.62884517759085,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 67.62892964854836,
+        "seconds": 67.684091668576,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 68.68418810516596,
+        "seconds": 68.70752808451653,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 69.70761975646019,
+        "seconds": 69.74529865011573,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 70.74538011103868,
+        "seconds": 70.7855917699635,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 71.78567508608103,
+        "seconds": 71.8271018974483,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 72.82719037681818,
+        "seconds": 72.895602311939,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 73.89571388065815,
+        "seconds": 73.93742034584284,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 74.93751852959394,
+        "seconds": 74.98067524656653,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 75.98076153546572,
+        "seconds": 76.02150226384401,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 77.02160462364554,
+        "seconds": 77.0798314474523,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 5228199936.0
+      },
+      {
+        "started_seconds": 78.0799178853631,
+        "seconds": 78.12019201740623,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 79.12027968466282,
+        "seconds": 79.1612060032785,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 80.1612859107554,
+        "seconds": 80.22007608041167,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 81.22016576677561,
+        "seconds": 81.27232598513365,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 82.27240958809853,
+        "seconds": 82.30900707095861,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 83.30908726900816,
+        "seconds": 83.3495118804276,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 84.3496131002903,
+        "seconds": 84.39900436252356,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 85.3990910500288,
+        "seconds": 85.4881599843502,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 86.48824528977275,
+        "seconds": 86.55762619897723,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 87.55771259963512,
+        "seconds": 87.61351725459099,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      },
+      {
+        "started_seconds": 88.22851802781224,
+        "seconds": 88.29192259907722,
+        "pids": [
+          22832
+        ],
+        "own_memory_bytes": 6002049024.0
+      }
+    ],
+    "own_pid": 22832,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

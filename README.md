@@ -75,6 +75,9 @@ at controlled application error ([#5](https://github.com/alecjacobson/fast-stoch
 Exact variance remains a bottleneck. A [full-slice sampling study](reproduction/results/correction_contrast/README.md)
 still misses the 1% spatial-contrast target at 8,192 draws on both A and B;
 deterministic variance passes. No matched-quality variance speedup is established by this study.
+A [matrix-free correction-sampling control](reproduction/results/inverse_root/README.md)
+now reaches three million observations with numerical checks; it has not established
+a variance speedup. The study also adds independently verified solve refinement.
 Matrix-free conditioning reaches a million observations with independently checked
 training-bandwidth convergence,
 but the full application quality bridge remains open. The authors' iterative

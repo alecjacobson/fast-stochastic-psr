@@ -1,0 +1,26 @@
+[cufinufft_makeplan_impl] cufft makeplan error: CUFFT_INTERNAL_ERRORTraceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/projects/stochastic-psr/reproduction/diagnose_inverse_root_residuals.py", line 61, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/diagnose_inverse_root_residuals.py", line 29, in main
+    (native,double,op),r['seconds']['operators']=timed('operators',setup)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/diagnose_inverse_root_residuals.py", line 20, in timed
+    sync();start=time.perf_counter();v=fn();sync();elapsed=time.perf_counter()-start
+                                       ^^^^
+  File "/home/horde/projects/stochastic-psr/reproduction/diagnose_inverse_root_residuals.py", line 27, in setup
+    double=HalfCubeKernel(x,HalfCubeSpectrum(200,dtype='float64',eps=1e-10,upsampfac=2.),.02)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/geospsr/half_spectral.py", line 72, in __init__
+    self.backward=op.plan(2,self.points,op.positive_rho.shape,rhs_count)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/projects/stochastic-psr/geospsr/half_spectral.py", line 39, in plan
+    plan=cufinufft.Plan(kind,shape,n_trans=n_trans,eps=self.eps,
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 152, in __init__
+    self._init_plan()
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 219, in _init_plan
+    raise RuntimeError('Error creating plan.')
+RuntimeError: Error creating plan.

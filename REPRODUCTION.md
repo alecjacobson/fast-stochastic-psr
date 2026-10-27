@@ -201,6 +201,24 @@ every scheduled endpoint and held-out failures. Fifteen solver/upstream tests
 and six geometry/selection tests pass, and saved-array replay verifies the
 reported numerical checks. Posterior applications still need separate validation.
 
+A [fixed-polynomial inverse-root pilot](reproduction/results/inverse_root/README.md)
+implements matrix-free correction sampling through three million observations.
+A periodic spatial-box row-sum envelope reduces the required Chebyshev degree
+from 4,696 to 390 on that input, without changing the finite covariance action.
+Released-A dense overlap and all polynomial round-trip diagnostics pass. This
+does not resolve marginal Monte Carlo contrast noise or provide posterior event
+samples; rational multi-shift CIQ remains open in #35.
+The initial large-N pathwise controls fail their native recomputed-residual
+checks. A separate same-RHS study introduces `geospsr.refinement.refine_solution`:
+compute defects with a double-precision action, solve corrections in float32,
+and independently recheck float32 stored weights. All four large-input draws
+pass after one correction. Full solve plus independent checks costs 8.05–8.16 s
+on the million-point prefix and 24.53–24.72 s on three million; these exclude
+operator setup, prior generation, aggregation and queries. They are not complete
+application speedups. Nineteen targeted tests pass. Initial failures and the
+batched double-plan failure remain archived; adoption in posterior applications
+is tracked in #37.
+
 The [marginal-variance pilot](reproduction/results/complement_variance/README.md)
 uses the independent centered posterior and conditioning correction from coherent
 pathwise draws. `reproduction.complement_variance` combines their second moments

@@ -1,0 +1,2029 @@
+{
+  "complete": true,
+  "n": 131072,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 131072,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "output": "/opt/geospsr-runtime/solver-scaling/n131072"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.6945205809315667,
+    "reference_analytic_solve": 14.374584413017146,
+    "reference_direct_rows": 0.01865267800167203,
+    "shared_cross_spectrum": 0.011117498041130602,
+    "reference_mean_queries": 0.37657873693387955,
+    "nufft_spectrum": 0.0008732599671930075,
+    "nufft_plans": 0.00970751908607781
+  },
+  "methods": {
+    "cholesky": {
+      "status": "not run beyond declared dense benchmark cap; no measured runtime claim",
+      "single_matrix_bytes": 137438953472
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.7051013599848375,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 1.6179329550359398,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.283439233811805e-06,
+                9.475616025156341e-06,
+                6.922600732650608e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.352988208681883e-05,
+                3.9211600891172846e-05,
+                4.703787671849189e-05
+              ],
+              "residual_history": [
+                [
+                  0.0015238023733306209,
+                  0.001330544619838089,
+                  0.001666876761666576
+                ],
+                [
+                  4.352988208681883e-05,
+                  3.9211600891172846e-05,
+                  4.703787671849189e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.277752047230024e-06,
+                    7.82117058406584e-06,
+                    7.476879090972943e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.2711950055318716e-05,
+            "mean_relative_l2": 4.120373265043737e-06,
+            "common_mean_prepare_query_seconds": 0.12934923509601504,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 1.6127654960146174,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.2842223087500315e-06,
+                9.477389539824799e-06,
+                6.920603027538164e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.3529795253478815e-05,
+                3.9211554435646124e-05,
+                4.7037909830937875e-05
+              ],
+              "residual_history": [
+                [
+                  0.0015238008964906342,
+                  0.0013305431157388861,
+                  0.001666875904019037
+                ],
+                [
+                  4.3529795253478815e-05,
+                  3.9211554435646124e-05,
+                  4.7037909830937875e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.283029390237061e-06,
+                    7.82324332249118e-06,
+                    7.471856406482402e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.2711914680660814e-05,
+            "mean_relative_l2": 4.120370857102026e-06,
+            "common_mean_prepare_query_seconds": 0.12948391505051404,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 1.6126041349489242,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.283724360400811e-06,
+                9.476864761381876e-06,
+                6.919196493981872e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.3529789264834075e-05,
+                3.921158751577003e-05,
+                4.703792504361809e-05
+              ],
+              "residual_history": [
+                [
+                  0.0015238002095141613,
+                  0.0013305434777202143,
+                  0.0016668748864394158
+                ],
+                [
+                  4.3529789264834075e-05,
+                  3.921158751577003e-05,
+                  4.703792504361809e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.281208127096761e-06,
+                    7.829496098565869e-06,
+                    7.478403404093115e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.2711930479773667e-05,
+            "mean_relative_l2": 4.120368343882743e-06,
+            "common_mean_prepare_query_seconds": 0.12941261497326195,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "pilots": [
+        {
+          "batch": 128,
+          "eta": 2.0,
+          "compile_seconds": 0.5923628220334649,
+          "validation_seconds": 33.27659266570117,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.1923625380732119,
+              "full_analytic_relative_residual": 0.6724573762596638
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.34178642102051526,
+              "full_analytic_relative_residual": 0.4463926932342265
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.49098550411872566,
+              "full_analytic_relative_residual": 0.3577810071998242
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.6404068961273879,
+              "full_analytic_relative_residual": 0.3122116922391256
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.7902217090595514,
+              "full_analytic_relative_residual": 0.28049530007385043
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.9399068920174614,
+              "full_analytic_relative_residual": 0.2547915534974665
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 1.0894072750816122,
+              "full_analytic_relative_residual": 0.2330019438379784
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 1.2389195981668308,
+              "full_analytic_relative_residual": 0.21350919662002804
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 1.3882184710819274,
+              "full_analytic_relative_residual": 0.19639447408354258
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 1.5377624240936711,
+              "full_analytic_relative_residual": 0.18074223304212922
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 1.687235247110948,
+              "full_analytic_relative_residual": 0.16631207779894164
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 1.8366719001205638,
+              "full_analytic_relative_residual": 0.15324213112250015
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 1.9861098931869492,
+              "full_analytic_relative_residual": 0.1411446227122686
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 2.1357229362474754,
+              "full_analytic_relative_residual": 0.13006145212913078
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 2.2853055292507634,
+              "full_analytic_relative_residual": 0.11977399128490254
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 2.4347220523050055,
+              "full_analytic_relative_residual": 0.11057895504156866
+            },
+            {
+              "iterations": 4352,
+              "updates_seconds": 2.5843308952171355,
+              "full_analytic_relative_residual": 0.1020794873126361
+            },
+            {
+              "iterations": 4608,
+              "updates_seconds": 2.7339826573152095,
+              "full_analytic_relative_residual": 0.09397997090054644
+            },
+            {
+              "iterations": 4864,
+              "updates_seconds": 2.8834008403355256,
+              "full_analytic_relative_residual": 0.08660573068170783
+            },
+            {
+              "iterations": 5120,
+              "updates_seconds": 3.032724952325225,
+              "full_analytic_relative_residual": 0.0800211100986132
+            },
+            {
+              "iterations": 5376,
+              "updates_seconds": 3.1820657153148204,
+              "full_analytic_relative_residual": 0.0737187302973125
+            },
+            {
+              "iterations": 5632,
+              "updates_seconds": 3.3316778872394934,
+              "full_analytic_relative_residual": 0.06774122394525742
+            },
+            {
+              "iterations": 5888,
+              "updates_seconds": 3.481154590146616,
+              "full_analytic_relative_residual": 0.06244726902220854
+            },
+            {
+              "iterations": 6144,
+              "updates_seconds": 3.630702783120796,
+              "full_analytic_relative_residual": 0.057401281177747954
+            },
+            {
+              "iterations": 6400,
+              "updates_seconds": 3.780107486061752,
+              "full_analytic_relative_residual": 0.05288974389896722
+            },
+            {
+              "iterations": 6656,
+              "updates_seconds": 3.9297109690960497,
+              "full_analytic_relative_residual": 0.04870492067631732
+            },
+            {
+              "iterations": 6912,
+              "updates_seconds": 4.078866192139685,
+              "full_analytic_relative_residual": 0.044877443931897076
+            },
+            {
+              "iterations": 7168,
+              "updates_seconds": 4.228035565232858,
+              "full_analytic_relative_residual": 0.041336207453472856
+            },
+            {
+              "iterations": 7424,
+              "updates_seconds": 4.377363498322666,
+              "full_analytic_relative_residual": 0.038118219748332634
+            },
+            {
+              "iterations": 7680,
+              "updates_seconds": 4.526925411308184,
+              "full_analytic_relative_residual": 0.03513376840436351
+            },
+            {
+              "iterations": 7936,
+              "updates_seconds": 4.6761778043583035,
+              "full_analytic_relative_residual": 0.03252400487500646
+            },
+            {
+              "iterations": 8192,
+              "updates_seconds": 4.825418347376399,
+              "full_analytic_relative_residual": 0.02999181450363132
+            },
+            {
+              "iterations": 8448,
+              "updates_seconds": 4.974917080369778,
+              "full_analytic_relative_residual": 0.027754096772385405
+            },
+            {
+              "iterations": 8704,
+              "updates_seconds": 5.124567283433862,
+              "full_analytic_relative_residual": 0.02549870550047585
+            },
+            {
+              "iterations": 8960,
+              "updates_seconds": 5.273889756528661,
+              "full_analytic_relative_residual": 0.02349878155613062
+            },
+            {
+              "iterations": 9216,
+              "updates_seconds": 5.423113859491423,
+              "full_analytic_relative_residual": 0.02164301487345214
+            },
+            {
+              "iterations": 9472,
+              "updates_seconds": 5.5725308725377545,
+              "full_analytic_relative_residual": 0.01997797837735916
+            },
+            {
+              "iterations": 9728,
+              "updates_seconds": 5.721958925598301,
+              "full_analytic_relative_residual": 0.01846825581294824
+            },
+            {
+              "iterations": 9984,
+              "updates_seconds": 5.871044908533804,
+              "full_analytic_relative_residual": 0.017061892036500454
+            },
+            {
+              "iterations": 10240,
+              "updates_seconds": 6.020417911466211,
+              "full_analytic_relative_residual": 0.01568777780639241
+            },
+            {
+              "iterations": 10496,
+              "updates_seconds": 6.1695951744914055,
+              "full_analytic_relative_residual": 0.014556564406773005
+            },
+            {
+              "iterations": 10752,
+              "updates_seconds": 6.31883792753797,
+              "full_analytic_relative_residual": 0.013480703286502565
+            },
+            {
+              "iterations": 11008,
+              "updates_seconds": 6.467958180583082,
+              "full_analytic_relative_residual": 0.012403566371165046
+            },
+            {
+              "iterations": 11264,
+              "updates_seconds": 6.6171417435398325,
+              "full_analytic_relative_residual": 0.011385788898001053
+            },
+            {
+              "iterations": 11520,
+              "updates_seconds": 6.7663192064501345,
+              "full_analytic_relative_residual": 0.01044714239024958
+            },
+            {
+              "iterations": 11776,
+              "updates_seconds": 6.915513729560189,
+              "full_analytic_relative_residual": 0.009693526681520378
+            },
+            {
+              "iterations": 12032,
+              "updates_seconds": 7.064628412481397,
+              "full_analytic_relative_residual": 0.009009378736173242
+            },
+            {
+              "iterations": 12288,
+              "updates_seconds": 7.213658825494349,
+              "full_analytic_relative_residual": 0.008373251021637544
+            },
+            {
+              "iterations": 12544,
+              "updates_seconds": 7.362698547542095,
+              "full_analytic_relative_residual": 0.00767246086019381
+            },
+            {
+              "iterations": 12800,
+              "updates_seconds": 7.512026420561597,
+              "full_analytic_relative_residual": 0.00696432393149882
+            },
+            {
+              "iterations": 13056,
+              "updates_seconds": 7.661295613623224,
+              "full_analytic_relative_residual": 0.006436131130664721
+            },
+            {
+              "iterations": 13312,
+              "updates_seconds": 7.810575756593607,
+              "full_analytic_relative_residual": 0.005958970276698001
+            },
+            {
+              "iterations": 13568,
+              "updates_seconds": 7.9597232196247205,
+              "full_analytic_relative_residual": 0.00553646682808924
+            },
+            {
+              "iterations": 13824,
+              "updates_seconds": 8.10897291265428,
+              "full_analytic_relative_residual": 0.005082831377706919
+            },
+            {
+              "iterations": 14080,
+              "updates_seconds": 8.258152524707839,
+              "full_analytic_relative_residual": 0.004611318266745895
+            },
+            {
+              "iterations": 14336,
+              "updates_seconds": 8.407389547792263,
+              "full_analytic_relative_residual": 0.004248314299530391
+            },
+            {
+              "iterations": 14592,
+              "updates_seconds": 8.556564650731161,
+              "full_analytic_relative_residual": 0.003909513645254676
+            },
+            {
+              "iterations": 14848,
+              "updates_seconds": 8.705916743725538,
+              "full_analytic_relative_residual": 0.0036375439584705018
+            },
+            {
+              "iterations": 15104,
+              "updates_seconds": 8.855051866732538,
+              "full_analytic_relative_residual": 0.0033827787852732448
+            },
+            {
+              "iterations": 15360,
+              "updates_seconds": 9.004295589751564,
+              "full_analytic_relative_residual": 0.003166501151137622
+            },
+            {
+              "iterations": 15616,
+              "updates_seconds": 9.153549292706884,
+              "full_analytic_relative_residual": 0.0029198291379565746
+            },
+            {
+              "iterations": 15872,
+              "updates_seconds": 9.302851095679216,
+              "full_analytic_relative_residual": 0.002695925815194003
+            },
+            {
+              "iterations": 16128,
+              "updates_seconds": 9.4520004686201,
+              "full_analytic_relative_residual": 0.00249780192269711
+            },
+            {
+              "iterations": 16384,
+              "updates_seconds": 9.601025161682628,
+              "full_analytic_relative_residual": 0.002329188976021969
+            },
+            {
+              "iterations": 16640,
+              "updates_seconds": 9.750192184583284,
+              "full_analytic_relative_residual": 0.0021438993896171384
+            },
+            {
+              "iterations": 16896,
+              "updates_seconds": 9.89949033758603,
+              "full_analytic_relative_residual": 0.001989593743601146
+            },
+            {
+              "iterations": 17152,
+              "updates_seconds": 10.048609770601615,
+              "full_analytic_relative_residual": 0.001856808183529016
+            },
+            {
+              "iterations": 17408,
+              "updates_seconds": 10.197846313589253,
+              "full_analytic_relative_residual": 0.001615781357561605
+            },
+            {
+              "iterations": 17664,
+              "updates_seconds": 10.346911766566336,
+              "full_analytic_relative_residual": 0.0015094372145144797
+            },
+            {
+              "iterations": 17920,
+              "updates_seconds": 10.496183159644715,
+              "full_analytic_relative_residual": 0.0013802951871894164
+            },
+            {
+              "iterations": 18176,
+              "updates_seconds": 10.645242172642611,
+              "full_analytic_relative_residual": 0.0012752388417549502
+            },
+            {
+              "iterations": 18432,
+              "updates_seconds": 10.79434776562266,
+              "full_analytic_relative_residual": 0.0012004312316360563
+            },
+            {
+              "iterations": 18688,
+              "updates_seconds": 10.943220538669266,
+              "full_analytic_relative_residual": 0.0011402996803124919
+            },
+            {
+              "iterations": 18944,
+              "updates_seconds": 11.09237690072041,
+              "full_analytic_relative_residual": 0.0010762283381554661
+            },
+            {
+              "iterations": 19200,
+              "updates_seconds": 11.241451003705151,
+              "full_analytic_relative_residual": 0.001002001727470493
+            },
+            {
+              "iterations": 19456,
+              "updates_seconds": 11.390593636780977,
+              "full_analytic_relative_residual": 0.0009268967861623599
+            },
+            {
+              "iterations": 19712,
+              "updates_seconds": 11.539871039800346,
+              "full_analytic_relative_residual": 0.0008067665734882891
+            },
+            {
+              "iterations": 19968,
+              "updates_seconds": 11.689560971804895,
+              "full_analytic_relative_residual": 0.000736901159465712
+            },
+            {
+              "iterations": 20224,
+              "updates_seconds": 11.838885934790596,
+              "full_analytic_relative_residual": 0.0006709581855235655
+            },
+            {
+              "iterations": 20480,
+              "updates_seconds": 11.988439976703376,
+              "full_analytic_relative_residual": 0.0006128540944835202
+            },
+            {
+              "iterations": 20736,
+              "updates_seconds": 12.137845639605075,
+              "full_analytic_relative_residual": 0.000569958700923819
+            },
+            {
+              "iterations": 20992,
+              "updates_seconds": 12.287323241587728,
+              "full_analytic_relative_residual": 0.0005365916099298711
+            },
+            {
+              "iterations": 21248,
+              "updates_seconds": 12.436818154528737,
+              "full_analytic_relative_residual": 0.0004947584695176096
+            },
+            {
+              "iterations": 21504,
+              "updates_seconds": 12.586642997572199,
+              "full_analytic_relative_residual": 0.0004646511226138023
+            },
+            {
+              "iterations": 21760,
+              "updates_seconds": 12.736277710529976,
+              "full_analytic_relative_residual": 0.0004415919899586005
+            },
+            {
+              "iterations": 22016,
+              "updates_seconds": 12.885742863523774,
+              "full_analytic_relative_residual": 0.00041361328956464425
+            },
+            {
+              "iterations": 22272,
+              "updates_seconds": 13.035152096534148,
+              "full_analytic_relative_residual": 0.00037134693338537766
+            },
+            {
+              "iterations": 22528,
+              "updates_seconds": 13.184733189526014,
+              "full_analytic_relative_residual": 0.00034796189303055856
+            },
+            {
+              "iterations": 22784,
+              "updates_seconds": 13.334152652532794,
+              "full_analytic_relative_residual": 0.00032588650441122503
+            },
+            {
+              "iterations": 23040,
+              "updates_seconds": 13.48355745547451,
+              "full_analytic_relative_residual": 0.00030626100729249094
+            },
+            {
+              "iterations": 23296,
+              "updates_seconds": 13.63271412847098,
+              "full_analytic_relative_residual": 0.0002828372898467783
+            },
+            {
+              "iterations": 23552,
+              "updates_seconds": 13.781940751476213,
+              "full_analytic_relative_residual": 0.000268757182583627
+            },
+            {
+              "iterations": 23808,
+              "updates_seconds": 13.931234824471176,
+              "full_analytic_relative_residual": 0.0002569758933359457
+            },
+            {
+              "iterations": 24064,
+              "updates_seconds": 14.08229071740061,
+              "full_analytic_relative_residual": 0.00023620291781421065
+            },
+            {
+              "iterations": 24320,
+              "updates_seconds": 14.231453830376267,
+              "full_analytic_relative_residual": 0.00022573585134705437
+            },
+            {
+              "iterations": 24576,
+              "updates_seconds": 14.3810821933439,
+              "full_analytic_relative_residual": 0.0002067794561046909
+            },
+            {
+              "iterations": 24832,
+              "updates_seconds": 14.530245966394432,
+              "full_analytic_relative_residual": 0.00019218821610386802
+            },
+            {
+              "iterations": 25088,
+              "updates_seconds": 14.679438139428385,
+              "full_analytic_relative_residual": 0.00018099575637173912
+            },
+            {
+              "iterations": 25344,
+              "updates_seconds": 14.828576762462035,
+              "full_analytic_relative_residual": 0.00017041922333033436
+            },
+            {
+              "iterations": 25600,
+              "updates_seconds": 14.977774135535583,
+              "full_analytic_relative_residual": 0.00013247927982736515
+            },
+            {
+              "iterations": 25856,
+              "updates_seconds": 15.126832358539104,
+              "full_analytic_relative_residual": 0.00012056613971118755
+            },
+            {
+              "iterations": 26112,
+              "updates_seconds": 15.276088511571288,
+              "full_analytic_relative_residual": 9.987786055473468e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 128,
+          "eta": 5.0,
+          "compile_seconds": 0.5673525349702686,
+          "validation_seconds": 20.210330462898128,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.15286409202963114,
+              "full_analytic_relative_residual": 0.502080874290737
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.30440545396413654,
+              "full_analytic_relative_residual": 0.36834046672796783
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.45597974688280374,
+              "full_analytic_relative_residual": 0.3189293328582012
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.607366049895063,
+              "full_analytic_relative_residual": 0.2804556406493428
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.7590597718954086,
+              "full_analytic_relative_residual": 0.24734034484138792
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.910581344855018,
+              "full_analytic_relative_residual": 0.2184301764689327
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 1.0622790078632534,
+              "full_analytic_relative_residual": 0.1934169982988861
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 1.2136141109513119,
+              "full_analytic_relative_residual": 0.17088041117479139
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 1.3653196729719639,
+              "full_analytic_relative_residual": 0.15150573523809352
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 1.5168151559773833,
+              "full_analytic_relative_residual": 0.13444992627138957
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 1.6685720189707354,
+              "full_analytic_relative_residual": 0.11881012111587538
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 1.8199044520733878,
+              "full_analytic_relative_residual": 0.10482744195015911
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 1.9715876841219142,
+              "full_analytic_relative_residual": 0.09248805091960437
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 2.1231454671360552,
+              "full_analytic_relative_residual": 0.08178042844889206
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 2.275015520164743,
+              "full_analytic_relative_residual": 0.07204723797885738
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 2.4266162031563,
+              "full_analytic_relative_residual": 0.06401901319037574
+            },
+            {
+              "iterations": 4352,
+              "updates_seconds": 2.5784517461434007,
+              "full_analytic_relative_residual": 0.05691296233289233
+            },
+            {
+              "iterations": 4608,
+              "updates_seconds": 2.730023178155534,
+              "full_analytic_relative_residual": 0.04992925201255618
+            },
+            {
+              "iterations": 4864,
+              "updates_seconds": 2.8817644010996446,
+              "full_analytic_relative_residual": 0.04403826402281443
+            },
+            {
+              "iterations": 5120,
+              "updates_seconds": 3.033169344183989,
+              "full_analytic_relative_residual": 0.0389791674837788
+            },
+            {
+              "iterations": 5376,
+              "updates_seconds": 3.184908906230703,
+              "full_analytic_relative_residual": 0.03433498108870779
+            },
+            {
+              "iterations": 5632,
+              "updates_seconds": 3.3349181591765955,
+              "full_analytic_relative_residual": 0.03016657884986396
+            },
+            {
+              "iterations": 5888,
+              "updates_seconds": 3.486621702206321,
+              "full_analytic_relative_residual": 0.02665758035188916
+            },
+            {
+              "iterations": 6144,
+              "updates_seconds": 3.638100794283673,
+              "full_analytic_relative_residual": 0.022994150723209435
+            },
+            {
+              "iterations": 6400,
+              "updates_seconds": 3.7899751373333856,
+              "full_analytic_relative_residual": 0.01994947251156919
+            },
+            {
+              "iterations": 6656,
+              "updates_seconds": 3.9415688402950764,
+              "full_analytic_relative_residual": 0.017679217840400187
+            },
+            {
+              "iterations": 6912,
+              "updates_seconds": 4.093351933290251,
+              "full_analytic_relative_residual": 0.016014551305202802
+            },
+            {
+              "iterations": 7168,
+              "updates_seconds": 4.244856095290743,
+              "full_analytic_relative_residual": 0.014095713502131978
+            },
+            {
+              "iterations": 7424,
+              "updates_seconds": 4.396466007223353,
+              "full_analytic_relative_residual": 0.012078969525055003
+            },
+            {
+              "iterations": 7680,
+              "updates_seconds": 4.548018550267443,
+              "full_analytic_relative_residual": 0.010337603848339207
+            },
+            {
+              "iterations": 7936,
+              "updates_seconds": 4.698654602281749,
+              "full_analytic_relative_residual": 0.009411593005050584
+            },
+            {
+              "iterations": 8192,
+              "updates_seconds": 4.84996811428573,
+              "full_analytic_relative_residual": 0.00840308708814848
+            },
+            {
+              "iterations": 8448,
+              "updates_seconds": 5.00173417723272,
+              "full_analytic_relative_residual": 0.007585756897475613
+            },
+            {
+              "iterations": 8704,
+              "updates_seconds": 5.1526006802450866,
+              "full_analytic_relative_residual": 0.006822777700200196
+            },
+            {
+              "iterations": 8960,
+              "updates_seconds": 5.304123252280988,
+              "full_analytic_relative_residual": 0.0057772514572437365
+            },
+            {
+              "iterations": 9216,
+              "updates_seconds": 5.455743965227157,
+              "full_analytic_relative_residual": 0.004909702653538045
+            },
+            {
+              "iterations": 9472,
+              "updates_seconds": 5.606927088228986,
+              "full_analytic_relative_residual": 0.0045434817399895655
+            },
+            {
+              "iterations": 9728,
+              "updates_seconds": 5.757853100309148,
+              "full_analytic_relative_residual": 0.004192162717954125
+            },
+            {
+              "iterations": 9984,
+              "updates_seconds": 5.909591633244418,
+              "full_analytic_relative_residual": 0.003717217217934163
+            },
+            {
+              "iterations": 10240,
+              "updates_seconds": 6.060358936199918,
+              "full_analytic_relative_residual": 0.0030037996439429473
+            },
+            {
+              "iterations": 10496,
+              "updates_seconds": 6.211339869303629,
+              "full_analytic_relative_residual": 0.0025246424164040893
+            },
+            {
+              "iterations": 10752,
+              "updates_seconds": 6.362835321342573,
+              "full_analytic_relative_residual": 0.002309247906418152
+            },
+            {
+              "iterations": 11008,
+              "updates_seconds": 6.51368303433992,
+              "full_analytic_relative_residual": 0.0019821285405779796
+            },
+            {
+              "iterations": 11264,
+              "updates_seconds": 6.665132616297342,
+              "full_analytic_relative_residual": 0.0019113789166884366
+            },
+            {
+              "iterations": 11520,
+              "updates_seconds": 6.816626709303819,
+              "full_analytic_relative_residual": 0.0018553479748603374
+            },
+            {
+              "iterations": 11776,
+              "updates_seconds": 6.967476942343637,
+              "full_analytic_relative_residual": 0.0016727646490860588
+            },
+            {
+              "iterations": 12032,
+              "updates_seconds": 7.118595595355146,
+              "full_analytic_relative_residual": 0.0015946412121936734
+            },
+            {
+              "iterations": 12288,
+              "updates_seconds": 7.270197187433951,
+              "full_analytic_relative_residual": 0.0015699703081670203
+            },
+            {
+              "iterations": 12544,
+              "updates_seconds": 7.421848440426402,
+              "full_analytic_relative_residual": 0.001552158380713844
+            },
+            {
+              "iterations": 12800,
+              "updates_seconds": 7.573439293424599,
+              "full_analytic_relative_residual": 0.0007324385353054153
+            },
+            {
+              "iterations": 13056,
+              "updates_seconds": 7.725133616477251,
+              "full_analytic_relative_residual": 0.00038298583363068273
+            },
+            {
+              "iterations": 13312,
+              "updates_seconds": 7.876553258509375,
+              "full_analytic_relative_residual": 0.0003341981147791715
+            },
+            {
+              "iterations": 13568,
+              "updates_seconds": 8.028160791494884,
+              "full_analytic_relative_residual": 0.0002980084561095985
+            },
+            {
+              "iterations": 13824,
+              "updates_seconds": 8.17972967447713,
+              "full_analytic_relative_residual": 0.0002645083674082446
+            },
+            {
+              "iterations": 14080,
+              "updates_seconds": 8.329980416456237,
+              "full_analytic_relative_residual": 0.00023374337270109412
+            },
+            {
+              "iterations": 14336,
+              "updates_seconds": 8.480756109463982,
+              "full_analytic_relative_residual": 0.00020234875349978853
+            },
+            {
+              "iterations": 14592,
+              "updates_seconds": 8.632133512408473,
+              "full_analytic_relative_residual": 0.0001612690741252838
+            },
+            {
+              "iterations": 14848,
+              "updates_seconds": 8.78375044441782,
+              "full_analytic_relative_residual": 0.00014245519961407263
+            },
+            {
+              "iterations": 15104,
+              "updates_seconds": 8.935917306458578,
+              "full_analytic_relative_residual": 0.00012707722852833608
+            },
+            {
+              "iterations": 15360,
+              "updates_seconds": 9.087382389465347,
+              "full_analytic_relative_residual": 0.00011435555135728039
+            },
+            {
+              "iterations": 15616,
+              "updates_seconds": 9.238666532561183,
+              "full_analytic_relative_residual": 0.00010687385019599704
+            },
+            {
+              "iterations": 15872,
+              "updates_seconds": 9.390169465565123,
+              "full_analytic_relative_residual": 9.081172434018058e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 2.0,
+          "compile_seconds": 0.5683374550426379,
+          "validation_seconds": 8.476557138958015,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.460273046977818,
+              "full_analytic_relative_residual": 0.38517192298502867
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.9160065649775788,
+              "full_analytic_relative_residual": 0.23823324733328335
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 1.371326332911849,
+              "full_analytic_relative_residual": 0.16918398491270845
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 1.8269990399712697,
+              "full_analytic_relative_residual": 0.12157165492289042
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 2.2818448579637334,
+              "full_analytic_relative_residual": 0.08724485347014302
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 2.7370641749585047,
+              "full_analytic_relative_residual": 0.06295922545097903
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 3.192260232870467,
+              "full_analytic_relative_residual": 0.04543689730849205
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 3.6475624198792502,
+              "full_analytic_relative_residual": 0.03252238843086318
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 4.102956097922288,
+              "full_analytic_relative_residual": 0.023228617997331866
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 4.558127845986746,
+              "full_analytic_relative_residual": 0.016952076561462012
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 5.014015874010511,
+              "full_analytic_relative_residual": 0.012338048242567786
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 5.469563362072222,
+              "full_analytic_relative_residual": 0.008690521514844054
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 5.924792360048741,
+              "full_analytic_relative_residual": 0.006290719428557326
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 6.380247458000667,
+              "full_analytic_relative_residual": 0.004597443324760495
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 6.835441585048102,
+              "full_analytic_relative_residual": 0.00327318371486524
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 7.290849703131244,
+              "full_analytic_relative_residual": 0.002364023773809691
+            },
+            {
+              "iterations": 4352,
+              "updates_seconds": 7.746192250167951,
+              "full_analytic_relative_residual": 0.001655812757172209
+            },
+            {
+              "iterations": 4608,
+              "updates_seconds": 8.201098638121039,
+              "full_analytic_relative_residual": 0.0011574754390011415
+            },
+            {
+              "iterations": 4864,
+              "updates_seconds": 8.656552946078591,
+              "full_analytic_relative_residual": 0.0008683973229953623
+            },
+            {
+              "iterations": 5120,
+              "updates_seconds": 9.111890984000638,
+              "full_analytic_relative_residual": 0.0006425896837752547
+            },
+            {
+              "iterations": 5376,
+              "updates_seconds": 9.567252242006361,
+              "full_analytic_relative_residual": 0.0004448441113439378
+            },
+            {
+              "iterations": 5632,
+              "updates_seconds": 10.02243745001033,
+              "full_analytic_relative_residual": 0.0003036050915535231
+            },
+            {
+              "iterations": 5888,
+              "updates_seconds": 10.477290678070858,
+              "full_analytic_relative_residual": 0.00020040809070125514
+            },
+            {
+              "iterations": 6144,
+              "updates_seconds": 10.932311596116051,
+              "full_analytic_relative_residual": 0.00013821443296323645
+            },
+            {
+              "iterations": 6400,
+              "updates_seconds": 11.387067304109223,
+              "full_analytic_relative_residual": 0.00010163870685474922
+            },
+            {
+              "iterations": 6656,
+              "updates_seconds": 11.841899412102066,
+              "full_analytic_relative_residual": 7.520456972479659e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 5.0,
+          "compile_seconds": 0.5704292240552604,
+          "validation_seconds": 5.214690335094929,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.4564955480163917,
+              "full_analytic_relative_residual": 0.32018230815827564
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.9114966649794951,
+              "full_analytic_relative_residual": 0.19222270340708872
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 1.3667123629711568,
+              "full_analytic_relative_residual": 0.11893694753208978
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 1.8213099798886105,
+              "full_analytic_relative_residual": 0.07323882419864972
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 2.275993877905421,
+              "full_analytic_relative_residual": 0.04414572916581166
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 2.7313105548964813,
+              "full_analytic_relative_residual": 0.027187833410877715
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 3.1861761728068814,
+              "full_analytic_relative_residual": 0.015616412173120063
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 3.640995739842765,
+              "full_analytic_relative_residual": 0.009453884871532004
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 4.095650337869301,
+              "full_analytic_relative_residual": 0.006188118208136158
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 4.550044485833496,
+              "full_analytic_relative_residual": 0.003872254326013397
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 5.004610843840055,
+              "full_analytic_relative_residual": 0.0027213704677112806
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 5.459035151870921,
+              "full_analytic_relative_residual": 0.0017184927062135296
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 5.9136780998669565,
+              "full_analytic_relative_residual": 0.000712389872135119
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 6.368134917807765,
+              "full_analytic_relative_residual": 0.00023444755680021877
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 6.822706695878878,
+              "full_analytic_relative_residual": 0.0001377843579030321
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 7.277370763942599,
+              "full_analytic_relative_residual": 7.976774989060893e-05
+            }
+          ],
+          "status": "pass"
+        }
+      ],
+      "selected": {
+        "batch": 512,
+        "eta": 5.0,
+        "iterations": 4096
+      },
+      "prepare_seconds": 0.5704292240552604,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 7.259716948028654,
+          "quality": {
+            "analytic_relative_residual": 0.0004147671718066536,
+            "mean_relative_l2": 9.779478461815757e-05,
+            "common_mean_prepare_query_seconds": 0.12909871502779424,
+            "pass": false
+          }
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 7.260504098027013,
+          "quality": {
+            "analytic_relative_residual": 0.00016841800258994506,
+            "mean_relative_l2": 2.1280550782549685e-05,
+            "common_mean_prepare_query_seconds": 0.12967704504262656,
+            "pass": false
+          }
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 7.255883318954147,
+          "quality": {
+            "analytic_relative_residual": 0.00014721640301492656,
+            "mean_relative_l2": 1.5651005462261763e-05,
+            "common_mean_prepare_query_seconds": 0.1285638650879264,
+            "pass": false
+          }
+        }
+      ]
+    }
+  },
+  "hashes": {
+    "points": "1d61ccd681fbca21fb53e7afd2a9d11bc6e5e46394eb21f36f9099d8d8f3ae30",
+    "normals": "5f32874b3ebfc5ff1af9f4384a44403c1e5bbe6a52a1fa7a608ca87055c3de1d",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.00017004995606839657,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 131072,
+    "leaf_size": 128,
+    "far_groups": 17768,
+    "direct_groups": 10888,
+    "far_entries": 7010560,
+    "direct_entries": 1393664,
+    "max_far_group_entries": 72524,
+    "cpu_plan_seconds": 0.5195133000379428,
+    "device_transfer_seconds": 0.014650908997282386,
+    "retained_device_bytes": 47112728,
+    "cache_setup_seconds": 0.01967340800911188,
+    "cache_bytes": 1065605120,
+    "cached_total_device_bytes": 2539987968,
+    "scheduling_seconds": 0.0060445889830589294,
+    "small_group_threshold": 32,
+    "small_groups": 0,
+    "large_groups": 17768,
+    "scheduling_bytes": 71072,
+    "leaf_cache_seconds": 0.1259324459824711,
+    "leaf_cache_bytes": 1427111936,
+    "matrix_offset_bytes": 87112
+  },
+  "reference_solve": {
+    "iterations": 43,
+    "recurrence_converged": true,
+    "relative_residual": [
+      5.860905593309183e-11,
+      9.230712402700355e-11,
+      6.241464144164935e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 1.958168932284545e-15,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.013744049007073045,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.0276016220450401,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.0417519460897893,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.0558934900909662,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.069595634005964,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 5.083224417991005,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 6.097611891105771,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 7.1121805449947715,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 8.132542928098701,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 9.146456902031787,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 10.16063718602527,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 11.174866460030898,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 12.188976664096117,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 13.202979807043448,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 14.217345661018044,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 15.230896925088018,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 16.24619195901323,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 17.260374733014032,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 18.281708436086774,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 19.295829129056074,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 20.312843273044564,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 21.326648117043078,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 22.396710824104957,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 23.410779308062047,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 24.42550678201951,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 25.44024009606801,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 26.454561038990505,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 27.46854291309137,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 28.48312315705698,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 29.497900590999052,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 30.511845744098537,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 31.52577155805193,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 32.5408562120283,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 33.560701315058395,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 34.574866599054076,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 35.58862852305174,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 36.60310621699318,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 37.61730212008115,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 38.63149051403161,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 39.64583151799161,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 40.66051379207056,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 41.6754381560022,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 42.689167139003985,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 43.702435373095796,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 44.717010617023334,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 45.73156939109322,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 46.74549914500676,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 47.76069223799277,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 48.77571266202722,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 49.789430286036804,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 50.803175960085355,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 51.82447902299464,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 52.83836618706118,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 53.85293802001979,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 54.868139514001086,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 55.88233281800058,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 56.90348258102313,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 57.91757411509752,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 58.93233320803847,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 59.94684498209972,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 60.96140443603508,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 61.976257289992645,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 62.99118624301627,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 64.00558284705039,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 65.01953883108217,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 66.03354636509903,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 67.04779862810392,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 68.06206257210579,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 69.08699769503437,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 70.10216928902082,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 71.11694476206321,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 72.13230371603277,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 73.1537939690752,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 74.1678475830704,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 75.18208735703956,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 76.19618399010506,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 77.21018810407259,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 78.23156652704347,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 79.24660810106434,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 80.26162151503377,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 81.27644490799867,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 82.29205608204938,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 83.3059923161054,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 84.32016841007862,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 85.33432173309848,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 86.34860545699485,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 87.36349724105094,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 88.37857344502117,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 89.39336427801754,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 90.40771776204929,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 91.42224905604962,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 92.43632432003506,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 93.45023055409547,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 94.46401242702268,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 95.47791455104016,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 96.49254868505523,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 97.50738364900462,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 98.5214792030165,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 99.53577957605012,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 100.55334656999912,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 101.56771021406166,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 102.58302787702996,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 103.60363735002466,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 104.61869811406359,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 105.63395089807454,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 106.64838194102049,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 107.66203503508586,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 108.67745425901376,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 109.69238080305513,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 110.70680001704022,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 111.72643511008937,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 112.74143905309029,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 113.75547313701827,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 114.77017638110556,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 115.7849411451025,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 116.8073078080779,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 117.8214377410477,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 118.83649992500432,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 119.85115683905315,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 120.86546934302896,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 121.88069550599903,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 122.89490151009522,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 123.90894683403894,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 124.92455176799558,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 125.93931040109601,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 126.95329752506223,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 127.96845366910566,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 129.00638598005753,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 130.0204426239943,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 131.0429658270441,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 132.05821409006603,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 133.07389493403025,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 134.08858857804444,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 135.10304816102143,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 136.117440275033,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 137.13201571907848,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 138.14681193302386,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 139.16098142706323,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 140.17548850004096,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 141.1905638440512,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 142.20539499807637,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 143.2191507020034,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 144.2348665150348,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 145.25004492909648,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 146.2651059330674,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 147.280216536019,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 148.29495067009702,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 149.31031904404517,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 150.3251898670569,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 151.339828291093,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 152.35509383503813,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 153.3697785390541,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 154.38465353206266,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 155.39951308607124,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 156.41452493006364,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 157.42976641410496,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 158.4444927170407,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 158.80834038602188,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 249760,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

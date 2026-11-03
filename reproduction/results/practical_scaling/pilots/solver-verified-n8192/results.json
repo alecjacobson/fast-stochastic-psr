@@ -1,0 +1,402 @@
+{
+  "complete": true,
+  "n": 8192,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 8192,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "analytic_cache_gib": 4.0,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "adaptive_confirm": true,
+    "selected_sdd": "/opt/geospsr-runtime/solver-scaling/n8192/results.json",
+    "output": "/opt/geospsr-runtime/solver-scaling/verified-n8192"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.02898115711286664,
+    "reference_analytic_solve": 0.1555694619892165,
+    "reference_direct_rows": 0.00174555997364223,
+    "shared_cross_spectrum": 0.02036344795487821,
+    "reference_mean_queries": 0.31962380302138627,
+    "dense_matrix_factor": 0.7120458289282396,
+    "nufft_spectrum": 0.0024157100124284625,
+    "nufft_plans": 0.019435118068940938
+  },
+  "methods": {
+    "cholesky": {
+      "prepare_seconds": 0.7120458289282396,
+      "solve_seconds": 0.009222108987160027,
+      "quality": {
+        "analytic_relative_residual": 2.515291550538495e-15,
+        "mean_relative_l2": 2.456571500530446e-11,
+        "common_mean_prepare_query_seconds": 0.08262290095444769,
+        "pass": true
+      }
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.05083198519423604,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 0.2632568490225822,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.309869720804272e-06,
+                4.875338163401466e-06,
+                5.068090558779659e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.7274784160051993e-06,
+                2.646932409206718e-06,
+                2.936678627526167e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010935284383475812,
+                  0.001033375671887867,
+                  0.0011118235748261707
+                ],
+                [
+                  2.7274784160051993e-06,
+                  2.646932409206718e-06,
+                  2.936678627526167e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    5.0034236664942e-06,
+                    5.30633906237199e-06,
+                    5.115892690810142e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.7518082508493967e-06,
+            "mean_relative_l2": 1.0971713514736473e-06,
+            "common_mean_prepare_query_seconds": 0.08813654992263764,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 0.256166851031594,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.307332230586326e-06,
+                4.875610557064647e-06,
+                5.070279257779475e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.727479024616407e-06,
+                2.646929658760459e-06,
+                2.9366873034955706e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010935270353205236,
+                  0.0010333762072536,
+                  0.001111824133178991
+                ],
+                [
+                  2.727479024616407e-06,
+                  2.646929658760459e-06,
+                  2.9366873034955706e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    5.001320005248999e-06,
+                    5.302566478349036e-06,
+                    5.11416283188737e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.751809790241928e-06,
+            "mean_relative_l2": 1.0971728096001214e-06,
+            "common_mean_prepare_query_seconds": 0.07087021193001419,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 0.2560260100290179,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.307712399371667e-06,
+                4.873450961895287e-06,
+                5.071431587566622e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.727480468222128e-06,
+                2.6469322682213307e-06,
+                2.9366865742285223e-06
+              ],
+              "residual_history": [
+                [
+                  0.001093528307777477,
+                  0.0010333754599944523,
+                  0.0011118240974057874
+                ],
+                [
+                  2.727480468222128e-06,
+                  2.6469322682213307e-06,
+                  2.9366865742285223e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    5.000523287890246e-06,
+                    5.304464593791636e-06,
+                    5.115391559229465e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.7518110905705235e-06,
+            "mean_relative_l2": 1.0971762556182453e-06,
+            "common_mean_prepare_query_seconds": 0.07080354203935713,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "selection_source": "/opt/geospsr-runtime/solver-scaling/n8192/results.json",
+      "pilots": [],
+      "selected": {
+        "batch": 128,
+        "eta": 5.0,
+        "iterations": 1280
+      },
+      "prepare_seconds": 0.7227563469205052,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 0.2265336129348725,
+          "quality": {
+            "analytic_relative_residual": 2.5756261251084014e-05,
+            "mean_relative_l2": 2.9408385821189834e-06,
+            "common_mean_prepare_query_seconds": 0.072497972054407,
+            "pass": true
+          },
+          "iterations": 1536,
+          "stopping_history": [
+            {
+              "iterations": 1280,
+              "update_seconds": 0.19533921696711332,
+              "full_analytic_relative_residual": 0.00033199901970176315
+            },
+            {
+              "iterations": 1536,
+              "update_seconds": 0.2265336129348725,
+              "full_analytic_relative_residual": 2.575626125108498e-05
+            }
+          ],
+          "verification_seconds": 0.017483587958849967,
+          "verified_solve_seconds": 0.24401720089372247
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 0.15373807202558964,
+          "quality": {
+            "analytic_relative_residual": 5.231653908182262e-05,
+            "mean_relative_l2": 7.807973064142788e-06,
+            "common_mean_prepare_query_seconds": 0.07161806197836995,
+            "pass": true
+          },
+          "iterations": 1280,
+          "stopping_history": [
+            {
+              "iterations": 1280,
+              "update_seconds": 0.15373807202558964,
+              "full_analytic_relative_residual": 5.231653908182288e-05
+            }
+          ],
+          "verification_seconds": 0.00869329902343452,
+          "verified_solve_seconds": 0.16243137104902416
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 0.15361008199397475,
+          "quality": {
+            "analytic_relative_residual": 6.948006796127355e-05,
+            "mean_relative_l2": 1.0086301304686541e-05,
+            "common_mean_prepare_query_seconds": 0.0707908219192177,
+            "pass": true
+          },
+          "iterations": 1280,
+          "stopping_history": [
+            {
+              "iterations": 1280,
+              "update_seconds": 0.15361008199397475,
+              "full_analytic_relative_residual": 6.948006796127377e-05
+            }
+          ],
+          "verification_seconds": 0.008648329065181315,
+          "verified_solve_seconds": 0.16225841105915606
+        }
+      ],
+      "confirmation_policy": "full analytic residual stopping",
+      "verification_setup_seconds": 0.02898115711286664
+    }
+  },
+  "hashes": {
+    "points": "b8881b9b91098f78c93437375342243e86fba605c997cf31e40a2d502fc46195",
+    "normals": "49545e7a923f9a8719f2668be3198a5d658e80e6fa5531a67760b492ff5fdea6",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.00017476000357419252,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 8192,
+    "leaf_size": 128,
+    "far_groups": 619,
+    "direct_groups": 431,
+    "far_entries": 168918,
+    "direct_entries": 55168,
+    "max_far_group_entries": 4504,
+    "cpu_plan_seconds": 0.01210731896571815,
+    "device_transfer_seconds": 0.00037642999086529016,
+    "retained_device_bytes": 1385309,
+    "cache_setup_seconds": 0.0030873289797455072,
+    "cache_bytes": 25675536,
+    "cached_total_device_bytes": 83558809,
+    "scheduling_seconds": 0.006227020057849586,
+    "small_group_threshold": 32,
+    "small_groups": 0,
+    "large_groups": 619,
+    "scheduling_bytes": 2476,
+    "leaf_cache_seconds": 0.006018919055350125,
+    "leaf_cache_bytes": 56492032,
+    "matrix_offset_bytes": 3456
+  },
+  "reference_solve": {
+    "iterations": 14,
+    "recurrence_converged": true,
+    "relative_residual": [
+      2.3533729399447333e-11,
+      2.023841406578556e-11,
+      2.1735932000539504e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 8.981512474830797e-16,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.013544807909056544,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.027905351947993,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.047406525001861,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.0613891289103776,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.0741137829609215,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.261807190952823,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 250479,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

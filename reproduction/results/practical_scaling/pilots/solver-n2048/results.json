@@ -1,0 +1,478 @@
+{
+  "complete": true,
+  "n": 2048,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 2048,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "output": "/opt/geospsr-runtime/solver-scaling/n2048"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.014585718046873808,
+    "reference_analytic_solve": 0.1355562839889899,
+    "reference_direct_rows": 0.0009090499952435493,
+    "shared_cross_spectrum": 0.020744818029925227,
+    "reference_mean_queries": 0.3110014240955934,
+    "dense_matrix_factor": 0.03686843591276556,
+    "nufft_spectrum": 0.0009053800022229552,
+    "nufft_plans": 0.01015450805425644
+  },
+  "methods": {
+    "cholesky": {
+      "prepare_seconds": 0.03686843591276556,
+      "solve_seconds": 0.0017722300253808498,
+      "quality": {
+        "analytic_relative_residual": 1.3128833203429884e-15,
+        "mean_relative_l2": 5.991975991908985e-11,
+        "common_mean_prepare_query_seconds": 0.05876147304661572,
+        "pass": true
+      }
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.025645606103353202,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 0.18063850002363324,
+          "solver": {
+            "initial": {
+              "iterations": 5,
+              "recurrence_converged": true,
+              "relative_residual": [
+                2.2108995381131535e-06,
+                1.6770775346230948e-06,
+                1.8562374179964536e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                1.580616274285757e-06,
+                1.6163663899561103e-06,
+                1.6973831999919158e-06
+              ],
+              "residual_history": [
+                [
+                  0.001100517102764397,
+                  0.001098123280488391,
+                  0.0011393050277581271
+                ],
+                [
+                  1.580616274285757e-06,
+                  1.6163663899561103e-06,
+                  1.6973831999919158e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 5,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    2.189729229939985e-06,
+                    1.754959043864801e-06,
+                    1.890712383101345e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 1.6284865059484258e-06,
+            "mean_relative_l2": 1.1746605132348775e-06,
+            "common_mean_prepare_query_seconds": 0.05890829302370548,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 0.1745438399957493,
+          "solver": {
+            "initial": {
+              "iterations": 5,
+              "recurrence_converged": true,
+              "relative_residual": [
+                2.209776312156464e-06,
+                1.6772577282608836e-06,
+                1.8588103785077692e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                1.5806143956068559e-06,
+                1.6163663166194768e-06,
+                1.6973730341355806e-06
+              ],
+              "residual_history": [
+                [
+                  0.0011005159303542284,
+                  0.0010981247400706374,
+                  0.001139303376303259
+                ],
+                [
+                  1.5806143956068559e-06,
+                  1.6163663166194768e-06,
+                  1.6973730341355806e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 5,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    2.1919045138929505e-06,
+                    1.7592024050827604e-06,
+                    1.8890960973294568e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 1.628483019635018e-06,
+            "mean_relative_l2": 1.1746586618558879e-06,
+            "common_mean_prepare_query_seconds": 0.05813440296333283,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 0.17423146998044103,
+          "solver": {
+            "initial": {
+              "iterations": 5,
+              "recurrence_converged": true,
+              "relative_residual": [
+                2.21055393012648e-06,
+                1.676718056842219e-06,
+                1.858653604358551e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                1.580615805990478e-06,
+                1.6163635683043289e-06,
+                1.6973848027200593e-06
+              ],
+              "residual_history": [
+                [
+                  0.0011005176839692366,
+                  0.0010981220777961642,
+                  0.0011393056742060974
+                ],
+                [
+                  1.580615805990478e-06,
+                  1.6163635683043289e-06,
+                  1.6973848027200593e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 5,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    2.1888313312956598e-06,
+                    1.7549796211824287e-06,
+                    1.8853886558645172e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 1.6284856370827389e-06,
+            "mean_relative_l2": 1.1746599936333443e-06,
+            "common_mean_prepare_query_seconds": 0.058017842937260866,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "pilots": [
+        {
+          "batch": 128,
+          "eta": 2.0,
+          "compile_seconds": 0.6527817049063742,
+          "validation_seconds": 0.006081460043787956,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.058591802953742445,
+              "full_analytic_relative_residual": 0.11478501543534825
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.07749533106107265,
+              "full_analytic_relative_residual": 0.008759274965362635
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.09627951902803034,
+              "full_analytic_relative_residual": 0.0006676323265367655
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.11503132700454444,
+              "full_analytic_relative_residual": 5.02460699324543e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 128,
+          "eta": 5.0,
+          "compile_seconds": 0.6391849659848958,
+          "validation_seconds": 0.005945640034042299,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.020098697976209223,
+              "full_analytic_relative_residual": 0.08882247844741724
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.03892976592760533,
+              "full_analytic_relative_residual": 0.006776212654658577
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.057758772862143815,
+              "full_analytic_relative_residual": 0.0005163080186791402
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.0765279708430171,
+              "full_analytic_relative_residual": 3.874480281864661e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 2.0,
+          "compile_seconds": 0.636751757003367,
+          "validation_seconds": 0.005823589977808297,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.026077006943523884,
+              "full_analytic_relative_residual": 0.08220355797961358
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.0506996939657256,
+              "full_analytic_relative_residual": 0.006272542300423434
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.07528120093047619,
+              "full_analytic_relative_residual": 0.00047781960920557324
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.09987831790931523,
+              "full_analytic_relative_residual": 3.577585275206656e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 5.0,
+          "compile_seconds": 0.6255023879930377,
+          "validation_seconds": 0.005881440010853112,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.025812516920268536,
+              "full_analytic_relative_residual": 0.0781431590808873
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.05048232385888696,
+              "full_analytic_relative_residual": 0.0059626715569189885
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.07508317090105265,
+              "full_analytic_relative_residual": 0.00045417984102296663
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.09963470790535212,
+              "full_analytic_relative_residual": 3.399311609762142e-05
+            }
+          ],
+          "status": "pass"
+        }
+      ],
+      "selected": {
+        "batch": 128,
+        "eta": 5.0,
+        "iterations": 1024
+      },
+      "prepare_seconds": 0.6391849659848958,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 0.07470105192624032,
+          "quality": {
+            "analytic_relative_residual": 3.905476611956874e-05,
+            "mean_relative_l2": 3.763439965768116e-05,
+            "common_mean_prepare_query_seconds": 0.05936052300967276,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 0.07441096100956202,
+          "quality": {
+            "analytic_relative_residual": 3.89142341570461e-05,
+            "mean_relative_l2": 3.7479607857483794e-05,
+            "common_mean_prepare_query_seconds": 0.05854731297586113,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 0.07438607199583203,
+          "quality": {
+            "analytic_relative_residual": 3.941327856698017e-05,
+            "mean_relative_l2": 3.821104924561518e-05,
+            "common_mean_prepare_query_seconds": 0.058598764007911086,
+            "pass": true
+          }
+        }
+      ]
+    }
+  },
+  "hashes": {
+    "points": "0e2edd159c1b4895e35f7da56d9a56b3aac19a16a8debf61e4559a1f41e35006",
+    "normals": "b88d55d369814e83039b42269e71044a088562ae4fb0d95749d39d59eb43b893",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.00017354008741676807,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 2048,
+    "leaf_size": 128,
+    "far_groups": 98,
+    "direct_groups": 80,
+    "far_entries": 20480,
+    "direct_entries": 10240,
+    "max_far_group_entries": 1150,
+    "cpu_plan_seconds": 0.001767609966918826,
+    "device_transfer_seconds": 0.0003300299867987633,
+    "retained_device_bytes": 213680,
+    "cache_setup_seconds": 0.0036667800741270185,
+    "cache_bytes": 3112960,
+    "cached_total_device_bytes": 13813440,
+    "scheduling_seconds": 0.006212229025550187,
+    "small_group_threshold": 32,
+    "small_groups": 1,
+    "large_groups": 97,
+    "scheduling_bytes": 392,
+    "leaf_cache_seconds": 0.0017849900759756565,
+    "leaf_cache_bytes": 10485760,
+    "matrix_offset_bytes": 648
+  },
+  "reference_solve": {
+    "iterations": 9,
+    "recurrence_converged": true,
+    "relative_residual": [
+      5.26731853573054e-11,
+      4.72312522701879e-11,
+      4.8929396738702246e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 3.9316517588935426e-16,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.01387804897967726,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.0326507119461894,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.0463334360392764,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.059764949954115,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.073557873023674,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 5.011001955950633,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 248855,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

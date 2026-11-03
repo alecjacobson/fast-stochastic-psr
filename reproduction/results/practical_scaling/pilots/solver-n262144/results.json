@@ -1,0 +1,76 @@
+{
+  "complete": false,
+  "n": 262144,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 262144,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "output": "/opt/geospsr-runtime/solver-scaling/n262144"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {},
+  "methods": {},
+  "hashes": {
+    "points": "c56fef13906b882e29526b2719145eeb000a90db8b15c60ba00fe149d17ca040",
+    "normals": "493d417cc36104fbc60cc88150b2762f3a8369933229ab6661cc00c839d60a43",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "failure": "MemoryError: combined periodic/leaf cache exceeds byte cap",
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.01364560890942812,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.0281979819992557,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.4290458969771862,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 250422,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

@@ -65,6 +65,13 @@ In particular, SDD also has linear work per iteration at fixed batch size;
 there is no unconditional asymptotic NUFFT advantage over SDD independent of
 convergence, bandwidth, and the accuracy requirement.
 
+A final crossover check also tuned SDD batches 1,024/2,048/4,096 with both
+learning-rate multipliers at N=32,768. The fastest new configuration confirms
+at 0.995s, slower than the retained batch-512 result (0.849s); all three new
+confirmations and the device audit pass. These additional raw pilots are
+retained, and do not change the crossover. This is a finite tuning sweep,
+not a claim of globally optimal SDD hyperparameters.
+
 The iteration-growth hypothesis is supported in this regime:
 
 | N | SDD confirmed iterations, three seeds | NUFFT CG iterations, including corrections |

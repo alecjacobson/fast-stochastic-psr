@@ -21,7 +21,8 @@ Solve all three normal right-hand sides. Compare:
   upstream updates. Pilot batches 128/512 and learning-rate multipliers 2/5;
   retain all attempted configurations and failures. At N=262,144 narrow the
   pilot to the stronger batch 512 from preceding sizes, try both multipliers,
-  and check every 1,024 updates to reduce verification overhead.
+  and check every 1,024 updates to reduce verification overhead. A final
+  N=32,768 check also tests batches 1024/2048/4096 with both multipliers.
 - NUFFT-CG at training cutoff 100 followed by analytic defect corrections.
   Each correction uses the same finite NUFFT solve and checks the full
   analytic system. Count the analytic geometry preparation and correction

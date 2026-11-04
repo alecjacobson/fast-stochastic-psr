@@ -155,7 +155,8 @@ def run(args):
         system = GPUSparseMaternSystem(model, x, noise, cutoff=args.sparse_cutoff,
                                        rank=args.rank, neighbors=args.neighbors,
                                        threads=args.threads, seed=args.seed, graph_backend=args.sparse_builder,
-                                       preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size)
+                                       preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size,
+                                       memory_fraction=args.sparse_memory_fraction)
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
                                               mean_tolerance=args.solve_tolerance)
     else:
@@ -289,6 +290,8 @@ if __name__ == '__main__':
     parser.add_argument('--normal-noise', type=float, default=0., help='additive normal component standard deviation')
     parser.add_argument('--sparse-cutoff', type=float, default=12., help='dimensionless kappa*radius for sparse control')
     parser.add_argument('--sparse-builder', choices=['gpu', 'cpu'], default='gpu')
+    parser.add_argument('--sparse-memory-fraction', type=float, default=.75,
+                        help='Cached sparse representation fraction of currently free GPU memory; solve workspace remains necessary')
     parser.add_argument('--lengthscale', type=float, default=.3)
     parser.add_argument('--amplitude', type=float, default=.0025)
     parser.add_argument('--relative-noise', type=float, default=.01)

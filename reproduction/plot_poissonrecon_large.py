@@ -12,9 +12,10 @@ import numpy as np
 def main(root):
     root = Path(root)
     selection = json.loads((root/'selection.json').read_text())
-    fig, axes = plt.subplots(1, 3, figsize=(13, 4))
+    fig, panels = plt.subplots(2, 2, figsize=(11, 8))
+    axes = panels.ravel()
     summary = []
-    colors = {'H2 cached': '#1764a2', 'H2 streamed': '#17a2a0',
+    colors = {'H2': '#1764a2', 'Sparse': '#c14c25', 'H2 cached': '#1764a2', 'H2 streamed': '#17a2a0',
               'Sparse cached': '#d18119', 'Sparse streamed': '#c14c25', 'Cholesky': '#777777'}
     for group in selection['series']:
         records = [json.loads((root/p).read_text()) for p in group['records']]
@@ -28,18 +29,20 @@ def main(root):
         label = group['dataset'].title()+' / '+group['method']
         style = '-' if group['dataset'] == 'eagle' else '--'
         axes[0].loglog(n, times, style+'o', label=label, color=color)
-        axes[1].loglog(n, storage, style+'o', label=label, color=color)
+        entries = [d.get('interaction_nnz', d.get('sparse_diagnostics', {}).get('nnz', d['arguments']['n']**2)) for d in records]
+        axes[1].loglog(n, entries, style+'o', label=label, color=color)
+        axes[2].loglog(n, storage, style+'o', label=label, color=color)
         if 'solve_info' in records[0]:
             iterations = [max(d['solve_info']['mean']['iterations']) for d in records]
-            axes[2].semilogx(n, iterations, style+'o', label=label, color=color)
+            axes[3].semilogx(n, iterations, style+'o', label=label, color=color)
         summary.extend(dict(dataset=group['dataset'], method=group['method'], n=d['arguments']['n'],
                             total_seconds=d['total_seconds'], storage_gib=s,
                             max_probability_error=d['independent_audit']['max_probability_error'],
                             max_variance_error_over_prior=d['independent_audit']['max_variance_error_over_prior'])
                        for d,s in zip(records, storage))
     for ax,title,ylabel in zip(axes,
-            ['Complete mean + variance workload', 'Stored GPU representation', 'Mean conditioning iterations'],
-            ['Seconds, including 1,048,576 queries', 'GiB; workspace is reported separately', 'Maximum component PCG iterations']):
+            ['Complete mean + variance workload', 'Represented kernel interactions', 'Stored GPU representation', 'Mean conditioning iterations'],
+            ['Seconds, including 1,048,576 queries', 'Entries, including regenerated blocks', 'GiB; workspace reported separately', 'Maximum component PCG iterations']):
         ax.set(title=title, xlabel='Oriented observations N', ylabel=ylabel)
         ax.grid(True, which='both', alpha=.2)
     axes[0].legend(fontsize=7)

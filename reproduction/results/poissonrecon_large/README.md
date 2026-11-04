@@ -20,9 +20,11 @@ cutoff 12 takes 63.66 s but **fails probability accuracy**, so that pair is not 
 accepted speedup comparison. Widening the local radius is necessary.
 
 At full Eagle, the order-six streamed H² run takes 233.67 s and fits in the
-24 GiB GPU partition; its independent audit is pending. The earlier order-four
-103.97 s run is also provisional. Neither is accepted large-scale accuracy
-or a demonstrated speedup until its audit and a valid baseline comparison pass.
+24 GiB GPU partition, but fails the probability gate (0.001285 versus 0.001).
+Its variance error/prior is 2.45e-6 and passes. The earlier order-four 103.97 s
+run also fails (probability error 0.00482; variance error/prior 0.000255). Neither is an accepted speedup. A tighter hierarchy and
+stronger shared preconditioner are being tested against the saved full-kernel
+reference; its construction took 926.44 s and required no refinement sweep.
 
 Torso order-four dense and H² pilots fail probability accuracy, and order five
 at N=77,824 narrowly fails. A float64 dense N=16,384 pilot identifies interpolation

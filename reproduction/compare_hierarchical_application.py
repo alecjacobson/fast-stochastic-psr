@@ -57,6 +57,11 @@ def compare(candidate, baseline, output):
                       max_error_if_constant_contact_variance_is_used=float(cp.max(abs(bpred-ndtr((b['level']-bm)/contact_variance**.5)))))
         for key, value in values.items():
             result[key] = max(result[key], value)
+    result['independent_audits'] = dict(candidate=bool(c.get('independent_audit', {}).get('passes')),
+                                        baseline=bool(b.get('independent_audit', {}).get('passes')))
+    result['passes'] = bool(all(result['independent_audits'].values()) and
+                            result['max_probability_error'] <= 1e-3 and
+                            result['max_variance_error_over_prior'] <= 1e-4)
     result['queries'] = b['arguments']['queries']*b['arguments']['batches']
     result['shape_brier'] = ({key: value/result['queries'] for key, value in brier_sums.items()} if known_shape else None)
     result['shape_brier_scope'] = ('Known synthetic ellipsoid/sphere inside labels, at anchored local contact; not a repeated-scan calibration certificate.'

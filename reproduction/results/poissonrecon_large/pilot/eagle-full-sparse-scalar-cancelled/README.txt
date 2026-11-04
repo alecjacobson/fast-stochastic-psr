@@ -1,0 +1,1 @@
+Cancelled by SIGTERM after at least 268 seconds elapsed while investigating scalar row-fill underutilization. No completed production timing or speedup ratio. Warp fill preserves columns and values exactly and passed streamed operator tests. Final control is rerun under eagle/large-control.

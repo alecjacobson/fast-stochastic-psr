@@ -7,7 +7,7 @@ from .hierarchical import HierarchicalMaternSystem
 from .hierarchical_gpu import GPUAFNPreconditioner, GPUHierarchicalSystem
 from .nonperiodic_sparse import _RADIUS
 
-_FILL = r'''
+_FILL_SCALAR = r'''
 extern "C" __global__ void fill_local(
     const double* x, const long long* cells, const int* offsets,
     int ny, int nz, int nx, double radius2, int first, int last,
@@ -32,6 +32,48 @@ extern "C" __global__ void fill_local(
                 values[position]=amplitude*(1+z)*exp(-z)+(i==j?noise:0.);
                 position++;
             }
+        }
+    }
+}
+'''
+
+# A warp owns each row: streamed chunks can contain only a few hundred rows,
+# so one thread per row leaves most SMs idle on dense surface neighborhoods.
+# Ballot compaction preserves the ascending cell/column order of scalar fill.
+_FILL = r'''
+extern "C" __global__ void fill_local(
+    const double* x, const long long* cells, const int* offsets,
+    int ny, int nz, int nx, double radius2, int first, int last,
+    const int* ptr, int* columns, double* values,
+    double kappa, double amplitude, double noise) {
+    int i=first+(blockIdx.x*blockDim.x+threadIdx.x)/32;
+    int lane=threadIdx.x%32;
+    if(i>=last) return;
+    long long cell=cells[i];
+    int iz=cell%nz,iy=(cell/nz)%ny,ix=cell/(ny*nz);
+    double a=x[3*i],b=x[3*i+1],c=x[3*i+2];
+    int position=ptr[i-first];
+    for(int u=max(0,ix-1);u<=min(nx-1,ix+1);u++)
+    for(int v=max(0,iy-1);v<=min(ny-1,iy+1);v++)
+    for(int w=max(0,iz-1);w<=min(nz-1,iz+1);w++) {
+        int bin=(u*ny+v)*nz+w;
+        for(int base=offsets[bin];base<offsets[bin+1];base+=32) {
+            int j=base+lane;
+            double d=0.;
+            bool keep=false;
+            if(j<offsets[bin+1]) {
+                double dx=a-x[3*j],dy=b-x[3*j+1],dz=c-x[3*j+2];
+                d=dx*dx+dy*dy+dz*dz;
+                keep=d<=radius2;
+            }
+            unsigned mask=__ballot_sync(0xffffffff,keep);
+            if(keep) {
+                int p=position+__popc(mask & ((1u<<lane)-1u));
+                double z=sqrt(d)*kappa;
+                columns[p]=j;
+                values[p]=amplitude*(1+z)*exp(-z)+(i==j?noise:0.);
+            }
+            position+=__popc(mask);
         }
     }
 }
@@ -106,7 +148,7 @@ class GPUStreamedLocalSystem(GPUHierarchicalSystem):
         result = cp.empty_like(ordered)
         for first,last,nnz,ptr in self.chunks:
             values, columns = self.values[:nnz], self.columns[:nnz]
-            self.kernel(((last-first+127)//128,), (128,), (self.coordinates,self.ids,self.offsets,
+            self.kernel(((last-first+3)//4,), (128,), (self.coordinates,self.ids,self.offsets,
                 self.ny,self.nz,self.nx,self.radius**2,first,last,ptr,columns,values,
                 self.model.kappa,self.model.amplitude,self.noise_variance))
             matrix = csr_matrix((values,columns,ptr), shape=(last-first,len(self.points)))

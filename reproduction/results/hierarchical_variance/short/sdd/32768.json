@@ -1,0 +1,264 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_variance/short/references/32768.json",
+    "output": "reproduction/results/hierarchical_variance/short/sdd/32768.json",
+    "eta": [
+      0.1,
+      0.15
+    ],
+    "batch": 128,
+    "checkpoints": [
+      2048,
+      8192,
+      16384,
+      32768,
+      49152,
+      65536,
+      98304,
+      131072
+    ],
+    "budget": 60.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 32768,
+    "seed": 12,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 32
+  },
+  "solve_rank": 20,
+  "compression_seconds": 0.3442155550001189,
+  "common_runtime_initialization_seconds": 0.2014281500596553,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "f1326433bde12f4fe8f1472bb09a6f6859e02483f7ab93012ab9dd5c922e6492",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "d00e112aa2805d92da6f150a677cd4173a319f9ce7fbaff87103af761e0c2372",
+    "reproduction/benchmark_hierarchical_variance.py": "829e6c74aa870e0d148273c1f5170541401d66b60fbf214bc9274a39aa7f845c"
+  },
+  "configurations": [
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "learning_rate": 0.000390625,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.6386964250123128,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.520318986964412,
+          "preparation_seconds": 1.5061674669850618,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0038549660401649977,
+              "max_variance_error_over_prior": 0.0022878430298603715,
+              "minimum_variance": 1.3294230566877799e-06,
+              "passes": false,
+              "projection_seconds": 0.0019580599619075656,
+              "field_seconds": 0.0009784400463104248
+            },
+            "corrected": {
+              "max_probability_error": 0.01151538542786501,
+              "max_variance_error_over_prior": 0.007899652371966815,
+              "minimum_variance": 1.3442574521555295e-06,
+              "passes": false,
+              "projection_seconds": 0.43002831598278135,
+              "field_seconds": 0.0008453199407085776
+            }
+          },
+          "max_probability_error": 0.0038549660401649977,
+          "max_variance_error_over_prior": 0.0022878430298603715,
+          "minimum_variance": 1.3294230566877799e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 1.8174928738735616,
+          "preparation_seconds": 2.8032120438292623,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0011612156710505417,
+              "max_variance_error_over_prior": 9.135691305348676e-05,
+              "minimum_variance": 1.3269702698860524e-06,
+              "passes": false,
+              "projection_seconds": 0.0019533300073817372,
+              "field_seconds": 0.0008538599358871579
+            },
+            "corrected": {
+              "max_probability_error": 0.0016679225540590648,
+              "max_variance_error_over_prior": 0.0013144474539943894,
+              "minimum_variance": 1.3300110749522655e-06,
+              "passes": false,
+              "projection_seconds": 0.3911259101005271,
+              "field_seconds": 0.0008310400880873203
+            }
+          },
+          "max_probability_error": 0.0011612156710505417,
+          "max_variance_error_over_prior": 9.135691305348676e-05,
+          "minimum_variance": 1.3269702698860524e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 3.544200327945873,
+          "preparation_seconds": 4.529905066941865,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00043443112548746665,
+              "max_variance_error_over_prior": 9.073241761327614e-05,
+              "minimum_variance": 1.3272296054776227e-06,
+              "passes": true,
+              "projection_seconds": 0.0019625090062618256,
+              "field_seconds": 0.0008302499772980809
+            }
+          },
+          "max_probability_error": 0.00043443112548746665,
+          "max_variance_error_over_prior": 9.073241761327614e-05,
+          "minimum_variance": 1.3272296054776227e-06,
+          "passes": true,
+          "query_seconds": [
+            0.004952259943820536,
+            0.0009291400201618671,
+            0.0008861690293997526,
+            0.0008544599404558539,
+            0.000856570084579289,
+            0.0008532099891453981,
+            0.0008577900007367134,
+            0.0008441200479865074,
+            0.000852369936183095,
+            0.0008385599358007312,
+            0.0008433799957856536,
+            0.000834809965454042,
+            0.0008328299736604095,
+            0.0008284299401566386,
+            0.0008273799903690815,
+            0.0008563799783587456
+          ],
+          "total_seconds": 4.547652925713919
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/short/sdd/32768-eta0.1-passing.json",
+      "status": "passing complete workload"
+    },
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 0.0005859375,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.4467458139406517,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.43302666605450213,
+          "preparation_seconds": 1.2267924749758095,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0039006403085829477,
+              "max_variance_error_over_prior": 0.001925504049761235,
+              "minimum_variance": 1.3289139135127743e-06,
+              "passes": false,
+              "projection_seconds": 0.001947490032762289,
+              "field_seconds": 0.0008569499477744102
+            },
+            "corrected": {
+              "max_probability_error": 0.019234920367435127,
+              "max_variance_error_over_prior": 0.018063205696503746,
+              "minimum_variance": 1.3677135867045014e-06,
+              "passes": false,
+              "projection_seconds": 0.3916689599864185,
+              "field_seconds": 0.0007221599807962775
+            }
+          },
+          "max_probability_error": 0.0039006403085829477,
+          "max_variance_error_over_prior": 0.001925504049761235,
+          "minimum_variance": 1.3289139135127743e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 1.7239098149584606,
+          "preparation_seconds": 2.5177730028517544,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00044453216656825667,
+              "max_variance_error_over_prior": 0.00022703525341238103,
+              "minimum_variance": 1.3267083081039352e-06,
+              "passes": false,
+              "projection_seconds": 0.002094968920573592,
+              "field_seconds": 0.0008068500319495797
+            },
+            "corrected": {
+              "max_probability_error": 0.0027484649422831464,
+              "max_variance_error_over_prior": 0.0023718464802897996,
+              "minimum_variance": 1.3323754167814564e-06,
+              "passes": false,
+              "projection_seconds": 0.391207079985179,
+              "field_seconds": 0.0008662700420245528
+            }
+          },
+          "max_probability_error": 0.00044453216656825667,
+          "max_variance_error_over_prior": 0.00022703525341238103,
+          "minimum_variance": 1.3267083081039352e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 3.4454431389458477,
+          "preparation_seconds": 4.2391386278904974,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0004311111566893122,
+              "max_variance_error_over_prior": 7.896622121017019e-05,
+              "minimum_variance": 1.3271559450243386e-06,
+              "passes": true,
+              "projection_seconds": 0.0018935500411316752,
+              "field_seconds": 0.000840569962747395
+            }
+          },
+          "max_probability_error": 0.0004311111566893122,
+          "max_variance_error_over_prior": 7.896622121017019e-05,
+          "minimum_variance": 1.3271559450243386e-06,
+          "passes": true,
+          "query_seconds": [
+            0.0011794399470090866,
+            0.0008969599148258567,
+            0.0008571799844503403,
+            0.0008542500436306,
+            0.000850509968586266,
+            0.0008618399733677506,
+            0.0008298699976876378,
+            0.0008386400295421481,
+            0.0008430300513282418,
+            0.0008482099510729313,
+            0.000835040002129972,
+            0.0008492401102557778,
+            0.0008365000830963254,
+            0.0008256000000983477,
+            0.0008332299767062068,
+            0.0008327999385073781
+          ],
+          "total_seconds": 4.253010967862792
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/short/sdd/32768-eta0.15-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

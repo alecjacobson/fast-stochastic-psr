@@ -1,0 +1,64 @@
+h2-gpu-131072-0 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '131072', '--method', 'h2-gpu', '--variance-iterations', '12', '--output', 'reproduction/results/hierarchical_variance/short/large/h2-gpu-131072-0.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--h2-tolerance', '0.001', '--leaf-size', '40', '--rank', '8', '--neighbors', '24'], 'returncode': 0}
+h2-gpu-131072-1 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '131072', '--method', 'h2-gpu', '--variance-iterations', '12', '--output', 'reproduction/results/hierarchical_variance/short/large/h2-gpu-131072-1.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--h2-tolerance', '0.001', '--leaf-size', '40', '--rank', '8', '--neighbors', '24'], 'returncode': 0}
+h2-gpu-131072-2 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '131072', '--method', 'h2-gpu', '--variance-iterations', '12', '--output', 'reproduction/results/hierarchical_variance/short/large/h2-gpu-131072-2.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--h2-tolerance', '0.001', '--leaf-size', '40', '--rank', '8', '--neighbors', '24'], 'returncode': 0}
+cg-dense-float32-32768-0 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '32768', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-32768-0.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-32768-1 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '32768', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-32768-1.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-32768-2 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '32768', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-32768-2.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-73728-0 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '73728', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-73728-0.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-73728-1 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '73728', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-73728-1.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-73728-2 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '73728', '--method', 'cg-dense-float32', '--variance-iterations', '8', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-73728-2.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+cg-dense-float32-131072-0 {'command': ['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.benchmark_hierarchical_variance', '--n', '131072', '--method', 'cg-dense-float32', '--variance-iterations', '12', '--output', 'reproduction/results/hierarchical_variance/short/controls/cg-dense-float32-131072-0.json', '--lengthscale', '0.03', '--halfwidth', '0.005', '--rank', '8', '--neighbors', '24', '--variance-refinements', '0'], 'returncode': 0}
+Set random seed to 12
+Change OpenMP threads to 4
+Init KrnlMatObject done
+Build H2 Mat dtype 1
+Mat size 131072 131072
+Set random seed to 12
+Change OpenMP threads to 4
+Init precond done
+Build AFN preconditioner dtype 1
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/audit_hierarchical_variance.py", line 117, in <module>
+    audit(args.record, args.reference, args.random_queries)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/audit_hierarchical_variance.py", line 53, in audit
+    z = system.solve(rhs, tolerance=1e-9)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical_gpu.py", line 203, in solve
+    x, info = batched_pcg(self.matmul, self.precondition, rhs, tolerance=tolerance,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical.py", line 91, in batched_pcg
+    ap = matmul(p)
+         ^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical_gpu.py", line 192, in matmul
+    result = self.interactions @ work
+             ~~~~~~~~~~~~~~~~~~^~~~~~
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupyx/scipy/sparse/_base.py", line 195, in __matmul__
+    return self._matmul_dispatch(other)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupyx/scipy/sparse/_csr.py", line 255, in _matmul_dispatch
+    self.sum_duplicates()
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupyx/scipy/sparse/_compressed.py", line 1561, in sum_duplicates
+    coo.sum_duplicates()
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupyx/scipy/sparse/_coo.py", line 705, in sum_duplicates
+    order = cupy.lexsort(keys)
+            ^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupy/_sorting/sort.py", line 88, in lexsort
+    thrust.lexsort(keys.dtype, idx_array.data.ptr, keys.data.ptr, k, n)
+  File "cupy/cuda/thrust.pyx", line 108, in cupy.cuda.thrust.lexsort
+  File "cupy/cuda/thrust.pyx", line 127, in cupy.cuda.thrust.lexsort
+MemoryError: std::bad_alloc
+Free H2 matrix done
+Dealloc KrnlMatObject done
+Dealloc precond done
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/audit_hierarchical_scaling.py", line 27, in <module>
+    main(parser.parse_args().root)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/audit_hierarchical_scaling.py", line 21, in main
+    subprocess.run(cmd, check=True)
+  File "/opt/geospsr-runtime/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/opt/geospsr-runtime/venv/bin/python', '-m', 'reproduction.audit_hierarchical_variance', 'reproduction/results/hierarchical_variance/short/large/h2-gpu-131072-0.json', '--reference', 'reproduction/results/hierarchical_variance/short/references/131072.json', '--random-queries', '8']' returned non-zero exit status 1.

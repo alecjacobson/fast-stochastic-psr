@@ -36,6 +36,26 @@ def test_variance_series_matches_dense_factor_at_new_queries():
     assert record['variance_cutoff'] == 4
 
 
+@pytest.mark.parametrize('working_dtype',['float64','float32'])
+@pytest.mark.parametrize('paired',[False,True])
+def test_gradient_variance_series_matches_independent_dense_variance(working_dtype,paired):
+    rng=np.random.default_rng(728)
+    x=rng.uniform(-1,1,(17,3)).astype('f');q=rng.uniform(-1,1,(31,3)).astype('f')
+    a=analytic_covariance_rows64(x,x,lengthscale=.2);a.flat[::18]+=.02
+    chol=cp.linalg.cholesky(a);op=FourierPoisson(4,lengthscale=.2,dtype='float64',eps=1e-12)
+    c=op.cross_values((q[:,None].astype('d')-x[None].astype('d')).reshape(-1,3)).reshape(len(q),len(x),3)
+    z=cla.solve_triangular(chol,c.transpose(1,0,2).reshape(len(x),-1),lower=True)
+    coeff,record=prepare_variance_series(x,chol,op,batch=5,method='gradient',working_dtype=working_dtype,
+        source_dtype=working_dtype,paired_sources=paired,inverse_batch=8 if paired else 0)
+    correction=(z*z).sum(0).reshape(-1,3).sum(1)
+    actual=FourierSeriesEvaluator(coeff).evaluate(q)[0]
+    error=cp.linalg.norm(actual-(record['prior_variance']-correction))/cp.linalg.norm(correction)
+    # Single FFT arithmetic followed by spectral differentiation amplifies
+    # roundoff; the stricter application gates are checked on independent data.
+    assert float(error)<(1e-10 if working_dtype=='float64' else 1e-5)
+    assert record['functions']==3*len(x)
+
+
 def test_tabulated_cross_matches_independent_scipy_interpolation():
     from scipy.interpolate import RegularGridInterpolator
     from reproduction.tabulated_cross import TabulatedCrossKernel
@@ -84,14 +104,16 @@ def test_spatial_moment_grid_matches_scipy_and_rejects_outside_domain():
     with pytest.raises(ValueError):grid.evaluate([[1.01,0,0]])
 
 
-def test_periodic_spatial_grid_matches_scipy_across_seam():
+@pytest.mark.parametrize('order',[3,5])
+def test_periodic_spatial_grid_matches_scipy_across_seam(order):
     from scipy.ndimage import map_coordinates as scipy_map
     from reproduction.spatial_moment_grid import SpatialMomentGrid
     values=np.random.default_rng(38).normal(size=(2,12,12,12))
     q=np.array([[-1,0,.99],[1,0,.99],[.999,.998,-.999]])
-    grid=SpatialMomentGrid(values,[-1]*3,[1]*3,periodic=True)
+    grid=SpatialMomentGrid(values,[-1]*3,[1]*3,periodic=True,order=order)
     actual=grid.evaluate(q)
     for i in range(2):
-        expected=scipy_map(values[i],((q+1)*6).T,order=3,mode='grid-wrap')
+        expected=scipy_map(values[i],((q+1)*6).T,order=order,mode='grid-wrap')
         np.testing.assert_allclose(actual[i].get(),expected,atol=1e-12,rtol=1e-11)
+        np.testing.assert_allclose(grid.evaluate_channel(q,i).get(),expected,atol=1e-12,rtol=1e-11)
         np.testing.assert_allclose(actual[i][0].get(),actual[i][1].get(),atol=1e-12)

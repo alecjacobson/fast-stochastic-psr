@@ -130,7 +130,7 @@ def run(args):
         begin = perf_counter()
         solver = StochasticDualDescent(jnp.asarray(x, dtype=jnp.float32), jnp.asarray(rhs), kernel,
                     noise_variance=a['relative_noise'], batch=args.batch,
-                    lr=eta*args.batch/len(x), seed=a['seed'], momentum=.9, polyak=.01)
+                    lr=eta*args.batch/len(x), seed=a['seed'], momentum=.9, polyak=.01, sampling=args.sampling)
         solver.compile()
         compile_seconds = perf_counter()-begin
         config = dict(eta=eta, batch=args.batch, learning_rate=eta*args.batch/len(x),
@@ -226,6 +226,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', required=True)
     parser.add_argument('--eta', nargs='+', type=float, default=[.03, .1])
     parser.add_argument('--batch', type=int, default=128)
+    parser.add_argument('--sampling', choices=['permutation', 'rejection'], default='permutation')
     parser.add_argument('--order', type=int, default=4)
     parser.add_argument('--cross-block-size', type=int)
     parser.add_argument('--cross-tolerance', type=float, default=1e-4)

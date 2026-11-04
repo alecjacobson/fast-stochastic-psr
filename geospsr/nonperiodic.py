@@ -7,6 +7,7 @@ fitted isovalue, variance shift, jitter or variance clipping is applied.
 
 from dataclasses import dataclass
 from math import factorial
+from time import perf_counter
 
 import numpy as np
 from scipy.linalg import cho_solve, cholesky, solve_triangular
@@ -178,8 +179,11 @@ class RegionalVarianceCache:
             raise ValueError('compression_tolerance must lie in (0,1)')
         cache = cls.__new__(cls)
         cache._initialize_box(center, halfwidth, order)
+        begin = perf_counter()
         basis, coefficients, relative_error = compress_cross_covariance(
             model, points, cache.nodes, compression_tolerance, cross_block_size)
+        compression_seconds = perf_counter()-begin
+        begin = perf_counter()
         rank = basis.shape[1]
         if project is None:
             solution = solve(basis)
@@ -189,6 +193,8 @@ class RegionalVarianceCache:
             # A dense baseline can use one triangular solve for [basis, y],
             # then form both moments from whitened inner products.
             gram, projected_vectors = project(basis, vectors)
+        conditioning_seconds = perf_counter()-begin
+        begin = perf_counter()
         gram = .5*(gram+gram.T)
         r = order**3
         cache.correction = sum(coefficients[:, d*r:(d+1)*r].T @ gram @
@@ -199,6 +205,9 @@ class RegionalVarianceCache:
         cache.solve_rank = rank
         cache.cross_compression_tolerance = compression_tolerance
         cache.cross_relative_frobenius_error = relative_error
+        cache.preparation_timings = dict(compression_seconds=compression_seconds,
+                                        conditioning_seconds=conditioning_seconds,
+                                        moments_seconds=perf_counter()-begin)
         return cache
 
     def basis(self, queries):

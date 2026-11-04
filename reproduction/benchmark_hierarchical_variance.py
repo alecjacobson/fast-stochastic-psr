@@ -207,6 +207,7 @@ def run(args):
         checksums.append(checksum)
         minimum_variances.append(minimum)
     record.update(setup_seconds=setup, regional_cache_seconds=cache_seconds,
+                  regional_cache_timings=cache.preparation_timings,
                   field_seconds=field_seconds, preparation_seconds=preparation,
                   query_seconds=times, total_seconds=preparation+sum(times),
                   solve_rank=cache.solve_rank, cross_relative_frobenius_error=cache.cross_relative_frobenius_error,

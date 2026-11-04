@@ -11,6 +11,21 @@ those gains on massive scans beyond practical upstream execution.
 [Benchmark protocol and coverage](reproduction/BENCHMARKS.md) ·
 [Reproduction instructions and technical details](REPRODUCTION.md)
 
+## Available numerical routes
+
+Both research routes are retained and selected explicitly; neither replaces the
+other or silently changes its covariance model.
+
+| Route | Model and intended use | Reproduction |
+|---|---|---|
+| **NUFFT / Fourier** | Existing periodic GeoSPSR-compatible mean, posterior-sample and marginal-variance implementations; useful for Fourier evaluation and broad repeated query batches | [Mean scaling](reproduction/results/practical_scaling/README.md), [variance reuse](reproduction/results/variance_probability/README.md) |
+| **H² / FMM-style** | New nonperiodic free-space Poisson–Matérn model with hierarchical conditioning and regional marginal variance; optional pinned HiGP backend | [Method](reproduction/results/hierarchical_variance/METHOD.md), [variance-inclusive contact benchmark](reproduction/results/hierarchical_variance/short/README.md) |
+
+The H² backend is imported only when requested; using NUFFT does not require
+building HiGP. Cross-model comparisons use geometry and uncertainty quality,
+not pointwise agreement. Neither route currently establishes calibrated
+uncertainty on real contact scans.
+
 ## Flagship comparisons
 
 All times below were measured on an NVIDIA L40 (48 GB). Speedups have explicit

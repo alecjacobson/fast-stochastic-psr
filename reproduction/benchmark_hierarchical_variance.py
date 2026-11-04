@@ -120,7 +120,8 @@ def run(args):
                   device_memory_bytes=cp.cuda.runtime.memGetInfo()[1],
                   cpu_quota=Path('/sys/fs/cgroup/cpu.max').read_text().strip(),
                   host_memory_limit=Path('/sys/fs/cgroup/memory.max').read_text().strip(),
-                  native_build=json.loads((Path(importlib.util.find_spec('psr_higp_cext').origin).parent/
+                  native_build=json.loads((Path(importlib.util.find_spec(
+                    'psr_higp_kd_cext' if args.preconditioner_backend == 'prefix-kd' else 'psr_higp_cext').origin).parent/
                     ('psr_higp_kd_build.json' if args.preconditioner_backend == 'prefix-kd' else 'psr_higp_build.json')).read_text()),
                   model='nonperiodic independent vector Matern-3/2, Poisson scalar projection',
                   application='marginal contact-ray probabilities and maximum mean Bernoulli ambiguity',

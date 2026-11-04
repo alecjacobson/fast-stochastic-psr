@@ -22,6 +22,17 @@ marginal inside probabilities; it does not condition the scalar field on a new
 contact observation. The workload contains 16 batches of 65,536 query samples
 (1,048,576 total), grouped into rays and ranked by mean Bernoulli ambiguity.
 
+The scaling regime increases sampling density on a fixed object, with fixed
+physical lengthscale, noise and query region. At a fixed physical cutoff, the
+number of radius neighbors grows with N, so the locality graph can approach
+O(N²) entries. H² compresses separated interactions instead of discarding them;
+bounded hierarchy ranks and iteration counts would give near-linear conditioning
+work at fixed regional rank. Dense Cholesky costs O(N³) preparation plus O(N² r)
+for r compressed variance right-hand sides. SDD costs O(N b r) per iteration for
+batch size b; this study does not establish its iteration count at convergence.
+Ranks, interpolation order and iterations can grow to maintain output accuracy,
+so the measured curves—not those conditional complexity estimates—decide wins.
+
 Every solver gets the same regional cross compression and polynomial mean/variance
 cache. Reported `total_seconds` includes hierarchy/factor/preconditioner setup,
 GPU representation, cross compression, mean and variance preparation, polynomial

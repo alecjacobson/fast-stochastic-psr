@@ -26,7 +26,7 @@ def main(root):
         times = [d['total_seconds'] for d in records]
         storage = [d.get('device_matrix_bytes', d.get('factor_bytes'))/2**30 for d in records]
         color = colors[group['method']]
-        label = group['dataset'].title()+' / '+group['method']
+        label = group['dataset'].title()+' / '+group['method'].replace('H2', 'H²')
         style = '-' if group['dataset'] == 'eagle' else '--'
         axes[0].loglog(n, times, style+'o', label=label, color=color)
         entries = [d.get('interaction_nnz', d.get('sparse_diagnostics', {}).get('nnz', d['arguments']['n']**2)) for d in records]
@@ -37,17 +37,25 @@ def main(root):
             axes[3].semilogx(n, iterations, style+'o', label=label, color=color)
         summary.extend(dict(dataset=group['dataset'], method=group['method'], n=d['arguments']['n'],
                             total_seconds=d['total_seconds'], storage_gib=s,
+                            backend=d['arguments']['method'], order=d['arguments']['order'],
+                            cross_rank=d['solve_rank'],
+                            logical_entries=e,
+                            workspace_gib=d.get('interaction_workspace_bytes', 0)/2**30,
+                            cupy_pool_gib=d['cupy_pool_total_bytes']/2**30,
+                            mean_iterations=max(d['solve_info']['mean']['iterations']) if 'solve_info' in d else None,
                             max_probability_error=d['independent_audit']['max_probability_error'],
                             max_variance_error_over_prior=d['independent_audit']['max_variance_error_over_prior'])
-                       for d,s in zip(records, storage))
+                       for d,s,e in zip(records, storage, entries))
     for ax,title,ylabel in zip(axes,
-            ['Complete mean + variance workload', 'Represented kernel interactions', 'Stored GPU representation', 'Mean conditioning iterations'],
+            ['Complete mean + variance workload', 'Represented kernel interactions', 'Stored GPU representation (cache policy varies)', 'Mean conditioning iterations'],
             ['Seconds, including 1,048,576 queries', 'Entries, including regenerated blocks', 'GiB; workspace reported separately', 'Maximum component PCG iterations']):
         ax.set(title=title, xlabel='Oriented observations N', ylabel=ylabel)
         ax.grid(True, which='both', alpha=.2)
     axes[0].legend(fontsize=7)
     fig.suptitle('PoissonRecon scans • matched sampled accuracy • single-run measurements', fontsize=12)
-    fig.tight_layout()
+    fig.text(.5, .012, 'Accuracy settings and cached/streamed policies vary with N; see report. These curves do not prove an asymptotic exponent.',
+             ha='center', fontsize=8)
+    fig.tight_layout(rect=(0, .035, 1, 1))
     fig.savefig(root/'scaling.png', dpi=180)
     fig.savefig(root/'scaling.pdf')
     (root/'summary.json').write_text(json.dumps(summary, indent=2)+'\n')

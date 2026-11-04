@@ -110,8 +110,11 @@ def run(args):
         from geospsr.nonperiodic_dense_cg import GPUDenseCGSystem
         system = GPUDenseCGSystem(model, x, noise, dtype=args.method.split('-')[-1],
                                   rank=args.rank, neighbors=args.neighbors, threads=args.threads, seed=args.seed)
-        project = (lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations,
-                                               mean_tolerance=args.solve_tolerance)) if args.variance_iterations else None
+        # This control needs reliable residual refinement even when the optional
+        # H2 early-variance setting is left at its default of zero.
+        project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
+                                              mean_tolerance=args.solve_tolerance,
+                                              variance_refinements=args.variance_refinements)
     else:
         from geospsr.hierarchical import HierarchicalMaternSystem
         system = HierarchicalMaternSystem(model, x, noise, tolerance=args.h2_tolerance,
@@ -231,6 +234,8 @@ if __name__ == '__main__':
     parser.add_argument('--h2-tolerance', type=float, default=1e-5)
     parser.add_argument('--solve-tolerance', type=float, default=1e-6)
     parser.add_argument('--variance-iterations', type=int, default=0)
+    parser.add_argument('--variance-refinements', type=int, default=1,
+                        help='dense GPU CG variance correction sweeps; mean refinement is independent')
     parser.add_argument('--cross-tolerance', type=float, default=1e-4)
     parser.add_argument('--leaf-size', type=int, default=100)
     parser.add_argument('--rank', type=int, default=50)

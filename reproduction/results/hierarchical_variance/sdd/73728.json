@@ -1,0 +1,150 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_variance/references/73728.json",
+    "output": "reproduction/results/hierarchical_variance/sdd/73728.json",
+    "eta": [
+      0.01,
+      0.03
+    ],
+    "batch": 128,
+    "checkpoints": [
+      2048,
+      8192,
+      32768,
+      65536,
+      131072,
+      262144
+    ],
+    "budget": 120.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 73728,
+    "seed": 12,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.3,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.05,
+    "random_queries": 32
+  },
+  "solve_rank": 21,
+  "compression_seconds": 0.9066907300148159,
+  "common_runtime_initialization_seconds": 0.24574491998646408,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "81ffc812d937c112f63d7461ed05501fc32f0fb999558c4ab5ba17733ba909dd",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "d00e112aa2805d92da6f150a677cd4173a319f9ce7fbaff87103af761e0c2372",
+    "reproduction/benchmark_hierarchical_variance.py": "9eed820f38280cb9d94c2fffbc45fa5c3f13f62fe43aeff4c4a9181ef15541a9"
+  },
+  "configurations": [
+    {
+      "eta": 0.01,
+      "batch": 128,
+      "learning_rate": 1.736111111111111e-05,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.6775465570390224,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 1.0241819550283253,
+          "preparation_seconds": 2.6155401010764763,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00028682117241296545,
+              "max_variance_error_over_prior": 9.463428665617138e-05,
+              "minimum_variance": 0.00013657727256617273,
+              "passes": true,
+              "projection_seconds": 0.006047649076208472,
+              "field_seconds": 0.0010732099181041121
+            }
+          },
+          "max_probability_error": 0.00028682117241296545,
+          "max_variance_error_over_prior": 9.463428665617138e-05,
+          "minimum_variance": 0.00013657727256617273,
+          "passes": true,
+          "query_seconds": [
+            0.0054876599460840225,
+            0.0031069390242919326,
+            0.0008844699477776885,
+            0.000856350059621036,
+            0.0008714499417692423,
+            0.0008462690748274326,
+            0.0008556100074201822,
+            0.0008485500002279878,
+            0.0008431799942627549,
+            0.0008348999544978142,
+            0.0008434100309386849,
+            0.0008259100141003728,
+            0.0008496599039062858,
+            0.0008343099616467953,
+            0.0008317900355905294,
+            0.0008373099844902754
+          ],
+          "total_seconds": 2.6359978689579293
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/sdd/73728-eta0.01-passing.json",
+      "status": "passing complete workload"
+    },
+    {
+      "eta": 0.03,
+      "batch": 128,
+      "learning_rate": 5.208333333333333e-05,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.4887393299723044,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.9351660560350865,
+          "preparation_seconds": 2.3374296750407666,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00032584767558541117,
+              "max_variance_error_over_prior": 5.553288165290245e-05,
+              "minimum_variance": 0.00013656972952512993,
+              "passes": true,
+              "projection_seconds": 0.005843688966706395,
+              "field_seconds": 0.0009898700518533587
+            }
+          },
+          "max_probability_error": 0.00032584767558541117,
+          "max_variance_error_over_prior": 5.553288165290245e-05,
+          "minimum_variance": 0.00013656972952512993,
+          "passes": true,
+          "query_seconds": [
+            0.001186799956485629,
+            0.0009038500720635056,
+            0.0008895400678738952,
+            0.0008694300195202231,
+            0.0008422300452366471,
+            0.0008462199475616217,
+            0.0008420500671491027,
+            0.0008544599404558539,
+            0.000830029952339828,
+            0.0008558700792491436,
+            0.0008465200662612915,
+            0.0008451590547338128,
+            0.0008398699574172497,
+            0.0008509899489581585,
+            0.0008338700281456113,
+            0.0008460100507363677
+          ],
+          "total_seconds": 2.3514125742949545
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/sdd/73728-eta0.03-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

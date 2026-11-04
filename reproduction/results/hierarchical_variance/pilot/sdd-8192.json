@@ -1,0 +1,147 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_variance/references/8192.json",
+    "output": "reproduction/results/hierarchical_variance/sdd/8192.json",
+    "eta": [
+      0.03,
+      0.1
+    ],
+    "batch": 128,
+    "checkpoints": [
+      128,
+      512,
+      2048,
+      8192
+    ],
+    "budget": 45
+  },
+  "contract": {
+    "n": 8192,
+    "seed": 12,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.3,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.05,
+    "random_queries": 32
+  },
+  "solve_rank": 21,
+  "compression_seconds": 0.09629637701436877,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "29a8682248120a0c8924707a29686859dc709d521bb3866b2d4d7b111c169004",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "c3f70b8418a390b53940d781cfbf46a19f2cafbea5b60ad34eef31e1468c1833",
+    "reproduction/benchmark_hierarchical_variance.py": "9eed820f38280cb9d94c2fffbc45fa5c3f13f62fe43aeff4c4a9181ef15541a9"
+  },
+  "configurations": [
+    {
+      "eta": 0.03,
+      "batch": 128,
+      "compile_seconds": 0.8841712590074167,
+      "history": [
+        {
+          "iterations": 128,
+          "solve_seconds": 0.10519154591020197,
+          "preparation_seconds": 1.1835908178472891,
+          "residual_correction_seconds": 0.0972098569618538,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.0494417107249408,
+          "max_variance_error_over_prior": 0.04646083759768994,
+          "minimum_variance": 0.0001468752273523657,
+          "passes": false
+        },
+        {
+          "iterations": 512,
+          "solve_seconds": 0.15296462993137538,
+          "preparation_seconds": 1.1792730988236144,
+          "residual_correction_seconds": 0.04534515296109021,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.025894300732898,
+          "max_variance_error_over_prior": 0.017090091462447023,
+          "minimum_variance": 0.00014031846090171134,
+          "passes": false
+        },
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.3388518149731681,
+          "preparation_seconds": 1.3649036849383265,
+          "residual_correction_seconds": 0.04505842400249094,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.013864430411560713,
+          "max_variance_error_over_prior": 0.010021595965011095,
+          "minimum_variance": 0.00013878932724139913,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 1.0804380730260164,
+          "preparation_seconds": 2.106663583079353,
+          "residual_correction_seconds": 0.0451731039211154,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.005658842702174316,
+          "max_variance_error_over_prior": 0.004175427668757393,
+          "minimum_variance": 0.00013750116283477252,
+          "passes": false
+        }
+      ],
+      "status": "no passing observed checkpoint within budget"
+    },
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "compile_seconds": 0.6201720760436729,
+      "history": [
+        {
+          "iterations": 128,
+          "solve_seconds": 0.017418407020159066,
+          "preparation_seconds": 0.7797653941670433,
+          "residual_correction_seconds": 0.045281164115294814,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.32972063395370443,
+          "max_variance_error_over_prior": 0.25014713191395377,
+          "minimum_variance": 0.0001916581753807321,
+          "passes": false
+        },
+        {
+          "iterations": 512,
+          "solve_seconds": 0.06448426004499197,
+          "preparation_seconds": 0.8264557271031663,
+          "residual_correction_seconds": 0.04502375400625169,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.3821223383368849,
+          "max_variance_error_over_prior": 0.26398419389569083,
+          "minimum_variance": 0.00019469249818921986,
+          "passes": false
+        },
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.2504687150940299,
+          "preparation_seconds": 1.012624251190573,
+          "residual_correction_seconds": 0.045118454028852284,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.13979087916907207,
+          "max_variance_error_over_prior": 0.11843078974388431,
+          "minimum_variance": 0.00016263697131501683,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 0.9921374541008845,
+          "preparation_seconds": 1.754416901152581,
+          "residual_correction_seconds": 0.045203073997981846,
+          "residual_correction": "full float64 kernel; joint mean/variance bilinear correction",
+          "max_probability_error": 0.014907232143442195,
+          "max_variance_error_over_prior": 0.012971852435917839,
+          "minimum_variance": 0.00013943303404478119,
+          "passes": false
+        }
+      ],
+      "status": "no passing observed checkpoint within budget"
+    }
+  ]
+}

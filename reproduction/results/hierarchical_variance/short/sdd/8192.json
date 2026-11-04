@@ -1,0 +1,208 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_variance/short/references/8192.json",
+    "output": "reproduction/results/hierarchical_variance/short/sdd/8192.json",
+    "eta": [
+      0.1,
+      0.15
+    ],
+    "batch": 128,
+    "checkpoints": [
+      2048,
+      8192,
+      16384,
+      32768,
+      49152,
+      65536,
+      98304,
+      131072
+    ],
+    "budget": 60.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 8192,
+    "seed": 12,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 32
+  },
+  "solve_rank": 19,
+  "compression_seconds": 0.09795933996792883,
+  "common_runtime_initialization_seconds": 0.2484821950783953,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "27b049829117f2271e59cf96153f82f8eece3f4d4e9c9832b61979a293b5fb2e",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "d00e112aa2805d92da6f150a677cd4173a319f9ce7fbaff87103af761e0c2372",
+    "reproduction/benchmark_hierarchical_variance.py": "829e6c74aa870e0d148273c1f5170541401d66b60fbf214bc9274a39aa7f845c"
+  },
+  "configurations": [
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "learning_rate": 0.0015625,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.7936385889770463,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.3144701879937202,
+          "preparation_seconds": 1.2079754159785807,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0005278657168857892,
+              "max_variance_error_over_prior": 0.0001379625580413297,
+              "minimum_variance": 1.4164125993387301e-06,
+              "passes": false,
+              "projection_seconds": 0.0008776600006967783,
+              "field_seconds": 0.0010296390391886234
+            },
+            "corrected": {
+              "max_probability_error": 0.0007623141347427032,
+              "max_variance_error_over_prior": 0.0005154329266127702,
+              "minimum_variance": 1.4171323966610092e-06,
+              "passes": false,
+              "projection_seconds": 0.0888086409540847,
+              "field_seconds": 0.000888630049303174
+            }
+          },
+          "max_probability_error": 0.0005278657168857892,
+          "max_variance_error_over_prior": 0.0001379625580413297,
+          "minimum_variance": 1.4164125993387301e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 1.0040797980036587,
+          "preparation_seconds": 1.897041946882382,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0003941455848357478,
+              "max_variance_error_over_prior": 2.3088882142452347e-05,
+              "minimum_variance": 1.4161533593895403e-06,
+              "passes": true,
+              "projection_seconds": 0.0005044300341978669,
+              "field_seconds": 0.0008597898995503783
+            }
+          },
+          "max_probability_error": 0.0003941455848357478,
+          "max_variance_error_over_prior": 2.3088882142452347e-05,
+          "minimum_variance": 1.4161533593895403e-06,
+          "passes": true,
+          "query_seconds": [
+            0.004857929074205458,
+            0.0009157699532806873,
+            0.0008645500056445599,
+            0.0008468700107187033,
+            0.0008603300666436553,
+            0.0008432089816778898,
+            0.000856350059621036,
+            0.0008438400691375136,
+            0.000866569927893579,
+            0.000845489907078445,
+            0.0008498999522998929,
+            0.0008351199794560671,
+            0.0008313599973917007,
+            0.0008292599814012647,
+            0.000828638905659318,
+            0.0008249100064858794
+          ],
+          "total_seconds": 1.9146420437609777
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/short/sdd/8192-eta0.1-passing.json",
+      "status": "passing complete workload"
+    },
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 0.00234375,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.633680135011673,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 0.22848655690904707,
+          "preparation_seconds": 0.9614270919701084,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00031305118539681764,
+              "max_variance_error_over_prior": 0.0002651191211171645,
+              "minimum_variance": 1.4165949455867184e-06,
+              "passes": false,
+              "projection_seconds": 0.0004900300409644842,
+              "field_seconds": 0.0008110300404950976
+            },
+            "corrected": {
+              "max_probability_error": 0.001288074195380351,
+              "max_variance_error_over_prior": 0.0011639840975149298,
+              "minimum_variance": 1.4183721668946789e-06,
+              "passes": false,
+              "projection_seconds": 0.045164854964241385,
+              "field_seconds": 0.0006951900431886315
+            }
+          },
+          "max_probability_error": 0.00031305118539681764,
+          "max_variance_error_over_prior": 0.0002651191211171645,
+          "minimum_variance": 1.4165949455867184e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 0.9081695078639314,
+          "preparation_seconds": 1.6411383827216923,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00040394860551218326,
+              "max_variance_error_over_prior": 2.1904944328445758e-05,
+              "minimum_variance": 1.4161535603610035e-06,
+              "passes": true,
+              "projection_seconds": 0.0004867399111390114,
+              "field_seconds": 0.000842659967020154
+            }
+          },
+          "max_probability_error": 0.00040394860551218326,
+          "max_variance_error_over_prior": 2.1904944328445758e-05,
+          "minimum_variance": 1.4161535603610035e-06,
+          "passes": true,
+          "query_seconds": [
+            0.0011210800148546696,
+            0.0008910499745979905,
+            0.0008611900266259909,
+            0.0008468599990010262,
+            0.0008417299250140786,
+            0.0008462900295853615,
+            0.000830029952339828,
+            0.0008519500261172652,
+            0.0008348890114575624,
+            0.0008520899573341012,
+            0.0008399999933317304,
+            0.0008412000024691224,
+            0.0008297599852085114,
+            0.0008335600141435862,
+            0.0008268899982795119,
+            0.0008316299645230174
+          ],
+          "total_seconds": 1.6549185815965757
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/short/sdd/8192-eta0.15-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

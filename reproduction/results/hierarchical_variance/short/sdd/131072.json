@@ -1,0 +1,98 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_variance/short/references/131072.json",
+    "output": "reproduction/results/hierarchical_variance/short/sdd/131072.json",
+    "eta": [
+      0.15
+    ],
+    "batch": 128,
+    "checkpoints": [
+      32768,
+      65536,
+      98304,
+      131072,
+      196608,
+      262144
+    ],
+    "budget": 180.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 131072,
+    "seed": 12,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 8
+  },
+  "solve_rank": 20,
+  "compression_seconds": 1.6851799179567024,
+  "common_runtime_initialization_seconds": 0.24638434499502182,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "295ff144ad4641f61e96bc3c546f0dc6fd692ceb053a56aa295f44f51023cdad",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "d00e112aa2805d92da6f150a677cd4173a319f9ce7fbaff87103af761e0c2372",
+    "reproduction/benchmark_hierarchical_variance.py": "829e6c74aa870e0d148273c1f5170541401d66b60fbf214bc9274a39aa7f845c"
+  },
+  "configurations": [
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 0.000146484375,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.7109983869595453,
+      "history": [
+        {
+          "iterations": 32768,
+          "solve_seconds": 24.704841778962873,
+          "preparation_seconds": 27.110661512822844,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00019249768580592574,
+              "max_variance_error_over_prior": 7.65635895543298e-05,
+              "minimum_variance": 1.3173546509190753e-06,
+              "passes": true,
+              "projection_seconds": 0.008521578973159194,
+              "field_seconds": 0.0011198499705642462
+            }
+          },
+          "max_probability_error": 0.00019249768580592574,
+          "max_variance_error_over_prior": 7.65635895543298e-05,
+          "minimum_variance": 1.3173546509190753e-06,
+          "passes": true,
+          "query_seconds": [
+            0.005219538928940892,
+            0.0012991600669920444,
+            0.0009175699669867754,
+            0.0008604900212958455,
+            0.0008411299204453826,
+            0.0008544400334358215,
+            0.0008586490293964744,
+            0.000842890003696084,
+            0.0008418000070378184,
+            0.0008500999538227916,
+            0.0008469499880447984,
+            0.0008487200830131769,
+            0.0008540900889784098,
+            0.0008281199261546135,
+            0.0009190000128000975,
+            0.000893410062417388
+          ],
+          "total_seconds": 27.129237570916303
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_variance/short/sdd/131072-eta0.15-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

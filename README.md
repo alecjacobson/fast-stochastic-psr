@@ -151,8 +151,9 @@ pipeline, at the same numerical gates with zero event disagreements across
 application validation and event-level error budgets remain open in
 [#51](https://github.com/alecjacobson/fast-stochastic-psr/issues/51) and
 [#52](https://github.com/alecjacobson/fast-stochastic-psr/issues/52).
-FMM has no implemented backend or measured speedup. A dense matrix's memory
-requirement alone does not establish that the authors' iterative method is intractable.
+The non-periodic H² research path below now has an FMM-style backend. A dense
+matrix's memory requirement alone does not establish that an iterative method
+is intractable.
 
 A new [non-periodic variance study](reproduction/results/nonperiodic/README.md)
 implements a free-space Poisson–Matérn dense oracle and regional variance
@@ -160,8 +161,21 @@ compression. Small query regions pass numerical gates with 125–343 coefficient
 a whole-object cache fails. The study also runs the original Sellán–Jacobson
 SPSR full-covariance reference. This changes the model and uses geometry and
 uncertainty quality as future cross-model criteria; periodic pointwise agreement
-is not required. Scalable conditioning and hierarchical variance preparation
-remain open in [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).
+is not required.
+
+The [nonperiodic H² variance experiment](reproduction/results/hierarchical_variance/short/README.md)
+removes the full dense factor from conditioning and local variance preparation.
+At 77,824 observations, a synthetic short-correlation contact workload takes
+**7.74 s for GPU H², 9.78 s for in-place GPU Cholesky, and 24.19 s for the best
+tested SDD checkpoint**, including setup and 1,048,576 mean/variance/probability
+queries. H² and Cholesky times are three-run medians; SDD has one run per
+tested learning rate. All methods pass the same numerical gates and receive
+the same regional query cache. H² also beats a same-preconditioner dense CG
+control at 73,728 and 131,072 points. Cholesky wins at smaller sizes, and
+[SDD wins the longer-correlation case](reproduction/results/hierarchical_variance/README.md).
+This is a controlled numerical demonstration, not a ContactFusion reproduction
+or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
+[#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).
 
 [Length-scale validation](reproduction/results/normalization/README.md) corrects
 an inherited Fourier normalization mismatch and preserves an explicit released

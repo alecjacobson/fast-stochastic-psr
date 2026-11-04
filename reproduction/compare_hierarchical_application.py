@@ -22,6 +22,7 @@ def compare(candidate, baseline, output):
                   max_decision_regret=0., exact_winner_agreements=0,
                   max_error_if_prior_variance_is_used=0.,
                   max_error_if_constant_contact_variance_is_used=0., batches=[],
+                  max_constant_variance_error_over_prior=0.,
                   interpretation='Same-model numerical and decision comparison; marginal probabilities, not joint collision events or calibration evidence.')
     contact_variance = float(bf.predict([[1, 0, 0]])[1][0])
     for q in query_batches(SimpleNamespace(**b['arguments'])):
@@ -39,6 +40,7 @@ def compare(candidate, baseline, output):
                       max_variance_error_over_prior=float(cp.max(abs(cv-bv)))/bf.prior_variance,
                       max_probability_error=float(cp.max(abs(cpred-bpred))),
                       max_decision_regret=regret,
+                      max_constant_variance_error_over_prior=float(cp.max(abs(bv-contact_variance)))/bf.prior_variance,
                       max_error_if_prior_variance_is_used=float(cp.max(abs(bpred-ndtr((b['level']-bm)/bf.prior_variance**.5)))),
                       max_error_if_constant_contact_variance_is_used=float(cp.max(abs(bpred-ndtr((b['level']-bm)/contact_variance**.5)))))
         for key, value in values.items():

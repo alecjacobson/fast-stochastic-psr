@@ -31,6 +31,7 @@ def full_kernel_matmul(model, points, noise_variance, rhs, block_size=512):
     if vector:
         b = b[:, None]
     n = len(x)
+    block_size = min(block_size, max(1, (512*2**20)//(n*8)))
     out = cp.empty_like(b)
     kernel = cp.RawKernel(_KERNEL.replace('TYPE', 'double'), 'covariance')
     for start in range(0, n, block_size):

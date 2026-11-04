@@ -19,12 +19,14 @@ from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem, full_kernel_matm
 from reproduction.benchmark_hierarchical_variance import data_from_arguments, read_field
 
 
-def audit(path, reference_path, random_queries=32):
+def audit(path, reference_path, random_queries=32, reference_preconditioner='native'):
     record = json.loads(Path(path).read_text())
     a = record['arguments']
     contract = {k: a[k] for k in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude',
                                  'relative_noise', 'halfwidth']}
     contract['random_queries'] = random_queries
+    if a.get('point_cloud'):
+        contract.update(point_cloud=a['point_cloud'], point_cloud_sha256=a['point_cloud_sha256'])
     for key, default in [('scan', 'full'), ('normal_noise', 0.)]:
         if a.get(key, default) != default:
             contract[key] = a[key]
@@ -52,7 +54,9 @@ def audit(path, reference_path, random_queries=32):
             from geospsr.hierarchical import HierarchicalMaternSystem
             from geospsr.hierarchical_gpu import GPUHierarchicalSystem
             system = GPUHierarchicalSystem(HierarchicalMaternSystem(
-                model, x, noise, tolerance=1e-7, leaf_size=100, preconditioner_rank=50, neighbors=40))
+                model, x, noise, tolerance=1e-7, leaf_size=100, preconditioner_rank=50, neighbors=40,
+                preconditioner_backend=reference_preconditioner), interaction_budget_bytes=256*2**20,
+                rhs_block_size=16)
             z = system.solve(rhs, tolerance=1e-9)
             norms = np.linalg.norm(rhs, axis=0)
             for step in range(6):
@@ -64,7 +68,7 @@ def audit(path, reference_path, random_queries=32):
             else:
                 raise RuntimeError('full-kernel reference refinement failed')
             refinement = dict(steps=step, relative_residuals=relative.tolist())
-            producer = 'H2-initialized; refined and audited with full float64 kernel'
+            producer = 'Streamed H2-initialized; refined and audited with full float64 kernel; '+reference_preconditioner
         residual = rhs-full_kernel_matmul(model, x, noise, z)
         # Q - (2 C^T Z - Z^T A Z) = R^T A^-1 R >= 0.
         # A >= noise*I gives a computable absolute variance error bound.
@@ -116,5 +120,6 @@ if __name__ == '__main__':
     parser.add_argument('record')
     parser.add_argument('--reference', required=True)
     parser.add_argument('--random-queries', type=int, default=32)
+    parser.add_argument('--reference-preconditioner', choices=['native', 'prefix-kd'], default='native')
     args = parser.parse_args()
-    audit(args.record, args.reference, args.random_queries)
+    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner)

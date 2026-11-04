@@ -23,10 +23,12 @@ def main(args):
                        '--output', str(path)]
                 for key in ['lengthscale', 'halfwidth', 'h2_tolerance', 'leaf_size', 'rank', 'neighbors',
                             'variance_refinements', 'seed', 'scan', 'normal_noise', 'sparse_cutoff',
-                            'sparse_builder', 'order', 'cross_tolerance']:
+                            'sparse_builder', 'order', 'cross_tolerance', 'geometry', 'point_cloud', 'cross_block_size', 'preconditioner_backend', 'interaction_budget_mib', 'rhs_block_size']:
                     value = getattr(args, key)
                     if value is not None:
                         cmd += ['--'+key.replace('_', '-'), str(value)]
+                if args.release_native:
+                    cmd += ['--release-native']
                 with (root/(stem+'.log')).open('w') as log:
                     try:
                         result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT, timeout=args.timeout)
@@ -46,8 +48,12 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=float, default=180)
     for name in ['lengthscale', 'halfwidth', 'h2-tolerance', 'normal-noise', 'sparse-cutoff', 'cross-tolerance']:
         parser.add_argument('--'+name, type=float)
-    for name in ['leaf-size', 'rank', 'neighbors', 'variance-refinements', 'seed', 'order']:
+    for name in ['leaf-size', 'rank', 'neighbors', 'variance-refinements', 'seed', 'order', 'cross-block-size', 'interaction-budget-mib', 'rhs-block-size']:
         parser.add_argument('--'+name, type=int)
+    parser.add_argument('--geometry', choices=['ellipsoid', 'sphere', 'eagle', 'torso'])
+    parser.add_argument('--point-cloud')
+    parser.add_argument('--preconditioner-backend', choices=['native', 'prefix-kd'])
+    parser.add_argument('--release-native', action='store_true')
     parser.add_argument('--scan', choices=['full', 'front'])
     parser.add_argument('--sparse-builder', choices=['gpu', 'cpu'])
     parser.add_argument('--output', default='reproduction/results/hierarchical_variance/scaling')

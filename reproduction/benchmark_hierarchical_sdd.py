@@ -16,7 +16,7 @@ from scipy.linalg import svd
 from scipy.special import ndtr
 
 from geospsr.iterative import StochasticDualDescent
-from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache
+from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache, compress_cross_covariance
 from geospsr.nonperiodic_dense_gpu import full_kernel_matmul
 from geospsr.regional_field import PolynomialMomentField
 from reproduction.benchmark_hierarchical_variance import data_from_arguments, query_batches, save_field, read_field
@@ -44,6 +44,8 @@ def run(args):
     if args.application_reference:
         application_reference = json.loads(Path(args.application_reference).read_text())
         other = application_reference['arguments']
+        if a.get('point_cloud_sha256') != other.get('point_cloud_sha256'):
+            raise ValueError('application reference point cloud mismatch')
         for key in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude', 'relative_noise', 'halfwidth']:
             if a[key] != other[key]:
                 raise ValueError(f'application reference mismatch: {key}')
@@ -65,11 +67,8 @@ def run(args):
     runtime_initialization = perf_counter()-start
     del warm, wm, wv, wp, ws
     begin = perf_counter()
-    c = model.cross_covariance(cache.nodes, x)
-    rhs = c.transpose(1, 2, 0).reshape(len(x), -1)
-    u, s, vt = svd(rhs, full_matrices=False, check_finite=False)
-    rank = int(np.count_nonzero(s > args.cross_tolerance*s[0]))
-    u, coefficients = u[:, :rank], s[:rank, None]*vt[:rank]
+    u, coefficients, cross_error = compress_cross_covariance(model, x, cache.nodes, args.cross_tolerance, args.cross_block_size)
+    rank = u.shape[1]
     compression_seconds = perf_counter()-begin
     full_rhs = np.column_stack((u, y))
     rhs = full_rhs.astype(np.float32)
@@ -228,6 +227,7 @@ if __name__ == '__main__':
     parser.add_argument('--eta', nargs='+', type=float, default=[.03, .1])
     parser.add_argument('--batch', type=int, default=128)
     parser.add_argument('--order', type=int, default=4)
+    parser.add_argument('--cross-block-size', type=int)
     parser.add_argument('--cross-tolerance', type=float, default=1e-4)
     parser.add_argument('--application-reference', help='audited moment-cache record for full-query acceptance')
     parser.add_argument('--checkpoints', nargs='+', type=int, default=[128, 512, 2048, 8192])

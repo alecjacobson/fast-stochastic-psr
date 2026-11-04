@@ -98,7 +98,8 @@ def _check_capacity(nnz, n):
 
 class GPUSparseMaternSystem(GPUHierarchicalSystem):
     def __init__(self, model, points, noise_variance, cutoff=12., rank=8,
-                 neighbors=24, threads=4, seed=12, block_size=256, graph_backend='gpu'):
+                 neighbors=24, threads=4, seed=12, block_size=256, graph_backend='gpu',
+                 preconditioner_backend='native', rhs_block_size=None):
         import cupy as cp
         from cupyx.scipy.sparse import csr_matrix
         if not np.isfinite(cutoff) or cutoff <= 0 or block_size < 1:
@@ -106,9 +107,11 @@ class GPUSparseMaternSystem(GPUHierarchicalSystem):
         start = perf_counter()
         self.native = HierarchicalMaternSystem(model, points, noise_variance,
                                                preconditioner_rank=rank, neighbors=neighbors,
-                                               threads=threads, seed=seed, build_hierarchy=False)
+                                               threads=threads, seed=seed, build_hierarchy=False,
+                                               preconditioner_backend=preconditioner_backend)
         self.model, self.points = model, self.native.points
         self.noise_variance = noise_variance
+        self.rhs_block_size = rhs_block_size
         self.preconditioner_gpu = GPUAFNPreconditioner(self.native.preconditioner)
         preconditioner_seconds = perf_counter()-start
         start = perf_counter()

@@ -163,7 +163,7 @@ class RegionalVarianceCache:
 
     @classmethod
     def from_solver(cls, model, points, vectors, solve, center, halfwidth, order,
-                    compression_tolerance=1e-7, project=None):
+                    compression_tolerance=1e-7, project=None, cross_block_size=None):
         """Prepare without a dense factor using a reusable multiple-RHS solve.
 
         Compress the joint three-component node cross matrix before solving.
@@ -171,7 +171,6 @@ class RegionalVarianceCache:
         Accuracy still requires validating both compression and solve errors.
         No scalar isovalue is fitted here.
         """
-        from scipy.linalg import svd
         points, vectors = _points(points), _points(vectors)
         if points.shape != vectors.shape or not len(points):
             raise ValueError('points and vectors must have the same nonempty shape')
@@ -179,12 +178,9 @@ class RegionalVarianceCache:
             raise ValueError('compression_tolerance must lie in (0,1)')
         cache = cls.__new__(cls)
         cache._initialize_box(center, halfwidth, order)
-        c = model.cross_covariance(cache.nodes, points)
-        rhs = c.transpose(1, 2, 0).reshape(len(points), -1)
-        u, singular, vt = svd(rhs, full_matrices=False, check_finite=False)
-        rank = int(np.count_nonzero(singular > compression_tolerance*singular[0]))
-        basis = u[:, :rank]
-        coefficients = singular[:rank, None]*vt[:rank]
+        basis, coefficients, relative_error = compress_cross_covariance(
+            model, points, cache.nodes, compression_tolerance, cross_block_size)
+        rank = basis.shape[1]
         if project is None:
             solution = solve(basis)
             gram = basis.T @ solution
@@ -202,7 +198,7 @@ class RegionalVarianceCache:
         cache.prior_variance = model.prior_variance
         cache.solve_rank = rank
         cache.cross_compression_tolerance = compression_tolerance
-        cache.cross_relative_frobenius_error = float(np.linalg.norm(singular[rank:])/np.linalg.norm(singular))
+        cache.cross_relative_frobenius_error = relative_error
         return cache
 
     def basis(self, queries):
@@ -224,3 +220,39 @@ class RegionalVarianceCache:
         phi = self.basis(queries)
         return (phi @ self.mean_coefficients,
                 self.prior_variance - np.sum((phi @ self.correction)*phi, axis=1))
+
+
+def compress_cross_covariance(model, points, nodes, tolerance, block_size=None):
+    """Thin SVD, optionally via stable streaming QR and a second kernel pass.
+
+    Streaming retains O(Nr + b d + d²) storage for d=3*len(nodes), rather
+    than several full N-by-d matrices. It does not square the condition number
+    through normal equations. All kernel passes and QR work belong to setup.
+    """
+    from scipy.linalg import qr, svd
+    if not 0 < tolerance < 1 or (block_size is not None and block_size < 1):
+        raise ValueError('invalid cross compression tolerance or block size')
+    def cross(first, last):
+        c = model.cross_covariance(nodes, points[first:last])
+        return c.transpose(1, 2, 0).reshape(last-first, -1)
+    if block_size is None:
+        u, singular, vt = svd(cross(0, len(points)), full_matrices=False, check_finite=False)
+        rank = int(np.count_nonzero(singular > tolerance*singular[0]))
+        basis = u[:, :rank]
+    else:
+        width = 3*len(nodes)
+        r = np.empty((0, width))
+        for first in range(0, len(points), block_size):
+            block = cross(first, min(first+block_size, len(points)))
+            r = qr(np.vstack((r, block)), mode='r', overwrite_a=True,
+                   check_finite=False)[0][:width].copy()
+        _, singular, vt = svd(r, full_matrices=False, check_finite=False)
+        rank = int(np.count_nonzero(singular > tolerance*singular[0]))
+        basis = np.empty((len(points), rank))
+        transform = vt[:rank].T/singular[:rank]
+        for first in range(0, len(points), block_size):
+            last = min(first+block_size, len(points))
+            basis[first:last] = cross(first, last)@transform
+    coefficients = singular[:rank, None]*vt[:rank]
+    relative_error = float(np.linalg.norm(singular[rank:])/np.linalg.norm(singular))
+    return basis, coefficients, relative_error

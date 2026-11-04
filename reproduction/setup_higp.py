@@ -59,7 +59,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', default='/opt/geospsr-runtime/higp-psr')
     parser.add_argument('--blas')
+    parser.add_argument('--prefix-knn', action='store_true', help='Build a separate exact predecessor-kd-tree AFN backend')
     args = parser.parse_args()
+    module = 'psr_higp_kd_cext' if args.prefix_knn else 'psr_higp_cext'
     root = Path(args.root).resolve()
     if not root.exists():
         subprocess.run(['git', 'clone', 'https://github.com/huanghua1994/HiGP.git', str(root)], check=True)
@@ -91,10 +93,13 @@ def main():
         return NULL;
     }
 ''')
-    source = source.replace('PyInit_higp_cext(void)', 'PyInit_psr_higp_cext(void)')
+    if args.prefix_knn:
+        # The exact predecessor tree builds itself; avoid the unused coarse octree.
+        source = source.replace('octree_build(n, dim, val_type, dataset, 400, &leaf_size, &spatial_tree);', '')
+    source = source.replace('PyInit_higp_cext(void)', f'PyInit_{module}(void)')
     snapshot = Path(__file__).resolve().parents[1]/'geospsr/native/higp_snapshot.inc'
     source = source.replace('#include "omp.h"', '#include "omp.h"\n'+snapshot.read_text())
-    (root/'py-interface/psr_higp_cext.c').write_text(source)
+    (root/f'py-interface/{module}.c').write_text(source)
     header = subprocess.check_output(['git', '-C', str(root), 'show', f'{PIN}:py-interface/higp_cext.h'], text=True)
     marker = 'static PyMethodDef KrnlMatObject_methods[] = \n{'
     assert marker in header
@@ -115,6 +120,20 @@ def main():
     source = source.replace('        h2mat_build_with_proxy_points(octree, dKdl_pp', '        if (algo == 1) h2mat_build_with_proxy_points(octree, dKdl_pp')
     source = source.replace('            h2m_2dbuf_free(&dKdl_pp[i]);', '            if (dKdl_pp) h2m_2dbuf_free(&dKdl_pp[i]);')
     (root/path).write_text(source)
+    path = 'cpp-src/solvers/fsai_precond.cpp'
+    source = subprocess.check_output(['git', '-C', str(root), 'show', f'{PIN}:{path}'], text=True)
+    if args.prefix_knn:
+        helper = Path(__file__).resolve().parents[1]/'geospsr/native/prefix_knn.inc'
+        marker = 'template<typename VT>\nstatic void fsai_exact_knn('
+        source = source.replace(marker, helper.read_text()+'\n'+marker, 1)
+        start = source.index(marker)
+        begin = source.index('{', start)
+        end = source.index('\n}\n', begin)
+        source = source[:begin]+'''{
+    ASSERT_PRINTF(pt_dim == 3, "PSR predecessor tree requires three dimensions\\n");
+    psr_prefix_knn<VT>(fsai_npt, n, coord, ldc, nn_idx, nn_cnt);
+'''+source[end:]
+    (root/path).write_text(source)
     site = Path(sysconfig.get_paths()['purelib'])
     if args.blas:
         blas = Path(args.blas).resolve()
@@ -126,8 +145,8 @@ def main():
     from setuptools import Extension, setup
     import numpy
     sources = sorted(root.glob('cpp-src/**/*.cpp'))
-    sources += [root/'cpp-src/utils.c', root/'py-interface/psr_higp_cext.c']
-    extension = Extension('psr_higp_cext', sources=[str(p) for p in sources],
+    sources += [root/'cpp-src/utils.c', root/f'py-interface/{module}.c']
+    extension = Extension(module, sources=[str(p) for p in sources],
                           include_dirs=[numpy.get_include()], language='c++',
                           extra_compile_args=['-O3', '-std=c++14', '-fopenmp', '-march=native',
                                               '-DUSE_OPENBLAS_LP64', '-Wno-unused-function', '-Wno-cpp'],
@@ -136,8 +155,8 @@ def main():
     os.chdir(root)
     setup(name='psr-higp-cext', version='0.1', ext_modules=[extension],
           script_args=['build_ext', '--parallel', '4', '--build-lib', str(site)])
-    (site/'psr_higp_build.json').write_text(json.dumps(dict(
-        upstream='https://github.com/huanghua1994/HiGP', commit=PIN,
+    (site/('psr_higp_kd_build.json' if args.prefix_knn else 'psr_higp_build.json')).write_text(json.dumps(dict(
+        upstream='https://github.com/huanghua1994/HiGP', commit=PIN, prefix_knn=args.prefix_knn,
         changes=['AFN rank selection after argument parsing', 'octree neighbor search in AFN setup',
                  'linear adjacency list storage', 'owned H2 and AFN snapshot export',
                  'prediction-only H2 setup omits unused derivative hierarchy'],

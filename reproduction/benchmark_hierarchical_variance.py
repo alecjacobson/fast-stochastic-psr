@@ -43,6 +43,10 @@ def data(n, seed, geometry, scan='full', normal_noise=0.):
 
 
 def data_from_arguments(args):
+    if args.get('point_cloud'):
+        from reproduction.poissonrecon_data import load_cloud
+        x, y, _ = load_cloud(args['point_cloud'], args['n'], args.get('point_cloud_sha256'))
+        return x, y, None
     return data(args['n'], args['seed'], args['geometry'],
                 args.get('scan', 'full'), args.get('normal_noise', 0.))
 
@@ -94,15 +98,21 @@ def run(args):
     del warm, wm, wv, wp, ws
     cp.get_default_memory_pool().free_all_blocks()
     x, vectors, axes = data_from_arguments(vars(args))
+    cloud_metadata = None
+    if args.point_cloud:
+        cloud_metadata = json.loads(Path(args.point_cloud).with_suffix('.json').read_text())
+        args.point_cloud_sha256 = cloud_metadata['normalized_sha256']
     model = FreeSpacePoissonMatern(args.lengthscale, args.amplitude)
     noise = args.amplitude*args.relative_noise
     provenance = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in [
         'geospsr/hierarchical.py', 'geospsr/hierarchical_gpu.py',
         'geospsr/nonperiodic.py', 'geospsr/nonperiodic_dense_gpu.py',
         'geospsr/nonperiodic_dense_cg.py', 'geospsr/native/higp_snapshot.inc',
-        'geospsr/nonperiodic_sparse.py',
+        'geospsr/nonperiodic_sparse.py', 'geospsr/nonperiodic_local_gpu.py',
+        'geospsr/hierarchical_interactions.py', 'geospsr/native/prefix_knn.inc',
         'reproduction/setup_higp.py',
-        'geospsr/regional_field.py', 'reproduction/benchmark_hierarchical_variance.py']}
+        'geospsr/regional_field.py', 'reproduction/benchmark_hierarchical_variance.py',
+        'reproduction/poissonrecon_data.py']}
     record = dict(arguments=vars(args), source_sha256=provenance,
                   python=platform.python_version(), numpy=np.__version__,
                   scipy=importlib.metadata.version('scipy'), cupy=cp.__version__,
@@ -110,11 +120,14 @@ def run(args):
                   device_memory_bytes=cp.cuda.runtime.memGetInfo()[1],
                   cpu_quota=Path('/sys/fs/cgroup/cpu.max').read_text().strip(),
                   host_memory_limit=Path('/sys/fs/cgroup/memory.max').read_text().strip(),
-                  native_build=json.loads((Path(importlib.util.find_spec('psr_higp_cext').origin).parent/'psr_higp_build.json').read_text()),
+                  native_build=json.loads((Path(importlib.util.find_spec('psr_higp_cext').origin).parent/
+                    ('psr_higp_kd_build.json' if args.preconditioner_backend == 'prefix-kd' else 'psr_higp_build.json')).read_text()),
                   model='nonperiodic independent vector Matern-3/2, Poisson scalar projection',
                   application='marginal contact-ray probabilities and maximum mean Bernoulli ambiguity',
                   level_policy='posterior mean at the known surface contact (1,0,0); variance unchanged')
     record['common_runtime_initialization_seconds'] = runtime_seconds
+    if cloud_metadata:
+        record['point_cloud_metadata'] = cloud_metadata
     begin = perf_counter()
     if args.method.startswith('dense'):
         from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem
@@ -129,23 +142,35 @@ def run(args):
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
                                               mean_tolerance=args.solve_tolerance,
                                               variance_refinements=args.variance_refinements)
+    elif args.method == 'sparse-streamed':
+        from geospsr.nonperiodic_local_gpu import GPUStreamedLocalSystem
+        system = GPUStreamedLocalSystem(model, x, noise, cutoff=args.sparse_cutoff,
+            rank=args.rank, neighbors=args.neighbors, threads=args.threads, seed=args.seed,
+            preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size,
+            budget_bytes=args.interaction_budget_mib*2**20)
+        project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
+                                              mean_tolerance=args.solve_tolerance)
     elif args.method == 'sparse-gpu':
         from geospsr.nonperiodic_sparse import GPUSparseMaternSystem
         system = GPUSparseMaternSystem(model, x, noise, cutoff=args.sparse_cutoff,
                                        rank=args.rank, neighbors=args.neighbors,
-                                       threads=args.threads, seed=args.seed, graph_backend=args.sparse_builder)
+                                       threads=args.threads, seed=args.seed, graph_backend=args.sparse_builder,
+                                       preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size)
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
                                               mean_tolerance=args.solve_tolerance)
     else:
         from geospsr.hierarchical import HierarchicalMaternSystem
         system = HierarchicalMaternSystem(model, x, noise, tolerance=args.h2_tolerance,
                                           preconditioner_rank=args.rank, neighbors=args.neighbors,
-                                          leaf_size=args.leaf_size, threads=args.threads, seed=args.seed)
-        if args.method == 'h2-gpu':
+                                          leaf_size=args.leaf_size, threads=args.threads, seed=args.seed,
+                                          preconditioner_backend=args.preconditioner_backend)
+        if args.method in ['h2-gpu', 'h2-streamed']:
             from geospsr.hierarchical_gpu import GPUHierarchicalSystem
-            system = GPUHierarchicalSystem(system)
+            system = GPUHierarchicalSystem(system, rhs_block_size=args.rhs_block_size,
+                release_native=args.release_native,
+                interaction_budget_bytes=args.interaction_budget_mib*2**20 if args.method == 'h2-streamed' else None)
         project = None
-        if args.method == 'h2-gpu' and args.variance_iterations:
+        if args.method in ['h2-gpu', 'h2-streamed'] and args.variance_iterations:
             project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations,
                                                   mean_tolerance=args.solve_tolerance)
     cp.cuda.get_current_stream().synchronize()
@@ -156,7 +181,7 @@ def run(args):
     cache = RegionalVarianceCache.from_solver(model, x, vectors, solve, [1, 0, 0],
                                               args.halfwidth, args.order,
                                               compression_tolerance=args.cross_tolerance,
-                                              project=project)
+                                              project=project, cross_block_size=args.cross_block_size)
     cp.cuda.get_current_stream().synchronize()
     cache_seconds = perf_counter()-start
     start = perf_counter()
@@ -193,13 +218,15 @@ def run(args):
         record.update(factor_bytes=system.factor_bytes, factor_workspace_bytes=system.factor_workspace_bytes)
     else:
         record['solve_info'] = system.last_solve
-        if args.method == 'h2-gpu':
+        if args.method in ['h2-gpu', 'h2-streamed']:
             record.update(device_matrix_bytes=system.device_matrix_bytes,
                           max_h2_rank=system.max_rank, sum_h2_ranks=int(system.ranks.sum()),
-                          interaction_nnz=system.interaction_nnz)
+                          interaction_nnz=system.interaction_nnz,
+                          interaction_workspace_bytes=system.interaction_workspace_bytes,
+                          native_setup=system.native.setup_timings)
         elif args.method.startswith('cg-dense'):
             record.update(device_matrix_bytes=system.device_matrix_bytes, matrix_cached=system.matrix_cached)
-        elif args.method == 'sparse-gpu':
+        elif args.method in ['sparse-gpu', 'sparse-streamed']:
             record.update(device_matrix_bytes=system.device_matrix_bytes,
                           sparse_diagnostics=system.diagnostics)
     out.write_text(json.dumps(record, indent=2)+'\n')
@@ -247,11 +274,16 @@ def run(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--n', type=int, required=True)
-    parser.add_argument('--method', choices=['h2-cpu', 'h2-gpu', 'dense-float32', 'dense-float64',
-                                            'cg-dense-float32', 'cg-dense-float64', 'sparse-gpu'], required=True)
+    parser.add_argument('--method', choices=['h2-cpu', 'h2-gpu', 'h2-streamed', 'dense-float32', 'dense-float64',
+                                            'cg-dense-float32', 'cg-dense-float64', 'sparse-gpu', 'sparse-streamed'], required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--seed', type=int, default=12)
-    parser.add_argument('--geometry', choices=['sphere', 'ellipsoid'], default='ellipsoid')
+    parser.add_argument('--geometry', choices=['sphere', 'ellipsoid', 'eagle', 'torso'], default='ellipsoid')
+    parser.add_argument('--point-cloud', help='Prepared oriented point cloud from poissonrecon_data')
+    parser.add_argument('--preconditioner-backend', choices=['native', 'prefix-kd'], default='native')
+    parser.add_argument('--interaction-budget-mib', type=int, default=256)
+    parser.add_argument('--rhs-block-size', type=int)
+    parser.add_argument('--release-native', action='store_true', help='Release owned CPU hierarchy/factors after GPU transfer')
     parser.add_argument('--scan', choices=['full', 'front'], default='full')
     parser.add_argument('--normal-noise', type=float, default=0., help='additive normal component standard deviation')
     parser.add_argument('--sparse-cutoff', type=float, default=12., help='dimensionless kappa*radius for sparse control')
@@ -264,6 +296,7 @@ if __name__ == '__main__':
     parser.add_argument('--variance-iterations', type=int, default=0)
     parser.add_argument('--variance-refinements', type=int, default=1,
                         help='dense GPU CG variance correction sweeps; mean refinement is independent')
+    parser.add_argument('--cross-block-size', type=int, help='Bound cross-kernel memory with streaming QR')
     parser.add_argument('--cross-tolerance', type=float, default=1e-4)
     parser.add_argument('--leaf-size', type=int, default=100)
     parser.add_argument('--rank', type=int, default=50)
@@ -277,4 +310,8 @@ if __name__ == '__main__':
     arguments = parser.parse_args()
     if arguments.queries <= 0 or arguments.queries % 64:
         parser.error('--queries must be a positive multiple of 64')
+    if arguments.geometry in ['eagle', 'torso'] and not arguments.point_cloud:
+        parser.error('eagle/torso requires --point-cloud')
+    if arguments.point_cloud and (arguments.scan != 'full' or arguments.normal_noise):
+        parser.error('point-cloud input preserves its supplied scan and normals')
     run(arguments)

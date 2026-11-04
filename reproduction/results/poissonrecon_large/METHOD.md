@@ -43,6 +43,23 @@ entries outside a declared radius. Its streamed variant bounds storage by
 regenerating radius rows each action. Hard truncation is not guaranteed positive
 definite; failed curvature or accuracy is recorded, not repaired by increasing
 noise. Cached sparse is preferable where it fits and must be included there.
+The cached allocation guard is a configurable fraction of available memory;
+a guard refusal is distinct from an actual allocation failure. Streamed radius
+fill uses a warp per row and ballot compaction. It preserves the scalar fill's
+columns and values exactly; the retained chunk microbenchmark is not a solve
+speedup. Both radius variants retain float64 values. A mixed-precision locality
+control remains an open comparison (issue 87).
+
+SDD uses the compiled original update with batch 128, momentum 0.9 and Polyak
+weight 0.01, the same compressed right-hand sides, and float32 arithmetic. Its
+optional rejection sampler draws uniform subsets without constructing a full-N
+permutation at each iteration. This changes the random stream, not the target
+sampling distribution. The original permutation sampler remains the default.
+SDD budgets count measured solver time; compression and compilation are reported
+separately, and would be charged in any passing complete-workload time. Failed
+checkpoints are censored observations, not measured completion times. Optional
+full-kernel mean correction is considered only after standard variance passes;
+no expensive full-variance correction is forced on these SDD controls.
 
 The audit uses direct cross kernels, full float64 all-pairs covariance actions,
 and residual bounds based on the observation noise. H² may initialize the
@@ -60,6 +77,19 @@ checks, not a uniform-in-space theorem. Full-workload comparisons supplement the
 when two validated fields are available. Original order-four pilots fail on some
 real scans, including dense Cholesky; those records remain as negative evidence.
 Do not count unaudited or failed production timings as matched-accuracy wins.
+The final independent checks use 17 locations: eight random queries, eight box
+corners and the contact. Two individually passing fields can still disagree
+between probes: the full-Eagle order-six/12-step and order-seven/8-step fields
+differ by 0.00149 over the complete workload. That comparison changes both
+interpolation order and iteration count and is marked failed. The final
+order-seven result has better sampled error margin; neither a sparse comparison
+sharing its interpolation nor these finite probes proves uniform exact-GP error.
+
+Scaling figures select explicit passing records in `selection.json`. They are
+single-run exploratory measurements. Accuracy settings and cached/streamed
+storage policies may change with N and are recorded per row; fitted slopes are
+not complexity proofs. Logical interaction counts include regenerated entries,
+whereas stored representation sizes exclude workspaces and solver vectors.
 
 Hardware: RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb (23.625 GiB visible),
 four-core CPU quota, 16 GiB host limit. Raw files record source and data hashes,

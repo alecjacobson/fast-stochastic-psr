@@ -62,6 +62,12 @@ class CachedFourierEvaluator:
         if not bool(cp.all(cp.isfinite(denominator) & (cp.abs(denominator) > 1e-20))):
             raise ValueError('invalid gridding response in retained frequency band')
         self.grid = cp.empty((self.packed_count, *self.shape), dtype=cp.complex64)
+        # Independently scale real channels before complex packing. Otherwise
+        # a large mean can contaminate a much smaller variance via roundoff.
+        # Keep constants outside the interpolator: its tiny DC response error
+        # can obscure the spatial contrast of a nearly constant variance field.
+        self.scales = cp.empty(self.count, dtype=cp.float32)
+        self.constants = cp.empty(self.count, dtype=cp.float32)
         start = self.size // 2 - self.cutoff
         sl = slice(start, start + width)
         for i in range(0, self.packed_count, batch):
@@ -70,6 +76,13 @@ class CachedFourierEvaluator:
             # Packing two resulting real functions into one complex FFT halves
             # cache storage and interpolation work without dropping any modes.
             hermitian = (raw + raw[:, ::-1, ::-1, ::-1].conj()) * .5
+            constants = hermitian[:, self.cutoff, self.cutoff, self.cutoff].real.copy()
+            hermitian[:, self.cutoff, self.cutoff, self.cutoff] = 0
+            amplitude = cp.max(cp.abs(hermitian), axis=(1, 2, 3))
+            scale = cp.exp2(cp.floor(cp.log2(cp.where(amplitude > 0, amplitude, 1))))
+            self.scales[2*i:2*i+len(raw)] = scale
+            self.constants[2*i:2*i+len(raw)] = constants
+            hermitian /= scale[:, None, None, None]
             block = hermitian[::2].copy()
             block[:len(hermitian[1::2])] += 1j * hermitian[1::2]
             padded = cp.zeros((len(block), *self.shape), dtype=cp.complex64)
@@ -77,7 +90,7 @@ class CachedFourierEvaluator:
             spatial = cp.fft.ifftn(cp.fft.ifftshift(padded, axes=(1, 2, 3)),
                                    axes=(1, 2, 3), norm='forward')
             self.grid[i:i + len(block)] = spatial
-        self.cache_bytes = int(self.grid.nbytes)
+        self.cache_bytes = int(self.grid.nbytes+self.scales.nbytes+self.constants.nbytes)
         self._plans = {}
 
     def evaluate(self, points, batch=None):
@@ -108,4 +121,4 @@ class CachedFourierEvaluator:
         result = cp.empty((self.count, len(points)), dtype=cp.float32)
         result[::2] = packed.real
         result[1::2] = packed[:self.count // 2].imag
-        return result
+        return result*self.scales[:, None]+self.constants[:, None]

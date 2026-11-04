@@ -1,0 +1,724 @@
+{
+  "complete": true,
+  "n": 32768,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 32768,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "output": "/opt/geospsr-runtime/solver-scaling/n32768"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.12584350595716387,
+    "reference_analytic_solve": 1.342538375989534,
+    "reference_direct_rows": 0.0051227189833298326,
+    "shared_cross_spectrum": 0.019234867999330163,
+    "reference_mean_queries": 0.3410047210054472,
+    "nufft_spectrum": 0.0007561800302937627,
+    "nufft_plans": 0.01188786793500185
+  },
+  "methods": {
+    "cholesky": {
+      "status": "not run beyond declared dense benchmark cap; no measured runtime claim",
+      "single_matrix_bytes": 8589934592
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.13848755392245948,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 0.5344336290145293,
+          "solver": {
+            "initial": {
+              "iterations": 12,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.308926574798534e-06,
+                4.61794752482092e-06,
+                5.5188543228723574e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                8.189243226463568e-06,
+                7.505829372037136e-06,
+                9.542421726498837e-06
+              ],
+              "residual_history": [
+                [
+                  0.001093258189573855,
+                  0.0009908398424349478,
+                  0.0012167123797950806
+                ],
+                [
+                  8.189243226463568e-06,
+                  7.505829372037136e-06,
+                  9.542421726498837e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 12,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    4.288633135729469e-06,
+                    4.499946498981444e-06,
+                    4.324156179791316e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 8.299115961610634e-06,
+            "mean_relative_l2": 1.5867940536854673e-06,
+            "common_mean_prepare_query_seconds": 0.09424341900739819,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 0.5286122789839283,
+          "solver": {
+            "initial": {
+              "iterations": 12,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.311105269356631e-06,
+                4.622618234861875e-06,
+                5.520585546037182e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                8.189266464568628e-06,
+                7.5058428096473694e-06,
+                9.542421383350625e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010932596808964365,
+                  0.0009908402985309064,
+                  0.0012167119963005426
+                ],
+                [
+                  8.189266464568628e-06,
+                  7.5058428096473694e-06,
+                  9.542421383350625e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 12,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    4.285544036974898e-06,
+                    4.499656370171579e-06,
+                    4.3245204324193764e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 8.299127988882931e-06,
+            "mean_relative_l2": 1.5867879213968266e-06,
+            "common_mean_prepare_query_seconds": 0.09033174999058247,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 0.528606318985112,
+          "solver": {
+            "initial": {
+              "iterations": 12,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.310803771862993e-06,
+                4.618163529812591e-06,
+                5.518812031368725e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                8.18927407487398e-06,
+                7.505841537696318e-06,
+                9.542420671175999e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010932613443584125,
+                  0.0009908407143766876,
+                  0.0012167121656801666
+                ],
+                [
+                  8.18927407487398e-06,
+                  7.505841537696318e-06,
+                  9.542420671175999e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 12,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    4.287357569410233e-06,
+                    4.500783688854426e-06,
+                    4.325082045397721e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 8.299129530795469e-06,
+            "mean_relative_l2": 1.5867919901837203e-06,
+            "common_mean_prepare_query_seconds": 0.08974866895005107,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "pilots": [
+        {
+          "batch": 128,
+          "eta": 2.0,
+          "compile_seconds": 0.5431022879201919,
+          "validation_seconds": 1.4847251211758703,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.09765045903623104,
+              "full_analytic_relative_residual": 0.5867143539715097
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.1544828120386228,
+              "full_analytic_relative_residual": 0.3258910585037626
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.2111969750840217,
+              "full_analytic_relative_residual": 0.2149479593153097
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.2678427090868354,
+              "full_analytic_relative_residual": 0.14962236921910346
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.32451270311139524,
+              "full_analytic_relative_residual": 0.10690856693643443
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.3811395261436701,
+              "full_analytic_relative_residual": 0.07651555186503602
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 0.4377673091366887,
+              "full_analytic_relative_residual": 0.05498170144419015
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 0.4943718430586159,
+              "full_analytic_relative_residual": 0.039460285900393736
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 0.5509590270230547,
+              "full_analytic_relative_residual": 0.028075097918255177
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 0.6074799309717491,
+              "full_analytic_relative_residual": 0.020242193219674777
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 0.6641383440000936,
+              "full_analytic_relative_residual": 0.014393843457992014
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 0.7206892269896343,
+              "full_analytic_relative_residual": 0.010312761784604392
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 0.7772065800381824,
+              "full_analytic_relative_residual": 0.0074129606781218075
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 0.8336898640263826,
+              "full_analytic_relative_residual": 0.005111443915981075
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 0.8903871279908344,
+              "full_analytic_relative_residual": 0.0035985631942526512
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 0.9469506209716201,
+              "full_analytic_relative_residual": 0.0025647543584341424
+            },
+            {
+              "iterations": 4352,
+              "updates_seconds": 1.0035194740630686,
+              "full_analytic_relative_residual": 0.001868558970036674
+            },
+            {
+              "iterations": 4608,
+              "updates_seconds": 1.0600707781268284,
+              "full_analytic_relative_residual": 0.0013745428998402517
+            },
+            {
+              "iterations": 4864,
+              "updates_seconds": 1.116748372092843,
+              "full_analytic_relative_residual": 0.0010193441374020797
+            },
+            {
+              "iterations": 5120,
+              "updates_seconds": 1.1734513961710036,
+              "full_analytic_relative_residual": 0.0007510653802490258
+            },
+            {
+              "iterations": 5376,
+              "updates_seconds": 1.230212829192169,
+              "full_analytic_relative_residual": 0.00048722583667746677
+            },
+            {
+              "iterations": 5632,
+              "updates_seconds": 1.286727782106027,
+              "full_analytic_relative_residual": 0.0003448407471501696
+            },
+            {
+              "iterations": 5888,
+              "updates_seconds": 1.3433109051547945,
+              "full_analytic_relative_residual": 0.0002567231038238962
+            },
+            {
+              "iterations": 6144,
+              "updates_seconds": 1.3998531590914354,
+              "full_analytic_relative_residual": 0.00020475223595289516
+            },
+            {
+              "iterations": 6400,
+              "updates_seconds": 1.45641102315858,
+              "full_analytic_relative_residual": 0.00014365690288265987
+            },
+            {
+              "iterations": 6656,
+              "updates_seconds": 1.5130236961413175,
+              "full_analytic_relative_residual": 0.00010659427515978922
+            },
+            {
+              "iterations": 6912,
+              "updates_seconds": 1.5697342491475865,
+              "full_analytic_relative_residual": 8.149604350846007e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 128,
+          "eta": 5.0,
+          "compile_seconds": 0.5171652709832415,
+          "validation_seconds": 0.8794982489198446,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.057759303017519414,
+              "full_analytic_relative_residual": 0.43382326273202954
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.11433404590934515,
+              "full_analytic_relative_residual": 0.25060147242113695
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.17086488893255591,
+              "full_analytic_relative_residual": 0.1553075720693229
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.22734905185643584,
+              "full_analytic_relative_residual": 0.09378183690696387
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.28392368589993566,
+              "full_analytic_relative_residual": 0.05744923556175996
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.3406363498652354,
+              "full_analytic_relative_residual": 0.035429515136413174
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 0.39719537284690887,
+              "full_analytic_relative_residual": 0.022094958196987428
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 0.4537830558838323,
+              "full_analytic_relative_residual": 0.013887962248658611
+            },
+            {
+              "iterations": 2304,
+              "updates_seconds": 0.5104366998421028,
+              "full_analytic_relative_residual": 0.00845250537168333
+            },
+            {
+              "iterations": 2560,
+              "updates_seconds": 0.5670385138364509,
+              "full_analytic_relative_residual": 0.004006083688813554
+            },
+            {
+              "iterations": 2816,
+              "updates_seconds": 0.6235842377645895,
+              "full_analytic_relative_residual": 0.001406627863215527
+            },
+            {
+              "iterations": 3072,
+              "updates_seconds": 0.6801082807360217,
+              "full_analytic_relative_residual": 0.0006624261427192236
+            },
+            {
+              "iterations": 3328,
+              "updates_seconds": 0.7366297136759385,
+              "full_analytic_relative_residual": 0.00036592334448087095
+            },
+            {
+              "iterations": 3584,
+              "updates_seconds": 0.793066777754575,
+              "full_analytic_relative_residual": 0.00021760374927582546
+            },
+            {
+              "iterations": 3840,
+              "updates_seconds": 0.8494565417058766,
+              "full_analytic_relative_residual": 0.00011109655162998986
+            },
+            {
+              "iterations": 4096,
+              "updates_seconds": 0.906234685680829,
+              "full_analytic_relative_residual": 6.390032556491865e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 2.0,
+          "compile_seconds": 0.5350016190204769,
+          "validation_seconds": 0.4412447080248967,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.14268364291638136,
+              "full_analytic_relative_residual": 0.24938073925832052
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.28428527689538896,
+              "full_analytic_relative_residual": 0.06228696112971924
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.4254585509188473,
+              "full_analytic_relative_residual": 0.016796859404024513
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.566938754869625,
+              "full_analytic_relative_residual": 0.0046987042293697165
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.708119748858735,
+              "full_analytic_relative_residual": 0.0011855486346085708
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.8495656629092991,
+              "full_analytic_relative_residual": 0.00031670953331935524
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 0.9907427468569949,
+              "full_analytic_relative_residual": 0.0001619069506697047
+            },
+            {
+              "iterations": 2048,
+              "updates_seconds": 1.132298310752958,
+              "full_analytic_relative_residual": 4.325305027165087e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 5.0,
+          "compile_seconds": 0.527011108933948,
+          "validation_seconds": 0.33094286208506674,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.14242035406641662,
+              "full_analytic_relative_residual": 0.16764340307847322
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.2839118371484801,
+              "full_analytic_relative_residual": 0.026018427439025892
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.4252576611470431,
+              "full_analytic_relative_residual": 0.0050568922549271735
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.5667302050860599,
+              "full_analytic_relative_residual": 0.0013660289205401947
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.7081706990720704,
+              "full_analytic_relative_residual": 0.00014623637089292293
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.8496508430689573,
+              "full_analytic_relative_residual": 2.813699171877996e-05
+            }
+          ],
+          "status": "pass"
+        }
+      ],
+      "selected": {
+        "batch": 512,
+        "eta": 5.0,
+        "iterations": 1536
+      },
+      "prepare_seconds": 0.527011108933948,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 0.8459780929842964,
+          "quality": {
+            "analytic_relative_residual": 5.131916874141497e-06,
+            "mean_relative_l2": 1.3533295556110582e-06,
+            "common_mean_prepare_query_seconds": 0.11640510696452111,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 0.8483333120821044,
+          "quality": {
+            "analytic_relative_residual": 7.323177668246439e-06,
+            "mean_relative_l2": 1.300760234974651e-06,
+            "common_mean_prepare_query_seconds": 0.09146362997125834,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 0.8461928729666397,
+          "quality": {
+            "analytic_relative_residual": 1.843737741992579e-05,
+            "mean_relative_l2": 1.8278531079375153e-06,
+            "common_mean_prepare_query_seconds": 0.09150868991855532,
+            "pass": true
+          }
+        }
+      ]
+    }
+  },
+  "hashes": {
+    "points": "b56e31d578251999525e0d4e61b2f924aa28c515e4fee802cea4ae1827738327",
+    "normals": "f9ea83a171e9f3ed33f48c95fce8ec42c3776b94398958643c00474f49a43b1f",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.00015950994566082954,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 32768,
+    "leaf_size": 128,
+    "far_groups": 3445,
+    "direct_groups": 2216,
+    "far_entries": 1149993,
+    "direct_entries": 283648,
+    "max_far_group_entries": 18056,
+    "cpu_plan_seconds": 0.08198230096604675,
+    "device_transfer_seconds": 0.0031286090379580855,
+    "retained_device_bytes": 8332877,
+    "cache_setup_seconds": 0.005428660078905523,
+    "cache_bytes": 174798936,
+    "cached_total_device_bytes": 473618881,
+    "scheduling_seconds": 0.006216939073055983,
+    "small_group_threshold": 32,
+    "small_groups": 0,
+    "large_groups": 3445,
+    "scheduling_bytes": 13780,
+    "leaf_cache_seconds": 0.02639271703083068,
+    "leaf_cache_bytes": 290455552,
+    "matrix_offset_bytes": 17736
+  },
+  "reference_solve": {
+    "iterations": 23,
+    "recurrence_converged": true,
+    "relative_residual": [
+      6.730478790870845e-11,
+      6.020131446452572e-11,
+      6.744670893399022e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 1.3805567862365961e-15,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.013591798022389412,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.0280122220283374,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.043479365995154,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.060127738979645,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.084717742050998,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 5.098796335980296,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 6.112519560032524,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 7.126551222987473,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 8.140550817013718,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 9.155184741015546,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 10.178739213966765,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 11.193180236965418,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 12.20779939100612,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 13.222828814992681,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 14.237878429004923,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 15.252533641993068,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 16.267270455951802,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 17.011755730956793,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 249443,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

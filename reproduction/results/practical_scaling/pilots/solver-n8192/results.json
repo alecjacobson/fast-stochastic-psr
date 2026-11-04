@@ -1,0 +1,510 @@
+{
+  "complete": true,
+  "n": 8192,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 8192,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "output": "/opt/geospsr-runtime/solver-scaling/n8192"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.2144533860264346,
+    "reference_analytic_solve": 0.1538887220667675,
+    "reference_direct_rows": 0.001744890003465116,
+    "shared_cross_spectrum": 0.020807097083888948,
+    "reference_mean_queries": 0.3247144130291417,
+    "dense_matrix_factor": 0.7125432379543781,
+    "nufft_spectrum": 0.0013104300014674664,
+    "nufft_plans": 0.009991509024985135
+  },
+  "methods": {
+    "cholesky": {
+      "prepare_seconds": 0.7125432379543781,
+      "solve_seconds": 0.00915034906938672,
+      "quality": {
+        "analytic_relative_residual": 2.5144528400261594e-15,
+        "mean_relative_l2": 2.4565708996989063e-11,
+        "common_mean_prepare_query_seconds": 0.07285329198930413,
+        "pass": true
+      }
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.2257553250528872,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 0.26147144997958094,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.3089311222720426e-06,
+                4.873516445513815e-06,
+                5.068357040727278e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.7274771054526527e-06,
+                2.6469327285724263e-06,
+                2.936679659688069e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010935268885198645,
+                  0.0010333744192328265,
+                  0.0011118236091463925
+                ],
+                [
+                  2.7274771054526527e-06,
+                  2.6469327285724263e-06,
+                  2.936679659688069e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    5.000449164072052e-06,
+                    5.3087233027326874e-06,
+                    5.112679446028778e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.7518082988361497e-06,
+            "mean_relative_l2": 1.0971735322784729e-06,
+            "common_mean_prepare_query_seconds": 0.07055863190907985,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 0.2555656109470874,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.3098283387953416e-06,
+                4.877012997894781e-06,
+                5.069200597063173e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.7274786257336436e-06,
+                2.6469337695033942e-06,
+                2.93668032512886e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010935268432848326,
+                  0.0010333747077677596,
+                  0.0011118235154652966
+                ],
+                [
+                  2.7274786257336436e-06,
+                  2.6469337695033942e-06,
+                  2.93668032512886e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    5.001075805921573e-06,
+                    5.303105353959836e-06,
+                    5.114819032314699e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.7518093705559217e-06,
+            "mean_relative_l2": 1.0971743333597925e-06,
+            "common_mean_prepare_query_seconds": 0.07085810205899179,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 0.2555043799802661,
+          "solver": {
+            "initial": {
+              "iterations": 7,
+              "recurrence_converged": true,
+              "relative_residual": [
+                5.309537300490774e-06,
+                4.874359092355007e-06,
+                5.07053800902213e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                2.7274823960610506e-06,
+                2.6469349553126973e-06,
+                2.9366903659374667e-06
+              ],
+              "residual_history": [
+                [
+                  0.0010935271381334595,
+                  0.0010333755202589175,
+                  0.0011118246204266475
+                ],
+                [
+                  2.7274823960610506e-06,
+                  2.6469349553126973e-06,
+                  2.9366903659374667e-06
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 7,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    4.997805262973998e-06,
+                    5.3022904467070475e-06,
+                    5.116369720781222e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 2.751813872252645e-06,
+            "mean_relative_l2": 1.0971776566080832e-06,
+            "common_mean_prepare_query_seconds": 0.07080970203969628,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "pilots": [
+        {
+          "batch": 128,
+          "eta": 2.0,
+          "compile_seconds": 0.7115102289244533,
+          "validation_seconds": 0.06129561294801533,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.07071143190842122,
+              "full_analytic_relative_residual": 0.3449911745163288
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.10182453785091639,
+              "full_analytic_relative_residual": 0.08341378645601392
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.13277878484223038,
+              "full_analytic_relative_residual": 0.020840922056010625
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.16370829078368843,
+              "full_analytic_relative_residual": 0.005249926166501151
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.19464567676186562,
+              "full_analytic_relative_residual": 0.0014710285947109284
+            },
+            {
+              "iterations": 1536,
+              "updates_seconds": 0.2255632437299937,
+              "full_analytic_relative_residual": 0.0003165519593415156
+            },
+            {
+              "iterations": 1792,
+              "updates_seconds": 0.2564974398119375,
+              "full_analytic_relative_residual": 6.302108831464877e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 128,
+          "eta": 5.0,
+          "compile_seconds": 0.6944402010412887,
+          "validation_seconds": 0.0442881949711591,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.03220572602003813,
+              "full_analytic_relative_residual": 0.20461537615249356
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.06322385207749903,
+              "full_analytic_relative_residual": 0.03298925002557651
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.09430958912707865,
+              "full_analytic_relative_residual": 0.00423293293471578
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.12539128516800702,
+              "full_analytic_relative_residual": 0.00042144908585170954
+            },
+            {
+              "iterations": 1280,
+              "updates_seconds": 0.15636083122808486,
+              "full_analytic_relative_residual": 3.050535768428504e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 2.0,
+          "compile_seconds": 0.7046184890205041,
+          "validation_seconds": 0.035123916110023856,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.05450146400835365,
+              "full_analytic_relative_residual": 0.10610676595068454
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.10746734798885882,
+              "full_analytic_relative_residual": 0.008099824135348967
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.16036789200734347,
+              "full_analytic_relative_residual": 0.0006176140440595838
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.21325545595027506,
+              "full_analytic_relative_residual": 4.6718602390365565e-05
+            }
+          ],
+          "status": "pass"
+        },
+        {
+          "batch": 512,
+          "eta": 5.0,
+          "compile_seconds": 0.6896955510601401,
+          "validation_seconds": 0.035086445859633386,
+          "history": [
+            {
+              "iterations": 256,
+              "updates_seconds": 0.05420663394033909,
+              "full_analytic_relative_residual": 0.0871469806082854
+            },
+            {
+              "iterations": 512,
+              "updates_seconds": 0.10714691795874387,
+              "full_analytic_relative_residual": 0.00665230376528745
+            },
+            {
+              "iterations": 768,
+              "updates_seconds": 0.1600473818834871,
+              "full_analytic_relative_residual": 0.000507157719614234
+            },
+            {
+              "iterations": 1024,
+              "updates_seconds": 0.21295260591432452,
+              "full_analytic_relative_residual": 3.831437732073896e-05
+            }
+          ],
+          "status": "pass"
+        }
+      ],
+      "selected": {
+        "batch": 128,
+        "eta": 5.0,
+        "iterations": 1280
+      },
+      "prepare_seconds": 0.6944402010412887,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 0.15402868192177266,
+          "quality": {
+            "analytic_relative_residual": 0.0003319990197017626,
+            "mean_relative_l2": 3.3080903706401624e-05,
+            "common_mean_prepare_query_seconds": 0.07335306203458458,
+            "pass": false
+          }
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 0.15380982193164527,
+          "quality": {
+            "analytic_relative_residual": 5.231653908182257e-05,
+            "mean_relative_l2": 7.807973064140023e-06,
+            "common_mean_prepare_query_seconds": 0.07156185200437903,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 0.15364360203966498,
+          "quality": {
+            "analytic_relative_residual": 6.94800679612738e-05,
+            "mean_relative_l2": 1.0086301304678422e-05,
+            "common_mean_prepare_query_seconds": 0.09012582001741976,
+            "pass": true
+          }
+        }
+      ]
+    }
+  },
+  "hashes": {
+    "points": "b8881b9b91098f78c93437375342243e86fba605c997cf31e40a2d502fc46195",
+    "normals": "49545e7a923f9a8719f2668be3198a5d658e80e6fa5531a67760b492ff5fdea6",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.0001732800155878067,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 8192,
+    "leaf_size": 128,
+    "far_groups": 619,
+    "direct_groups": 431,
+    "far_entries": 168918,
+    "direct_entries": 55168,
+    "max_far_group_entries": 4504,
+    "cpu_plan_seconds": 0.011911388952285051,
+    "device_transfer_seconds": 0.00047457998152822256,
+    "retained_device_bytes": 1385309,
+    "cache_setup_seconds": 0.0030194390565156937,
+    "cache_bytes": 25675536,
+    "cached_total_device_bytes": 83558809,
+    "scheduling_seconds": 0.1915593680460006,
+    "small_group_threshold": 32,
+    "small_groups": 0,
+    "large_groups": 619,
+    "scheduling_bytes": 2476,
+    "leaf_cache_seconds": 0.0063764299266040325,
+    "leaf_cache_bytes": 56492032,
+    "matrix_offset_bytes": 3456
+  },
+  "reference_solve": {
+    "iterations": 14,
+    "recurrence_converged": true,
+    "relative_residual": [
+      2.353372771701581e-11,
+      2.023841482262492e-11,
+      2.1735934544426542e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 8.877331266084398e-16,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.0138551079435274,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.0285624619573355,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.0444259359501302,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.058258748962544,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.071784853003919,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 5.085895797004923,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 6.100045810919255,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 7.113858244963922,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 7.428257768973708,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 249148,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

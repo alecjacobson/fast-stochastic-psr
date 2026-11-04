@@ -1,0 +1,608 @@
+{
+  "complete": true,
+  "n": 131072,
+  "args": {
+    "source": "/opt/geospsr-runtime/scaling-cloud-524288",
+    "n": 131072,
+    "cutoff": 100,
+    "rtol": 0.0001,
+    "dense_max": 16384,
+    "analytic_cache_gib": 4.0,
+    "batches": [
+      128,
+      512
+    ],
+    "etas": [
+      2.0,
+      5.0
+    ],
+    "budget": 120.0,
+    "maxiter": 200000,
+    "chunk": 256,
+    "repeats": 3,
+    "adaptive_confirm": true,
+    "selected_sdd": "/opt/geospsr-runtime/solver-scaling/n131072/results.json",
+    "output": "/opt/geospsr-runtime/solver-scaling/verified-n131072"
+  },
+  "model": {
+    "training": "full analytic periodic product Matern32",
+    "ell": 0.01,
+    "per_axis_variance": 0.1,
+    "noise_variance": 0.02,
+    "cross_cutoff": 50
+  },
+  "scope": "mean preparation and common NUFFT queries; no marginal/joint uncertainty speedup",
+  "gates": {
+    "full_analytic_relative_residual": 0.0001,
+    "mean_relative_l2": 0.002,
+    "direct_action_relative_error": 1e-09
+  },
+  "seconds": {
+    "analytic_geometry_setup": 0.7072488080011681,
+    "reference_analytic_solve": 14.380944592994638,
+    "reference_direct_rows": 0.019679208053275943,
+    "shared_cross_spectrum": 0.010314048966392875,
+    "reference_mean_queries": 0.37624779692851007,
+    "nufft_spectrum": 0.0007691000355407596,
+    "nufft_plans": 0.009540739003568888
+  },
+  "methods": {
+    "cholesky": {
+      "status": "not run beyond declared dense benchmark cap; no measured runtime claim",
+      "single_matrix_bytes": 137438953472
+    },
+    "nufft_refined": {
+      "prepare_seconds": 0.7175586470402777,
+      "runs": [
+        {
+          "repeat": 0,
+          "solve_seconds": 1.6114149849163368,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.2799886109132785e-06,
+                9.477777894062456e-06,
+                6.917392965988256e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.35298150520247e-05,
+                3.921158813144487e-05,
+                4.703796188357161e-05
+              ],
+              "residual_history": [
+                [
+                  0.0015238003043247096,
+                  0.0013305433102124044,
+                  0.0016668762206256192
+                ],
+                [
+                  4.35298150520247e-05,
+                  3.921158813144487e-05,
+                  4.703796188357161e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.27504129827139e-06,
+                    7.824804924894124e-06,
+                    7.481669854314532e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.2711949403308545e-05,
+            "mean_relative_l2": 4.120345823218158e-06,
+            "common_mean_prepare_query_seconds": 0.12948590493761003,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 1,
+          "solve_seconds": 1.6056036159861833,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.2807616814097855e-06,
+                9.47745138546452e-06,
+                6.915916401339928e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.352982474467121e-05,
+                3.921159925245745e-05,
+                4.7037951691195106e-05
+              ],
+              "residual_history": [
+                [
+                  0.00152380096686687,
+                  0.0013305433388556217,
+                  0.001666876491882656
+                ],
+                [
+                  4.352982474467121e-05,
+                  3.921159925245745e-05,
+                  4.7037951691195106e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.278660632437095e-06,
+                    7.823437044862658e-06,
+                    7.4812801358348224e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.271195381375011e-05,
+            "mean_relative_l2": 4.120361352086381e-06,
+            "common_mean_prepare_query_seconds": 0.12827137496788055,
+            "pass": true
+          }
+        },
+        {
+          "repeat": 2,
+          "solve_seconds": 1.6055521459784359,
+          "solver": {
+            "initial": {
+              "iterations": 22,
+              "recurrence_converged": true,
+              "relative_residual": [
+                6.281120022322284e-06,
+                9.478133506490849e-06,
+                6.917375685588922e-06
+              ],
+              "converged": true
+            },
+            "refinement": {
+              "converged": true,
+              "corrections": 1,
+              "analytic_actions": 2,
+              "relative_residual": [
+                4.3529791389378064e-05,
+                3.921156389006115e-05,
+                4.703796422976588e-05
+              ],
+              "residual_history": [
+                [
+                  0.0015238004155602586,
+                  0.001330543316023597,
+                  0.0016668771820055074
+                ],
+                [
+                  4.3529791389378064e-05,
+                  3.921156389006115e-05,
+                  4.703796422976588e-05
+                ]
+              ],
+              "inner_solves": [
+                {
+                  "iterations": 21,
+                  "recurrence_converged": true,
+                  "relative_residual": [
+                    7.2705402089923155e-06,
+                    7.82582901592832e-06,
+                    7.476030532416189e-06
+                  ],
+                  "converged": true
+                }
+              ]
+            }
+          },
+          "quality": {
+            "analytic_relative_residual": 4.271193319481163e-05,
+            "mean_relative_l2": 4.120383828456575e-06,
+            "common_mean_prepare_query_seconds": 0.12896773498505354,
+            "pass": true
+          }
+        }
+      ]
+    },
+    "sdd": {
+      "selection_source": "/opt/geospsr-runtime/solver-scaling/n131072/results.json",
+      "pilots": [],
+      "selected": {
+        "batch": 512,
+        "eta": 5.0,
+        "iterations": 4096
+      },
+      "prepare_seconds": 0.5936801119241863,
+      "runs": [
+        {
+          "repeat": 0,
+          "seed": 500,
+          "solve_seconds": 8.851016586995684,
+          "quality": {
+            "analytic_relative_residual": 8.064565288054934e-05,
+            "mean_relative_l2": 1.0923014233926814e-05,
+            "common_mean_prepare_query_seconds": 0.13057881500571966,
+            "pass": true
+          },
+          "iterations": 4864,
+          "stopping_history": [
+            {
+              "iterations": 4096,
+              "update_seconds": 7.440557557973079,
+              "full_analytic_relative_residual": 0.0004147671718066537
+            },
+            {
+              "iterations": 4352,
+              "update_seconds": 7.9105501640588045,
+              "full_analytic_relative_residual": 0.00015888107632185762
+            },
+            {
+              "iterations": 4608,
+              "update_seconds": 8.380976489977911,
+              "full_analytic_relative_residual": 0.00011179097160361321
+            },
+            {
+              "iterations": 4864,
+              "update_seconds": 8.851016586995684,
+              "full_analytic_relative_residual": 8.064565288054922e-05
+            }
+          ],
+          "verification_seconds": 1.3040252000791952,
+          "verified_solve_seconds": 10.155041787074879
+        },
+        {
+          "repeat": 1,
+          "seed": 501,
+          "solve_seconds": 8.382160969194956,
+          "quality": {
+            "analytic_relative_residual": 5.6010218578906433e-05,
+            "mean_relative_l2": 5.677122494709004e-06,
+            "common_mean_prepare_query_seconds": 0.1473982830066234,
+            "pass": true
+          },
+          "iterations": 4608,
+          "stopping_history": [
+            {
+              "iterations": 4096,
+              "update_seconds": 7.451901846099645,
+              "full_analytic_relative_residual": 0.0001684180025899454
+            },
+            {
+              "iterations": 4352,
+              "update_seconds": 7.914893082110211,
+              "full_analytic_relative_residual": 0.00011300538912557854
+            },
+            {
+              "iterations": 4608,
+              "update_seconds": 8.382160969194956,
+              "full_analytic_relative_residual": 5.601021857890651e-05
+            }
+          ],
+          "verification_seconds": 0.9772839680081233,
+          "verified_solve_seconds": 9.35944493720308
+        },
+        {
+          "repeat": 2,
+          "seed": 502,
+          "solve_seconds": 7.850428060046397,
+          "quality": {
+            "analytic_relative_residual": 7.959831615495328e-05,
+            "mean_relative_l2": 6.495485691050702e-06,
+            "common_mean_prepare_query_seconds": 0.14129276399035007,
+            "pass": true
+          },
+          "iterations": 4352,
+          "stopping_history": [
+            {
+              "iterations": 4096,
+              "update_seconds": 7.38815541297663,
+              "full_analytic_relative_residual": 0.00014721640301492643
+            },
+            {
+              "iterations": 4352,
+              "update_seconds": 7.850428060046397,
+              "full_analytic_relative_residual": 7.959831615495351e-05
+            }
+          ],
+          "verification_seconds": 0.6509336660383269,
+          "verified_solve_seconds": 8.501361726084724
+        }
+      ],
+      "confirmation_policy": "full analytic residual stopping",
+      "verification_setup_seconds": 0.7072488080011681
+    }
+  },
+  "hashes": {
+    "points": "1d61ccd681fbca21fb53e7afd2a9d11bc6e5e46394eb21f36f9099d8d8f3ae30",
+    "normals": "5f32874b3ebfc5ff1af9f4384a44403c1e5bbe6a52a1fa7a608ca87055c3de1d",
+    "queries": "48988ca6eacb4f85911d3997ff6839326940c74f5c67a46fb7913969d77677ba"
+  },
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "versions": {
+    "cupy": "14.2.0",
+    "jax": "0.6.2",
+    "numpy": "2.4.6"
+  },
+  "analytic_geometry": {
+    "native_library_seconds": 0.00018783006817102432,
+    "native_library_cached": true,
+    "native_source_sha256": "86293347c766d9497b54a3f4ff6a87446aec975ed39ee02c16b0c44f659f7dc5",
+    "n": 131072,
+    "leaf_size": 128,
+    "far_groups": 17768,
+    "direct_groups": 10888,
+    "far_entries": 7010560,
+    "direct_entries": 1393664,
+    "max_far_group_entries": 72524,
+    "cpu_plan_seconds": 0.5358548780204728,
+    "device_transfer_seconds": 0.01156498899217695,
+    "retained_device_bytes": 47112728,
+    "cache_setup_seconds": 0.01958386809565127,
+    "cache_bytes": 1065605120,
+    "cached_total_device_bytes": 2539987968,
+    "scheduling_seconds": 0.006249449099414051,
+    "small_group_threshold": 32,
+    "small_groups": 0,
+    "large_groups": 17768,
+    "scheduling_bytes": 71072,
+    "leaf_cache_seconds": 0.12561449501663446,
+    "leaf_cache_bytes": 1427111936,
+    "matrix_offset_bytes": 87112
+  },
+  "reference_solve": {
+    "iterations": 43,
+    "recurrence_converged": true,
+    "relative_residual": [
+      5.860906026298479e-11,
+      9.230712710996953e-11,
+      6.241463957691052e-11
+    ],
+    "converged": true
+  },
+  "direct_action_relative_error": 1.9996121589794398e-15,
+  "gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 1.0,
+    "samples": 0,
+    "foreign_process_samples": [],
+    "errors": [
+      {
+        "seconds": 0.013909938978031278,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 1.028198002022691,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 2.0428636060096323,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 3.0572906599845737,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 4.072055213036947,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 5.085901826969348,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 6.100233951001428,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 7.114257675013505,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 8.136723357951269,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 9.150745271937922,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 10.164645456010476,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 11.179236109019257,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 12.193331263028085,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 13.207427166984417,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 14.22168729105033,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 15.235874444944784,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 16.251613628002815,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 17.270402221009135,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 18.285943035036325,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 19.300667518982664,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 20.316038122051395,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 21.330331685952842,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 22.400263143936172,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 23.41464666801039,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 24.429496280965395,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 25.444512645015493,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 26.45937706902623,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 27.474030431942083,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 28.48872066603508,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 29.503344499971718,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 30.51709789398592,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 31.532728226971813,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 32.54781111096963,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 33.562580415047705,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 34.60011444601696,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 35.61488781997468,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 36.63013993296772,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 37.64544924697839,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 38.66011288098525,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 39.67434453498572,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 40.689747798023745,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 41.704329072032124,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 42.71898666594643,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 43.733779359958135,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 44.748865313013084,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 45.76359707699157,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 46.778579451027326,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 47.79326546401717,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 48.808488158043474,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 49.82353543199133,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 50.83701191598084,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 51.85074404999614,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      },
+      {
+        "seconds": 52.36188206099905,
+        "error": "ValueError: invalid literal for int() with base 10: '[Insufficient Permissions]'"
+      }
+    ],
+    "observations": [],
+    "own_pid": 250990,
+    "sampled_isolation_pass": false,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  }
+}

@@ -108,6 +108,12 @@ def test_gpu_nested_actions_match_cpu_and_dense(geometry):
     model = FreeSpacePoissonMatern(.3, 1.7)
     native = HierarchicalMaternSystem(model, x, .02, threads=2, leaf_size=60)
     gpu = GPUHierarchicalSystem(native)
+    # Verify actual column ordering/uniqueness independently of the GPU flag.
+    from scipy.sparse import csr_matrix
+    host_graph = csr_matrix((cp.asnumpy(gpu.interactions.data), cp.asnumpy(gpu.interactions.indices),
+                             cp.asnumpy(gpu.interactions.indptr)), shape=gpu.interactions.shape)
+    assert host_graph.has_canonical_format
+    assert gpu.interactions.has_canonical_format
     b = rng.normal(size=(len(x), 3))
     actual = cp.asnumpy(gpu.matmul(b))
     np.testing.assert_allclose(cp.asnumpy(gpu.precondition(b)), native.precondition(b),
@@ -156,7 +162,8 @@ def test_inplace_gpu_dense_baseline_and_projection(dtype):
 
 
 @pytest.mark.parametrize('cached', [True, False])
-def test_dense_gpu_pcg_control(cached):
+@pytest.mark.parametrize('refinements', [0, 1])
+def test_dense_gpu_pcg_control(cached, refinements):
     pytest.importorskip('psr_higp_cext')
     cp = pytest.importorskip('cupy')
     from geospsr.nonperiodic_dense_cg import GPUDenseCGSystem
@@ -167,6 +174,7 @@ def test_dense_gpu_pcg_control(cached):
     a = model.vector_covariance(x, x)+.000025*np.eye(len(x))
     rhs = rng.normal(size=(len(x), 5))
     np.testing.assert_allclose(cp.asnumpy(system.matmul(rhs)), a@rhs, atol=1e-8, rtol=1e-4)
-    gram, mean = system.project(rhs, x, variance_iterations=8, mean_tolerance=1e-7)
+    gram, mean = system.project(rhs, x, variance_iterations=8, mean_tolerance=1e-7,
+                                variance_refinements=refinements)
     np.testing.assert_allclose(gram, rhs.T@np.linalg.solve(a, rhs), atol=1e-2, rtol=2e-5)
     np.testing.assert_allclose(mean, rhs.T@np.linalg.solve(a, x), atol=1e-2, rtol=2e-5)

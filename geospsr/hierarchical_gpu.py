@@ -146,6 +146,15 @@ class GPUHierarchicalSystem:
         indptr = np.zeros(self.augmented_size+1, dtype=np.int64)
         metadata = []
         for (row, nr), sources in sorted(groups.items()):
+            sources = sorted(sources)
+            # Disjoint source blocks make every row sorted and duplicate-free.
+            # Establish this before allocating GPU entries: otherwise CuPy's
+            # first matmul may convert billions of entries to COO and sort them.
+            end = -1
+            for col, nc in sources:
+                if col < end:
+                    raise ValueError('overlapping source blocks in the H2 interaction graph')
+                end = col+nc
             width = sum(nc for _, nc in sources)
             if np.any(indptr[row+1:row+nr+1]):
                 raise ValueError('overlapping target groups in the H2 interaction graph')
@@ -168,6 +177,7 @@ class GPUHierarchicalSystem:
                 cp.asarray(metadata), len(metadata), self.model.kappa, values, columns))
         self.interactions = gpu_csr((values, columns, cp.asarray(indptr, dtype=cp.int32)),
                                     shape=(self.augmented_size, self.augmented_size))
+        self.interactions.has_canonical_format = True
         self.preconditioner_gpu = GPUAFNPreconditioner(native_system.preconditioner)
         matrices = [self.interactions]+[t for pair in self.transfers for t in pair]
         self.device_matrix_bytes = sum(m.data.nbytes+m.indices.nbytes+m.indptr.nbytes for m in matrices)

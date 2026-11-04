@@ -71,35 +71,43 @@ class GPUDenseCGSystem(GPUHierarchicalSystem):
             result[start:start+nr] = rows.astype(cp.float64)@b
         return result[:, 0] if vector else result
 
-    def project(self, basis, vectors, variance_iterations=8, mean_tolerance=1e-6):
+    def project(self, basis, vectors, variance_iterations=8, mean_tolerance=1e-6,
+                variance_refinements=1):
         """Fast low-precision inner steps, reliable high-precision correction.
 
-        The final quadratic form uses a float64 residual. Iterative refinement
-        makes a float32 matrix/action a useful control despite the cancellation
-        that otherwise prevents tight CG convergence on dense point clouds.
+        The final quadratic form uses a float64 residual after the same fixed
+        variance-step budget as H2, followed by one reliable correction sweep
+        to compensate float32 action error. Only mean columns are subsequently
+        refined to a tight residual; over-solving variance weakens the control.
         """
         import cupy as cp
         from .hierarchical import batched_pcg
+        if not 0 <= variance_refinements <= 4:
+            raise ValueError('variance_refinements must be between zero and four')
         b = cp.asarray(np.column_stack((basis, vectors)))
-        z, inner, _ = batched_pcg(self.matmul, self.precondition, b, tolerance=.003,
+        z, inner, _ = batched_pcg(self.matmul, self.precondition, b, tolerance=1e-10,
                                   max_iterations=variance_iterations, xp=cp, return_residual=True)
         r = b-self.accurate_matmul(z)
         history = [inner]
-        norms = cp.linalg.norm(b, axis=0)
+        norms = cp.linalg.norm(b[:, -3:], axis=0)
         for step in range(4):
-            if bool(cp.all(cp.linalg.norm(r, axis=0) <= mean_tolerance*norms)):
+            if step >= variance_refinements and bool(cp.all(cp.linalg.norm(r[:, -3:], axis=0) <= mean_tolerance*norms)):
                 break
-            dz, inner = batched_pcg(self.matmul, self.precondition, r, tolerance=.003,
+            columns = slice(None) if step < variance_refinements else slice(-3, None)
+            dz, inner = batched_pcg(self.matmul, self.precondition, r[:, columns], tolerance=.003,
                                     max_iterations=variance_iterations, xp=cp)
             history.append(inner)
-            z += dz
-            r = b-self.accurate_matmul(z)
-        relative = cp.linalg.norm(r, axis=0)/norms
+            z[:, columns] += dz
+            r[:, columns] = b[:, columns]-self.accurate_matmul(z[:, columns])
+        relative = cp.linalg.norm(r[:, -3:], axis=0)/norms
         self.last_solve = dict(refinement_steps=len(history)-1, inner=history,
-                              relative_residuals=cp.asnumpy(relative).tolist(),
-                              converged=bool(cp.all(relative <= mean_tolerance)),
+                              mean_relative_residuals=cp.asnumpy(relative).tolist(),
+                              variance_relative_residuals=cp.asnumpy(cp.linalg.norm(r[:, :-3], axis=0)/cp.linalg.norm(b[:, :-3], axis=0)).tolist(),
+                              mean_converged=bool(cp.all(relative <= mean_tolerance)),
+                              variance_step_budget=variance_iterations,
+                              variance_refinement_sweeps=variance_refinements,
                               residual_scope='float64 accumulation of stored kernel entries')
-        if not self.last_solve['converged']:
+        if not self.last_solve['mean_converged']:
             raise RuntimeError(f'dense mixed precision refinement did not converge: {self.last_solve}')
         u, zu, ru = b[:, :-3], z[:, :-3], r[:, :-3]
         gram = u.T@zu+zu.T@ru

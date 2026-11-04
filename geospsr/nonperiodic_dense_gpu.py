@@ -22,8 +22,28 @@ extern "C" __global__ void covariance(const TYPE* x, TYPE* a, long long n,
 '''
 
 
-def full_kernel_matmul(model, points, noise_variance, rhs, block_size=512):
-    """Independent float64 full-kernel action with bounded row storage."""
+_TILED_KERNEL = r'''
+extern "C" __global__ void covariance_tile(const double* x, double* a,
+    long long row, long long col, long long nr, long long nc,
+    double kappa, double amplitude, double noise) {
+    long long t=(long long)blockIdx.x*blockDim.x+threadIdx.x;
+    if(t>=nr*nc)return;
+    long long i=row+t/nc,j=col+t%nc;
+    double d=0;
+    for(int k=0;k<3;k++){double v=x[3*i+k]-x[3*j+k];d+=v*v;}
+    double z=sqrt(d)*kappa;
+    a[t]=amplitude*(1+z)*exp(-z)+(i==j?noise:0);
+}
+'''
+
+
+def full_kernel_matmul(model, points, noise_variance, rhs, block_size=2048,
+                       workspace_bytes=512*2**20):
+    """Independent float64 all-pairs action with bounded 2D tiles.
+
+    Tiling columns as well as rows preserves enough output rows for GPU GEMM
+    parallelism as N grows. Every kernel entry is still evaluated in float64.
+    """
     import cupy as cp
     x = cp.asarray(points, dtype=cp.float64)
     b = cp.asarray(rhs, dtype=cp.float64)
@@ -31,15 +51,20 @@ def full_kernel_matmul(model, points, noise_variance, rhs, block_size=512):
     if vector:
         b = b[:, None]
     n = len(x)
-    block_size = min(block_size, max(1, (512*2**20)//(n*8)))
-    out = cp.empty_like(b)
-    kernel = cp.RawKernel(_KERNEL.replace('TYPE', 'double'), 'covariance')
+    if block_size < 1 or workspace_bytes < 8:
+        raise ValueError('positive tile size and workspace required')
+    block_size = min(block_size, n, workspace_bytes//8)
+    column_size = min(n, workspace_bytes//(block_size*8))
+    out = cp.zeros_like(b)
+    kernel = cp.RawKernel(_TILED_KERNEL, 'covariance_tile')
     for start in range(0, n, block_size):
         nr = min(block_size, n-start)
-        a = cp.empty((nr, n), dtype=cp.float64)
-        kernel(((nr*n+255)//256,), (256,),
-               (x, a, n, start, nr, model.kappa, model.amplitude, noise_variance))
-        out[start:start+nr] = a@b
+        for first in range(0, n, column_size):
+            nc = min(column_size, n-first)
+            a = cp.empty((nr, nc), dtype=cp.float64)
+            kernel(((nr*nc+255)//256,), (256,),
+                   (x, a, start, first, nr, nc, model.kappa, model.amplitude, noise_variance))
+            out[start:start+nr] += a@b[first:first+nc]
     result = cp.asnumpy(out)
     return result[:, 0] if vector else result
 

@@ -90,10 +90,15 @@ def audit(path, reference_path, random_queries=32, reference_preconditioner='nat
             system = GPUHierarchicalSystem(HierarchicalMaternSystem(
                 model, x, noise, tolerance=1e-7, leaf_size=100, preconditioner_rank=50, neighbors=40,
                 preconditioner_backend=reference_preconditioner), interaction_budget_bytes=256*2**20,
-                rhs_block_size=16 if a['n'] > 262144 else None, release_native=True)
+                rhs_block_size=16 if a['n'] > 1048576 else None, release_native=True)
             solve = lambda b: system.solve(b, tolerance=1e-7)
             producer = 'Streamed H2 initializer; full-float64-kernel residual certification; '+reference_preconditioner
+        print(json.dumps(dict(reference_phase='initializer ready', elapsed_seconds=perf_counter()-start)),
+              file=sys.stderr, flush=True)
         z = solve(rhs)
+        initial_solve_info = getattr(system, 'last_solve', None)
+        print(json.dumps(dict(reference_phase='initial solve complete', elapsed_seconds=perf_counter()-start)),
+              file=sys.stderr, flush=True)
         norms = np.linalg.norm(rhs, axis=0)
         history = []
         for step in range(6):
@@ -110,7 +115,7 @@ def audit(path, reference_path, random_queries=32, reference_preconditioner='nat
             if step == 5:
                 raise RuntimeError('full-kernel reference output bounds failed')
             z += solve(residual)
-        refinement = dict(steps=step, relative_residuals=(np.linalg.norm(residual, axis=0)/norms).tolist(),
+        refinement = dict(steps=step, initializer_solve=initial_solve_info, relative_residuals=(np.linalg.norm(residual, axis=0)/norms).tolist(),
                           history=history, mean_formula='C^T W + Z^T (Y-AW)',
                           mean_error_bound='||C-AZ|| * ||Y-AW|| / noise, summed over components')
         reference = dict(contract=contract, queries=q.tolist(), mean=mean.tolist(),

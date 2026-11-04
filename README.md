@@ -188,6 +188,16 @@ tested learning rate. All methods pass the same numerical gates and receive
 the same regional query cache. H² also beats a same-preconditioner dense CG
 control at 73,728 and 131,072 points. Cholesky wins at smaller sizes, and
 [SDD wins the longer-correlation case](reproduction/results/hierarchical_variance/README.md).
+A [stronger GPU locality control and noisy-scan follow-up](reproduction/results/hierarchical_robustness/README.md)
+shows distance truncation beating H² at smaller sizes. At **196,608 points**,
+H² crosses ahead: **24.40 s versus 27.76 s**, including setup, mean, variance,
+and the same million-query workload. Both pass independent kernel probes and
+full-query comparisons; stored representations are **3.30 versus 12.22 GiB**.
+These are three-run medians with the lowest tested passing variance-step budget.
+The largest result uses one noisy partial scan and a tighter reference field,
+not a dense factor that cannot fit. The report retains failed tolerances and
+compares SDD using a stronger full-query accuracy check.
+
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
 [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).

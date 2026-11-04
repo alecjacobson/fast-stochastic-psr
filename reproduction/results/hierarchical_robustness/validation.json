@@ -1,0 +1,61 @@
+{
+  "source_commit": "a21c33d",
+  "merged_base": "e5419178595822cb16bb3ce7673910fcc6ca810c",
+  "merged_prs": [
+    65,
+    67,
+    76
+  ],
+  "route_preservation": "NUFFT/Fourier periodic route and optional nonperiodic H2 route remain available.",
+  "tests": [
+    {
+      "scope": "NUFFT/Fourier and H2 regression selection before merging stacked PRs",
+      "passed": 61,
+      "warnings": 3,
+      "seconds": 26.14
+    },
+    {
+      "command": "./reproduction/run_env.sh -m pytest tests/test_nonperiodic.py tests/test_hierarchical.py tests/test_nonperiodic_sparse.py -q",
+      "passed": 34,
+      "seconds": 11.23
+    }
+  ],
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+    "visible_gib": 23.625,
+    "cpu_quota": 4,
+    "host_memory_gib": 16
+  },
+  "acceptance": {
+    "max_variance_error_over_prior": 0.0001,
+    "max_marginal_probability_error": 0.001,
+    "variance": "positive; no clipping",
+    "reference": "Independent full-float64-kernel actions and direct cross kernels at finite probes; all-query comparisons to an audited regional cache where recorded. No uniform exact-GP certificate."
+  },
+  "timing": "Includes all production setup, mean and variance preparation, final query replay. Excludes common synthetic input generation, common runtime warmup, and independent verification. SDD additionally excludes rejected checkpoints/projection alternatives and uses offline stopping selection.",
+  "limitations": [
+    "Synthetic noisy-normal partial scans; positions are exact.",
+    "Query region is observed contact, not missing scan boundary.",
+    "Deterministic mean-level anchoring is not scalar-contact conditioning.",
+    "Constant contact variance passes the CDF gate but fails the spatial-variance gate.",
+    "Hard distance truncation is not a PSD-preserving taper.",
+    "Largest Cholesky factor does not fit; no runtime extrapolation.",
+    "SDD timing is best tested checkpoint, not exhaustive tuning.",
+    "H2 rank/iteration boundedness and asymptotic superiority remain conditional.",
+    "Mixed-precision H2/sparse and bounded-memory locality controls remain open in issue 87."
+  ],
+  "reproduction": "bash reproduction/results/hierarchical_robustness/reproduce.sh",
+  "accepted_non_sdd_production_runs": 57,
+  "passing_paired_workload_comparisons": 23,
+  "accepted_small_sdd_configurations": 6,
+  "large_sdd": "No passing observed checkpoint in 150 solver seconds; one eta tested.",
+  "shorter_sparse_cutoffs": {
+    "9": "Nonpositive PCG curvature",
+    "10": "Independent probes pass; full-query CDF error 0.001263 fails"
+  },
+  "storage_precision": {
+    "h2": "float64",
+    "sparse": "float64",
+    "cholesky": "float32"
+  }
+}

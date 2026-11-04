@@ -1,0 +1,242 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_robustness/partial/seed233/references/77824.json",
+    "output": "reproduction/results/hierarchical_robustness/partial/seed233/sdd/77824.json",
+    "eta": [
+      0.1,
+      0.15
+    ],
+    "batch": 128,
+    "order": 4,
+    "cross_tolerance": 1e-06,
+    "checkpoints": [
+      2048,
+      8192,
+      16384,
+      32768,
+      49152,
+      65536,
+      98304,
+      131072
+    ],
+    "budget": 90.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 77824,
+    "seed": 233,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 8,
+    "scan": "front",
+    "normal_noise": 0.005,
+    "order": 4,
+    "cross_tolerance": 1e-06
+  },
+  "solve_rank": 42,
+  "compression_seconds": 0.9457358290674165,
+  "common_runtime_initialization_seconds": 0.19816741696558893,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "5bfd894840cf4abe205dcb9cb4c2ffabf71c5a38f74132a4635217b6685837a0",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "3dbaa44729ef2279ef793e31783901a93beae32f99201976c9aebdec44d20631",
+    "reproduction/benchmark_hierarchical_variance.py": "758a528af61f79f44bb4607fbd1d44da62533641154f41036ec6242c3ac7e5db"
+  },
+  "configurations": [
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "learning_rate": 0.0001644736842105263,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.6806495509808883,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 1.4099482049932703,
+          "preparation_seconds": 3.052379793021828,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0005387206301415981,
+              "max_variance_error_over_prior": 0.00023853077465195682,
+              "minimum_variance": 1.3170751731490093e-06,
+              "passes": false,
+              "projection_seconds": 0.01490596798248589,
+              "field_seconds": 0.001140239997766912
+            },
+            "corrected": {
+              "max_probability_error": 0.029843487934783752,
+              "max_variance_error_over_prior": 0.02422160334376132,
+              "minimum_variance": 1.369586770383654e-06,
+              "passes": false,
+              "projection_seconds": 3.726713304989971,
+              "field_seconds": 0.0010995700722560287
+            }
+          },
+          "max_probability_error": 0.0005387206301415981,
+          "max_variance_error_over_prior": 0.00023853077465195682,
+          "minimum_variance": 1.3170751731490093e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 5.3589022640371695,
+          "preparation_seconds": 7.000759692047723,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00044506501202690174,
+              "max_variance_error_over_prior": 9.977144282935454e-05,
+              "minimum_variance": 1.3173690619772335e-06,
+              "passes": true,
+              "projection_seconds": 0.014382097986526787,
+              "field_seconds": 0.001089949975721538
+            }
+          },
+          "max_probability_error": 0.00044506501202690174,
+          "max_variance_error_over_prior": 9.977144282935454e-05,
+          "minimum_variance": 1.3173690619772335e-06,
+          "passes": true,
+          "query_seconds": [
+            0.005209669005125761,
+            0.00095422996673733,
+            0.0008961199782788754,
+            0.0008578000124543905,
+            0.0008681790204718709,
+            0.0008590500801801682,
+            0.0008636300917714834,
+            0.0008519500261172652,
+            0.0008562200237065554,
+            0.0008302700007334352,
+            0.0008385699475184083,
+            0.0008332589641213417,
+            0.00083430006634444,
+            0.0008353699231520295,
+            0.0008484299760311842,
+            0.0008302499772980809
+          ],
+          "total_seconds": 7.018826989107765
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_robustness/partial/seed233/sdd/77824-eta0.1-passing.json",
+      "status": "passing complete workload"
+    },
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 0.0002467105263157895,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.4918459019390866,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 1.3026923779398203,
+          "preparation_seconds": 2.756199017050676,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.003268122886038838,
+              "max_variance_error_over_prior": 0.00034105754996501886,
+              "minimum_variance": 1.3169259269296467e-06,
+              "passes": false,
+              "projection_seconds": 0.01490390906110406,
+              "field_seconds": 0.0010209990432485938
+            },
+            "corrected": {
+              "max_probability_error": 0.1428423737581186,
+              "max_variance_error_over_prior": 0.07607124025808308,
+              "minimum_variance": 1.4676841225681788e-06,
+              "passes": false,
+              "projection_seconds": 3.688323760055937,
+              "field_seconds": 0.0009749800665304065
+            }
+          },
+          "max_probability_error": 0.003268122886038838,
+          "max_variance_error_over_prior": 0.00034105754996501886,
+          "minimum_variance": 1.3169259269296467e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 5.196818473865278,
+          "preparation_seconds": 6.6502642629202455,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0005794543452347645,
+              "max_variance_error_over_prior": 0.00042895596675083966,
+              "minimum_variance": 1.3167281554918786e-06,
+              "passes": false,
+              "projection_seconds": 0.014887238037772477,
+              "field_seconds": 0.0009768200106918812
+            },
+            "corrected": {
+              "max_probability_error": 0.05590871321652835,
+              "max_variance_error_over_prior": 0.03333039303413888,
+              "minimum_variance": 1.3828000193226491e-06,
+              "passes": false,
+              "projection_seconds": 3.6944300279719755,
+              "field_seconds": 0.0009785699658095837
+            }
+          },
+          "max_probability_error": 0.0005794543452347645,
+          "max_variance_error_over_prior": 0.00042895596675083966,
+          "minimum_variance": 1.3167281554918786e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 10.38706706778612,
+          "preparation_seconds": 11.840552106848918,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0004561164230711956,
+              "max_variance_error_over_prior": 4.722133398819012e-05,
+              "minimum_variance": 1.317590610038173e-06,
+              "passes": true,
+              "projection_seconds": 0.014946458046324551,
+              "field_seconds": 0.000956850009970367
+            }
+          },
+          "max_probability_error": 0.0004561164230711956,
+          "max_variance_error_over_prior": 4.722133398819012e-05,
+          "minimum_variance": 1.317590610038173e-06,
+          "passes": true,
+          "query_seconds": [
+            0.0011249299859628081,
+            0.0008985199965536594,
+            0.0008388900896534324,
+            0.0008458299562335014,
+            0.0008476990042254329,
+            0.0008501899428665638,
+            0.0008354700403288007,
+            0.0008470300817862153,
+            0.000832119956612587,
+            0.0008403100073337555,
+            0.0008433799957856536,
+            0.0008439900120720267,
+            0.0008353099692612886,
+            0.0008509899489581585,
+            0.0008314599981531501,
+            0.0008351400028914213
+          ],
+          "total_seconds": 11.854353365837596
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_robustness/partial/seed233/sdd/77824-eta0.15-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

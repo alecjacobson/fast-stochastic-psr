@@ -1,0 +1,270 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_robustness/extension/references/196608.json",
+    "output": "reproduction/results/hierarchical_robustness/extension/sdd/196608.json",
+    "eta": [
+      0.15
+    ],
+    "batch": 128,
+    "order": 4,
+    "cross_tolerance": 1e-06,
+    "application_reference": "reproduction/results/hierarchical_robustness/extension/tight-field.json",
+    "checkpoints": [
+      8192,
+      16384,
+      32768,
+      65536,
+      98304,
+      131072
+    ],
+    "budget": 150.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 196608,
+    "seed": 89,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 8,
+    "scan": "front",
+    "normal_noise": 0.005,
+    "order": 4,
+    "cross_tolerance": 1e-06
+  },
+  "solve_rank": 43,
+  "compression_seconds": 2.653497669962235,
+  "common_runtime_initialization_seconds": 0.2817161380080506,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "893faf2ce5bb9e2ecd608a29564ca9d738331de46a62a50cf5ed5ea79266e76b",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "3bd290ecc67c156ebd959a316a109e69d9315ef337801942b26dc1c78ecdcc15",
+    "reproduction/benchmark_hierarchical_variance.py": "5b46e781e22644da9580d383073e16b6a73fc0540751ac1b8961fc339872038c"
+  },
+  "configurations": [
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 9.765624999999999e-05,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.7253392949933186,
+      "history": [
+        {
+          "iterations": 8192,
+          "solve_seconds": 12.975856028031558,
+          "preparation_seconds": 16.398118636920117,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.002507037100657472,
+              "max_variance_error_over_prior": 9.52519584907576e-05,
+              "minimum_variance": 1.3170783775802742e-06,
+              "passes": false,
+              "projection_seconds": 0.04217079491354525,
+              "field_seconds": 0.00125484901946038
+            },
+            "mean_corrected": {
+              "max_probability_error": 0.03377571219111508,
+              "max_variance_error_over_prior": 9.52519584907576e-05,
+              "minimum_variance": 1.3170783775802742e-06,
+              "passes": false,
+              "projection_seconds": 13.82789359788876,
+              "field_seconds": 0.0009493499528616667
+            },
+            "corrected": {
+              "max_probability_error": 0.04206388120793858,
+              "max_variance_error_over_prior": 0.042710383693104155,
+              "minimum_variance": 1.4092084047702053e-06,
+              "passes": false,
+              "projection_seconds": 25.62075658305548,
+              "field_seconds": 0.0009790899930521846
+            }
+          },
+          "max_probability_error": 0.002507037100657472,
+          "max_variance_error_over_prior": 9.52519584907576e-05,
+          "minimum_variance": 1.3170783775802742e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 25.866165705025196,
+          "preparation_seconds": 29.28961625508964,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0008374858167072841,
+              "max_variance_error_over_prior": 4.1824999770590396e-05,
+              "minimum_variance": 1.317207877509339e-06,
+              "passes": false,
+              "application_max_probability_error": 0.005888121259586876,
+              "application_max_variance_error_over_prior": 2.593960318476367e-05,
+              "application_queries": 1048576,
+              "projection_seconds": 0.0433924850076437,
+              "field_seconds": 0.0012211001012474298
+            },
+            "mean_corrected": {
+              "max_probability_error": 0.021779460711719656,
+              "max_variance_error_over_prior": 4.1824999770590396e-05,
+              "minimum_variance": 1.317207877509339e-06,
+              "passes": false,
+              "projection_seconds": 13.80323433096055,
+              "field_seconds": 0.0009617699543014169
+            },
+            "corrected": {
+              "max_probability_error": 0.027550929279634095,
+              "max_variance_error_over_prior": 0.0295190821294696,
+              "minimum_variance": 1.380826552486563e-06,
+              "passes": false,
+              "projection_seconds": 25.606251194956712,
+              "field_seconds": 0.0011764399241656065
+            }
+          },
+          "max_probability_error": 0.0008374858167072841,
+          "max_variance_error_over_prior": 4.1824999770590396e-05,
+          "minimum_variance": 1.317207877509339e-06,
+          "passes": false,
+          "application_max_probability_error": 0.005888121259586876,
+          "application_max_variance_error_over_prior": 2.593960318476367e-05,
+          "application_queries": 1048576
+        },
+        {
+          "iterations": 32768,
+          "solve_seconds": 51.6313984420849,
+          "preparation_seconds": 55.054528831038624,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0007722348379151089,
+              "max_variance_error_over_prior": 3.837885206554313e-05,
+              "minimum_variance": 1.3172555019131997e-06,
+              "passes": false,
+              "application_max_probability_error": 0.004650528227239437,
+              "application_max_variance_error_over_prior": 1.761590305067738e-05,
+              "application_queries": 1048576,
+              "projection_seconds": 0.04333591496106237,
+              "field_seconds": 0.0009575090371072292
+            },
+            "mean_corrected": {
+              "max_probability_error": 0.012800256135921395,
+              "max_variance_error_over_prior": 3.837885206554313e-05,
+              "minimum_variance": 1.3172555019131997e-06,
+              "passes": false,
+              "projection_seconds": 13.801466840901412,
+              "field_seconds": 0.0010837200097739697
+            },
+            "corrected": {
+              "max_probability_error": 0.016357101297086785,
+              "max_variance_error_over_prior": 0.018133072251790085,
+              "minimum_variance": 1.3564096460241221e-06,
+              "passes": false,
+              "projection_seconds": 25.60161152505316,
+              "field_seconds": 0.001042800024151802
+            }
+          },
+          "max_probability_error": 0.0007722348379151089,
+          "max_variance_error_over_prior": 3.837885206554313e-05,
+          "minimum_variance": 1.3172555019131997e-06,
+          "passes": false,
+          "application_max_probability_error": 0.004650528227239437,
+          "application_max_variance_error_over_prior": 1.761590305067738e-05,
+          "application_queries": 1048576
+        },
+        {
+          "iterations": 65536,
+          "solve_seconds": 103.13609060714953,
+          "preparation_seconds": 106.55922933702823,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00045243241998904615,
+              "max_variance_error_over_prior": 3.3116352721450476e-05,
+              "minimum_variance": 1.3172567770979857e-06,
+              "passes": false,
+              "application_max_probability_error": 0.0015888063819819997,
+              "application_max_variance_error_over_prior": 1.2520827228334586e-05,
+              "application_queries": 1048576,
+              "projection_seconds": 0.04337122500874102,
+              "field_seconds": 0.000930539914406836
+            },
+            "mean_corrected": {
+              "max_probability_error": 0.005340675974293774,
+              "max_variance_error_over_prior": 3.3116352721450476e-05,
+              "minimum_variance": 1.3172567770979857e-06,
+              "passes": false,
+              "projection_seconds": 13.800503632053733,
+              "field_seconds": 0.0009331590263172984
+            },
+            "corrected": {
+              "max_probability_error": 0.006906024260662225,
+              "max_variance_error_over_prior": 0.007991978719022264,
+              "minimum_variance": 1.3345084652486605e-06,
+              "passes": false,
+              "projection_seconds": 25.596648895996623,
+              "field_seconds": 0.000934349955059588
+            }
+          },
+          "max_probability_error": 0.00045243241998904615,
+          "max_variance_error_over_prior": 3.3116352721450476e-05,
+          "minimum_variance": 1.3172567770979857e-06,
+          "passes": false,
+          "application_max_probability_error": 0.0015888063819819997,
+          "application_max_variance_error_over_prior": 1.2520827228334586e-05,
+          "application_queries": 1048576
+        },
+        {
+          "iterations": 95488,
+          "solve_seconds": 150.21976063819602,
+          "preparation_seconds": 153.64254816714674,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0006024623032351295,
+              "max_variance_error_over_prior": 4.7988297845500164e-05,
+              "minimum_variance": 1.3171949066963718e-06,
+              "passes": false,
+              "application_max_probability_error": 0.0016155437996788757,
+              "application_max_variance_error_over_prior": 3.0296347804500247e-05,
+              "application_queries": 1048576,
+              "projection_seconds": 0.04300630500074476,
+              "field_seconds": 0.000944258994422853
+            },
+            "mean_corrected": {
+              "max_probability_error": 0.0024621837423436377,
+              "max_variance_error_over_prior": 4.7988297845500164e-05,
+              "minimum_variance": 1.3171949066963718e-06,
+              "passes": false,
+              "projection_seconds": 13.799435621011071,
+              "field_seconds": 0.0009256299817934632
+            },
+            "corrected": {
+              "max_probability_error": 0.003259134344250514,
+              "max_variance_error_over_prior": 0.004051248017431229,
+              "minimum_variance": 1.3260242966513265e-06,
+              "passes": false,
+              "projection_seconds": 25.59431592398323,
+              "field_seconds": 0.0009556399891152978
+            }
+          },
+          "max_probability_error": 0.0006024623032351295,
+          "max_variance_error_over_prior": 4.7988297845500164e-05,
+          "minimum_variance": 1.3171949066963718e-06,
+          "passes": false,
+          "application_max_probability_error": 0.0016155437996788757,
+          "application_max_variance_error_over_prior": 3.0296347804500247e-05,
+          "application_queries": 1048576
+        }
+      ],
+      "status": "no passing observed checkpoint within budget"
+    }
+  ],
+  "application_reference_sha256": "fe4e0cdb4aa258f98d7cd076a058d9c3c92f02c9a435a4bd45a7c285bd23a74f"
+}

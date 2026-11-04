@@ -139,6 +139,14 @@ class RegionalVarianceCache:
     """
 
     def __init__(self, posterior, center, halfwidth, order):
+        self._initialize_box(center, halfwidth, order)
+        w = posterior.whitened_cross(self.nodes)
+        self.correction = w.T @ w
+        c = posterior.model.cross_covariance(self.nodes, posterior.points)
+        self.mean_coefficients = np.einsum('mnd,nd->m', c, posterior.alpha)
+        self.prior_variance = posterior.model.prior_variance
+
+    def _initialize_box(self, center, halfwidth, order):
         self.center = np.asarray(center, dtype=float)
         self.halfwidth = np.broadcast_to(np.asarray(halfwidth, dtype=float), (3,)).copy()
         if (self.center.shape != (3,) or not np.isfinite(self.center).all()
@@ -152,11 +160,50 @@ class RegionalVarianceCache:
         self.weights = (-1.)**np.arange(order) * np.sin(theta)
         grid = np.stack(np.meshgrid(*([self.abscissae]*3), indexing='ij'), axis=-1).reshape(-1, 3)
         self.nodes = self.center + self.halfwidth * grid
-        w = posterior.whitened_cross(self.nodes)
-        self.correction = w.T @ w
-        c = posterior.model.cross_covariance(self.nodes, posterior.points)
-        self.mean_coefficients = np.einsum('mnd,nd->m', c, posterior.alpha)
-        self.prior_variance = posterior.model.prior_variance
+
+    @classmethod
+    def from_solver(cls, model, points, vectors, solve, center, halfwidth, order,
+                    compression_tolerance=1e-7, project=None):
+        """Prepare without a dense factor using a reusable multiple-RHS solve.
+
+        Compress the joint three-component node cross matrix before solving.
+        For fixed order, the SVD, reduced Gram and kernel construction are O(N).
+        Accuracy still requires validating both compression and solve errors.
+        No scalar isovalue is fitted here.
+        """
+        from scipy.linalg import svd
+        points, vectors = _points(points), _points(vectors)
+        if points.shape != vectors.shape or not len(points):
+            raise ValueError('points and vectors must have the same nonempty shape')
+        if not 0 < compression_tolerance < 1:
+            raise ValueError('compression_tolerance must lie in (0,1)')
+        cache = cls.__new__(cls)
+        cache._initialize_box(center, halfwidth, order)
+        c = model.cross_covariance(cache.nodes, points)
+        rhs = c.transpose(1, 2, 0).reshape(len(points), -1)
+        u, singular, vt = svd(rhs, full_matrices=False, check_finite=False)
+        rank = int(np.count_nonzero(singular > compression_tolerance*singular[0]))
+        basis = u[:, :rank]
+        coefficients = singular[:rank, None]*vt[:rank]
+        if project is None:
+            solution = solve(basis)
+            gram = basis.T @ solution
+            projected_vectors = solution.T @ vectors
+        else:
+            # A dense baseline can use one triangular solve for [basis, y],
+            # then form both moments from whitened inner products.
+            gram, projected_vectors = project(basis, vectors)
+        gram = .5*(gram+gram.T)
+        r = order**3
+        cache.correction = sum(coefficients[:, d*r:(d+1)*r].T @ gram @
+                               coefficients[:, d*r:(d+1)*r] for d in range(3))
+        cache.mean_coefficients = sum(coefficients[:, d*r:(d+1)*r].T @
+                                      projected_vectors[:, d] for d in range(3))
+        cache.prior_variance = model.prior_variance
+        cache.solve_rank = rank
+        cache.cross_compression_tolerance = compression_tolerance
+        cache.cross_relative_frobenius_error = float(np.linalg.norm(singular[rank:])/np.linalg.norm(singular))
+        return cache
 
     def basis(self, queries):
         x = (_points(queries) - self.center) / self.halfwidth

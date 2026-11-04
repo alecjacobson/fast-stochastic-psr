@@ -154,6 +154,15 @@ application validation and event-level error budgets remain open in
 FMM has no implemented backend or measured speedup. A dense matrix's memory
 requirement alone does not establish that the authors' iterative method is intractable.
 
+A new [non-periodic variance study](reproduction/results/nonperiodic/README.md)
+implements a free-space Poisson–Matérn dense oracle and regional variance
+compression. Small query regions pass numerical gates with 125–343 coefficients;
+a whole-object cache fails. The study also runs the original Sellán–Jacobson
+SPSR full-covariance reference. This changes the model and uses geometry and
+uncertainty quality as future cross-model criteria; periodic pointwise agreement
+is not required. Scalable conditioning and hierarchical variance preparation
+remain open in [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).
+
 [Length-scale validation](reproduction/results/normalization/README.md) corrects
 an inherited Fourier normalization mismatch and preserves an explicit released
 coefficient mode. The .01/.005 flagship settings are unchanged; at length scale

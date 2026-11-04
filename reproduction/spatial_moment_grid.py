@@ -16,11 +16,11 @@ class SpatialMomentGrid:
         self.lower=cp.asarray(lower,dtype='d');self.upper=cp.asarray(upper,dtype='d')
         if self.lower.shape!=(3,) or self.upper.shape!=(3,) or not bool(cp.all(self.upper>self.lower)):
             raise ValueError('invalid bounds')
-        if order not in (1,3):raise ValueError('linear or cubic interpolation required')
+        if order not in (1,3,5):raise ValueError('linear, cubic or quintic interpolation required')
         self.order,self.size=order,values.shape[-1]
         self.periodic=periodic
         self.mode='grid-wrap' if periodic else 'mirror'
-        self.values=cp.stack([spline_filter(v,order=3,mode=self.mode) for v in values]) if order==3 else values
+        self.values=cp.stack([spline_filter(v,order=order,mode=self.mode) for v in values]) if order>1 else values
         self.cache_bytes=self.values.nbytes+self.lower.nbytes+self.upper.nbytes
 
     @classmethod
@@ -36,9 +36,15 @@ class SpatialMomentGrid:
             result[0,start:start+len(ids)]=mean;result[1,start:start+len(ids)]=var
         return cls(result.reshape(2,size,size,size),lower,upper,order,periodic)
 
-    def evaluate(self, points):
+    def coordinates(self,points):
         q=cp.asarray(points,dtype='d')
         if q.ndim!=2 or q.shape[1]!=3 or not bool(cp.isfinite(q).all()):raise ValueError('invalid queries')
         if not bool(cp.all((q>=self.lower)&(q<=self.upper))):raise ValueError('query outside prepared domain')
-        coords=cp.ascontiguousarray(((q-self.lower)/(self.upper-self.lower)*(self.size if self.periodic else self.size-1)).T)
+        return cp.ascontiguousarray(((q-self.lower)/(self.upper-self.lower)*(self.size if self.periodic else self.size-1)).T)
+
+    def evaluate(self, points):
+        coords=self.coordinates(points)
         return tuple(map_coordinates(v,coords,order=self.order,mode=self.mode,prefilter=False) for v in self.values)
+
+    def evaluate_channel(self,points,channel):
+        return map_coordinates(self.values[channel],self.coordinates(points),order=self.order,mode=self.mode,prefilter=False)

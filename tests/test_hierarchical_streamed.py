@@ -37,7 +37,8 @@ def test_streamed_hierarchy_and_blocked_variance_match_cached_actions():
                                      preconditioner_rank=8, neighbors=24, threads=2,
                                      preconditioner_backend='prefix-kd')
     cached = GPUHierarchicalSystem(native)
-    streamed = GPUHierarchicalSystem(native, interaction_budget_bytes=64*1024, rhs_block_size=3)
+    streamed = GPUHierarchicalSystem(native, interaction_budget_bytes=64*1024, rhs_block_size=3, release_native=True)
+    assert native.operator is None and native.preconditioner is None
     assert len(streamed.interactions.chunks) > 1
     assert streamed.interactions.workspace_bytes <= 64*1024
     b = rng.normal(size=(len(x), 7))

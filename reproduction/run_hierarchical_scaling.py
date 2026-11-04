@@ -23,7 +23,7 @@ def main(args):
                        '--output', str(path)]
                 for key in ['lengthscale', 'halfwidth', 'h2_tolerance', 'leaf_size', 'rank', 'neighbors',
                             'variance_refinements', 'seed', 'scan', 'normal_noise', 'sparse_cutoff',
-                            'sparse_builder', 'order', 'cross_tolerance', 'geometry', 'point_cloud', 'cross_block_size', 'preconditioner_backend', 'interaction_budget_mib', 'rhs_block_size']:
+                            'sparse_builder', 'order', 'cross_tolerance', 'geometry', 'point_cloud', 'cross_block_size', 'preconditioner_backend', 'interaction_budget_mib', 'rhs_block_size', 'solve_tolerance']:
                     value = getattr(args, key)
                     if value is not None:
                         cmd += ['--'+key.replace('_', '-'), str(value)]
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--variance-iterations', type=int, default=8)
     parser.add_argument('--timeout', type=float, default=180)
-    for name in ['lengthscale', 'halfwidth', 'h2-tolerance', 'normal-noise', 'sparse-cutoff', 'cross-tolerance']:
+    for name in ['lengthscale', 'halfwidth', 'h2-tolerance', 'normal-noise', 'sparse-cutoff', 'cross-tolerance', 'solve-tolerance']:
         parser.add_argument('--'+name, type=float)
     for name in ['leaf-size', 'rank', 'neighbors', 'variance-refinements', 'seed', 'order', 'cross-block-size', 'interaction-budget-mib', 'rhs-block-size']:
         parser.add_argument('--'+name, type=int)

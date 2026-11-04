@@ -82,6 +82,8 @@ def main():
     old = '                        NULL, need_grad, &ap\n                    );'
     assert section.count(old) == 2
     section = section.replace(old, '                        spatial_tree, need_grad, &ap\n                    );\n                    octree_free(&spatial_tree);')
+    if args.prefix_knn:
+        section = section.replace('int need_grad = 1;', 'int need_grad = 0;')
     source = source[:start] + section + source[end:]
     # Stand-alone prediction does not use kernel hyperparameter derivatives.
     source = source.replace('NULL, kernel_type, 1, (void *) &h2_tol',
@@ -133,6 +135,13 @@ def main():
     ASSERT_PRINTF(pt_dim == 3, "PSR predecessor tree requires three dimensions\\n");
     psr_prefix_knn<VT>(fsai_npt, n, coord, ldc, nn_idx, nn_cnt);
 '''+source[end:]
+    if args.prefix_knn:
+        # malloc(0) can return a non-null pointer; the upstream destructor then
+        # wrongly traverses three unallocated derivative matrices.
+        source = source.replace('dG  = (csr_mat_p *) malloc(sizeof(csr_mat_p) * n_grad);',
+                                'if (n_grad) dG  = (csr_mat_p *) malloc(sizeof(csr_mat_p) * n_grad);')
+        source = source.replace('dGT = (csr_mat_p *) malloc(sizeof(csr_mat_p) * n_grad);',
+                                'if (n_grad) dGT = (csr_mat_p *) malloc(sizeof(csr_mat_p) * n_grad);')
     (root/path).write_text(source)
     site = Path(sysconfig.get_paths()['purelib'])
     if args.blas:
@@ -157,7 +166,9 @@ def main():
           script_args=['build_ext', '--parallel', '4', '--build-lib', str(site)])
     (site/('psr_higp_kd_build.json' if args.prefix_knn else 'psr_higp_build.json')).write_text(json.dumps(dict(
         upstream='https://github.com/huanghua1994/HiGP', commit=PIN, prefix_knn=args.prefix_knn,
-        changes=['AFN rank selection after argument parsing', 'octree neighbor search in AFN setup',
+        changes=['AFN rank selection after argument parsing',
+                 ('exact predecessor kd-tree search; unused standalone AFN derivatives omitted' if args.prefix_knn
+                  else 'octree neighbor search in AFN setup'),
                  'linear adjacency list storage', 'owned H2 and AFN snapshot export',
                  'prediction-only H2 setup omits unused derivative hierarchy'],
         blas=str(blas), source_root=str(root)), indent=2)+'\n')

@@ -16,7 +16,7 @@ from scipy.special import ndtr
 
 from geospsr.nonperiodic import FreeSpacePoissonMatern
 from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem, full_kernel_matmul
-from reproduction.benchmark_hierarchical_variance import data, read_field
+from reproduction.benchmark_hierarchical_variance import data_from_arguments, read_field
 
 
 def audit(path, reference_path, random_queries=32):
@@ -25,6 +25,9 @@ def audit(path, reference_path, random_queries=32):
     contract = {k: a[k] for k in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude',
                                  'relative_noise', 'halfwidth']}
     contract['random_queries'] = random_queries
+    for key, default in [('scan', 'full'), ('normal_noise', 0.)]:
+        if a.get(key, default) != default:
+            contract[key] = a[key]
     refpath = Path(reference_path)
     if refpath.exists():
         reference = json.loads(refpath.read_text())
@@ -32,7 +35,7 @@ def audit(path, reference_path, random_queries=32):
             raise ValueError('reference contract mismatch')
     else:
         start = perf_counter()
-        x, y, _ = data(a['n'], a['seed'], a['geometry'])
+        x, y, _ = data_from_arguments(a)
         model = FreeSpacePoissonMatern(a['lengthscale'], a['amplitude'])
         noise = model.amplitude*a['relative_noise']
         rng = np.random.default_rng(a['seed']+200)
@@ -79,7 +82,7 @@ def audit(path, reference_path, random_queries=32):
                          residual_dtype='float64', seconds=perf_counter()-start,
                          source_sha256={p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in
                            ['reproduction/audit_hierarchical_variance.py', 'geospsr/nonperiodic_dense_gpu.py',
-                            'geospsr/nonperiodic.py']})
+                            'geospsr/nonperiodic.py', 'reproduction/benchmark_hierarchical_variance.py']})
         refpath.parent.mkdir(parents=True, exist_ok=True)
         refpath.write_text(json.dumps(reference, indent=2)+'\n')
     field = read_field(record['field'])

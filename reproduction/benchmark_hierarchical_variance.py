@@ -23,15 +23,28 @@ from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache
 from geospsr.regional_field import PolynomialMomentField
 
 
-def data(n, seed, geometry):
+def data(n, seed, geometry, scan='full', normal_noise=0.):
+    if scan not in ['full', 'front'] or not np.isfinite(normal_noise) or normal_noise < 0:
+        raise ValueError('invalid scan or normal noise')
     rng = np.random.default_rng(seed)
     directions = rng.normal(size=(n, 3))
     directions /= np.linalg.norm(directions, axis=1)[:, None]
+    if scan == 'front':
+        directions[:, 0] = abs(directions[:, 0])
     axes = np.array([1., .8, .6]) if geometry == 'ellipsoid' else np.ones(3)
     points = directions*axes
     vectors = directions/axes
     vectors /= np.linalg.norm(vectors, axis=1)[:, None]
+    if normal_noise:
+        # Additive component noise follows the observation likelihood. Do not
+        # renormalize and thereby silently change that likelihood.
+        vectors += normal_noise*np.random.default_rng(seed+1000).normal(size=(n, 3))
     return points, vectors, axes
+
+
+def data_from_arguments(args):
+    return data(args['n'], args['seed'], args['geometry'],
+                args.get('scan', 'full'), args.get('normal_noise', 0.))
 
 
 def query_batches(args):
@@ -80,13 +93,14 @@ def run(args):
     runtime_seconds = perf_counter()-runtime_start
     del warm, wm, wv, wp, ws
     cp.get_default_memory_pool().free_all_blocks()
-    x, vectors, axes = data(args.n, args.seed, args.geometry)
+    x, vectors, axes = data_from_arguments(vars(args))
     model = FreeSpacePoissonMatern(args.lengthscale, args.amplitude)
     noise = args.amplitude*args.relative_noise
     provenance = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in [
         'geospsr/hierarchical.py', 'geospsr/hierarchical_gpu.py',
         'geospsr/nonperiodic.py', 'geospsr/nonperiodic_dense_gpu.py',
         'geospsr/nonperiodic_dense_cg.py', 'geospsr/native/higp_snapshot.inc',
+        'geospsr/nonperiodic_sparse.py',
         'reproduction/setup_higp.py',
         'geospsr/regional_field.py', 'reproduction/benchmark_hierarchical_variance.py']}
     record = dict(arguments=vars(args), source_sha256=provenance,
@@ -115,6 +129,13 @@ def run(args):
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
                                               mean_tolerance=args.solve_tolerance,
                                               variance_refinements=args.variance_refinements)
+    elif args.method == 'sparse-gpu':
+        from geospsr.nonperiodic_sparse import GPUSparseMaternSystem
+        system = GPUSparseMaternSystem(model, x, noise, cutoff=args.sparse_cutoff,
+                                       rank=args.rank, neighbors=args.neighbors,
+                                       threads=args.threads, seed=args.seed, graph_backend=args.sparse_builder)
+        project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
+                                              mean_tolerance=args.solve_tolerance)
     else:
         from geospsr.hierarchical import HierarchicalMaternSystem
         system = HierarchicalMaternSystem(model, x, noise, tolerance=args.h2_tolerance,
@@ -178,6 +199,9 @@ def run(args):
                           interaction_nnz=system.interaction_nnz)
         elif args.method.startswith('cg-dense'):
             record.update(device_matrix_bytes=system.device_matrix_bytes, matrix_cached=system.matrix_cached)
+        elif args.method == 'sparse-gpu':
+            record.update(device_matrix_bytes=system.device_matrix_bytes,
+                          sparse_diagnostics=system.diagnostics)
     out.write_text(json.dumps(record, indent=2)+'\n')
     print(json.dumps({k: record[k] for k in ['total_seconds', 'preparation_seconds', 'setup_seconds',
                                              'regional_cache_seconds', 'solve_rank']}), flush=True)
@@ -224,10 +248,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--n', type=int, required=True)
     parser.add_argument('--method', choices=['h2-cpu', 'h2-gpu', 'dense-float32', 'dense-float64',
-                                            'cg-dense-float32', 'cg-dense-float64'], required=True)
+                                            'cg-dense-float32', 'cg-dense-float64', 'sparse-gpu'], required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--seed', type=int, default=12)
     parser.add_argument('--geometry', choices=['sphere', 'ellipsoid'], default='ellipsoid')
+    parser.add_argument('--scan', choices=['full', 'front'], default='full')
+    parser.add_argument('--normal-noise', type=float, default=0., help='additive normal component standard deviation')
+    parser.add_argument('--sparse-cutoff', type=float, default=12., help='dimensionless kappa*radius for sparse control')
+    parser.add_argument('--sparse-builder', choices=['gpu', 'cpu'], default='gpu')
     parser.add_argument('--lengthscale', type=float, default=.3)
     parser.add_argument('--amplitude', type=float, default=.0025)
     parser.add_argument('--relative-noise', type=float, default=.01)

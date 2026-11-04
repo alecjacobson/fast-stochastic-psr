@@ -21,7 +21,9 @@ def main(args):
                 cmd = [sys.executable, '-m', 'reproduction.benchmark_hierarchical_variance',
                        '--n', str(n), '--method', method, '--variance-iterations', str(args.variance_iterations),
                        '--output', str(path)]
-                for key in ['lengthscale', 'halfwidth', 'h2_tolerance', 'leaf_size', 'rank', 'neighbors', 'variance_refinements']:
+                for key in ['lengthscale', 'halfwidth', 'h2_tolerance', 'leaf_size', 'rank', 'neighbors',
+                            'variance_refinements', 'seed', 'scan', 'normal_noise', 'sparse_cutoff',
+                            'sparse_builder', 'order', 'cross_tolerance']:
                     value = getattr(args, key)
                     if value is not None:
                         cmd += ['--'+key.replace('_', '-'), str(value)]
@@ -42,9 +44,11 @@ if __name__ == '__main__':
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--variance-iterations', type=int, default=8)
     parser.add_argument('--timeout', type=float, default=180)
-    for name in ['lengthscale', 'halfwidth', 'h2-tolerance']:
+    for name in ['lengthscale', 'halfwidth', 'h2-tolerance', 'normal-noise', 'sparse-cutoff', 'cross-tolerance']:
         parser.add_argument('--'+name, type=float)
-    for name in ['leaf-size', 'rank', 'neighbors', 'variance-refinements']:
+    for name in ['leaf-size', 'rank', 'neighbors', 'variance-refinements', 'seed', 'order']:
         parser.add_argument('--'+name, type=int)
+    parser.add_argument('--scan', choices=['full', 'front'])
+    parser.add_argument('--sparse-builder', choices=['gpu', 'cpu'])
     parser.add_argument('--output', default='reproduction/results/hierarchical_variance/scaling')
     main(parser.parse_args())

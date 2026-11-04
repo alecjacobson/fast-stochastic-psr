@@ -17,7 +17,7 @@ from scipy.special import ndtr
 from geospsr.hierarchical import HierarchicalMaternSystem
 from geospsr.hierarchical_gpu import GPUHierarchicalSystem
 from geospsr.nonperiodic import FreeSpacePoissonMatern
-from reproduction.benchmark_hierarchical_variance import data
+from reproduction.benchmark_hierarchical_variance import data_from_arguments
 
 
 def main(path, destination):
@@ -25,7 +25,7 @@ def main(path, destination):
     import matplotlib.pyplot as plt
     a = json.loads(Path(path).read_text())['arguments']
     out = Path(destination); out.mkdir(parents=True, exist_ok=True)
-    x, normals, axes = data(a['n'], a['seed'], a['geometry'])
+    x, normals, axes = data_from_arguments(a)
     model = FreeSpacePoissonMatern(a['lengthscale'], a['amplitude'])
     noise = model.amplitude*a['relative_noise']
     radius = np.linspace(.94, 1.06, 301)

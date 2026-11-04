@@ -154,7 +154,7 @@ def run(args):
             variants = dict(standard=dict(quality, projection_seconds=projection_seconds,
                                           field_seconds=finalization_seconds))
             selected = 'standard'
-            if (not quality['passes'] and application_reference is not None and
+            if (args.correction_policy != 'none' and not quality['passes'] and application_reference is not None and
                     quality['max_variance_error_over_prior'] is not None and
                     quality['max_variance_error_over_prior'] <= 1e-4 and
                     quality.get('application_max_variance_error_over_prior', 0.) <= 1e-4):
@@ -173,7 +173,7 @@ def run(args):
                     selected = 'mean_corrected'
             # Correction is optional: it can be more conservative and slower
             # for stochastic iterates with large errors orthogonal to U.
-            if not quality['passes']:
+            if not quality['passes'] and args.correction_policy == 'all':
                 start = perf_counter()
                 residual = full_rhs-full_kernel_matmul(model, x, model.amplitude*a['relative_noise'], z)
                 moment = full_rhs.T@z+z.T@residual
@@ -232,6 +232,8 @@ if __name__ == '__main__':
     parser.add_argument('--application-reference', help='audited moment-cache record for full-query acceptance')
     parser.add_argument('--checkpoints', nargs='+', type=int, default=[128, 512, 2048, 8192])
     parser.add_argument('--budget', type=float, default=45)
+    parser.add_argument('--correction-policy', choices=['all', 'mean', 'none'], default='all',
+                        help='Optional full-kernel corrections; standard SDD moments are always checked first')
     parser.add_argument('--queries', type=int, default=65536)
     parser.add_argument('--batches', type=int, default=16)
     arguments = parser.parse_args()

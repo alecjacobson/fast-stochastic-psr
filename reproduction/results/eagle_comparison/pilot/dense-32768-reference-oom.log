@@ -1,0 +1,45 @@
+common_runtime_excluded 0.07163497898727655
+cross_spectrum 0.025256846100091934
+regional_cross_compression 1.554059665184468
+analytic_matrix_cholesky 3.486933223903179
+solve 0.11288278293795884
+field 0.017272546887397766
+reference_cholesky_excluded 34.041202245047316
+reference_cross_excluded 0.4165962168481201
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 308, in <module>
+    main(a)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 272, in main
+    mr,vr=timed('reference_moments_excluded',direct)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 65, in timed
+    sync(); start = perf_counter(); value = fn(); sync()
+                                            ^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 269, in direct
+    alpha=solve(y);rr=cp.ascontiguousarray(c.transpose(1,0,2).reshape(n,-1))
+          ^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 170, in solve
+    return cla.solve_triangular(chol.T,cla.solve_triangular(chol,cp.asarray(b,dtype=chol.dtype),lower=True),lower=False).astype('d')
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupyx/scipy/linalg/_solve_triangular.py", line 132, in solve_triangular
+    a = cupy.array(a, dtype=dtype, order='F', copy=None)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupy/_creation/from_data.py", line 56, in array
+    return _core.array(obj, dtype, copy, order, subok, ndmin, blocking)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 2821, in cupy._core.core.array
+  File "cupy/_core/core.pyx", line 2832, in cupy._core.core.array
+  File "cupy/_core/core.pyx", line 2855, in cupy._core.core._array_from_cupy_ndarray
+  File "cupy/_core/core.pyx", line 733, in cupy._core.core._ndarray_base._astype
+  File "cupy/_core/core.pyx", line 770, in cupy._core.core._ndarray_base._astype
+  File "cupy/_core/core.pyx", line 176, in cupy._core.core.ndarray.__new__
+  File "cupy/_core/core.pyx", line 282, in cupy._core.core._ndarray_base._init
+  File "cupy/cuda/memory.pyx", line 904, in cupy.cuda.memory.alloc
+  File "cupy/cuda/memory.pyx", line 1614, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1635, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1350, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1376, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+  File "cupy/cuda/memory.pyx", line 1560, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 8,589,934,592 bytes (allocated so far: 17,246,840,320 bytes).

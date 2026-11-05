@@ -227,17 +227,17 @@ def compare_moment_fields(candidate, reference, *, candidate_level=0., reference
 
     queue, finished, serial = [], [], 0
 
-    def insert(poly, depth, bounds):
+    def insert(poly, depth, bounds, path):
         nonlocal serial
         serial += 1
         if acceptable(bounds) or depth >= max_depth:
-            finished.append((depth, bounds))
+            finished.append((depth, bounds, path))
         else:
-            heapq.heappush(queue, (-score(bounds), serial, depth, poly, bounds))
+            heapq.heappush(queue, (-score(bounds), serial, depth, poly, bounds, path))
 
-    insert(polys, 0, initial)
+    insert(polys, 0, initial, [])
     while queue and len(queue)+len(finished) < max_leaves:
-        _, _, depth, parent, _ = heapq.heappop(queue)
+        _, _, depth, parent, _, path = heapq.heappop(queue)
         # Split where the represented functions vary most. This heuristic does
         # not enter the bound, but avoids subdividing inactive coordinates.
         magnitude = np.maximum(np.abs(parent[0]), np.abs(parent[1]))
@@ -247,14 +247,17 @@ def compare_moment_fields(candidate, reference, *, candidate_level=0., reference
         axis = int(np.argmax(variation))
         for side in (-1, 1):
             child = _restrict(parent, axis, side)
-            insert(child, depth+1, _box_bounds(child, prior))
-    leaves = finished + [(item[2], item[4]) for item in queue]
-    aggregate = {k: (None if any(b[k] is None for _, b in leaves) else
-                     (min if k == 'variance_lower_bound' else max)(b[k] for _, b in leaves))
+            insert(child, depth+1, _box_bounds(child, prior), path+[(axis, side)])
+    leaves = finished + [(item[2], item[4], item[5]) for item in queue]
+    aggregate = {k: (None if any(b[k] is None for _, b, _ in leaves) else
+                     (min if k == 'variance_lower_bound' else max)(b[k] for _, b, _ in leaves))
                  for k in initial}
-    return dict(status='bounded' if all(acceptable(b) for _, b in leaves) else 'inconclusive',
+    worst = max(leaves, key=lambda leaf: score(leaf[1]))
+    # The path identifies a box exactly, even past binary64 coordinate precision.
+    return dict(status='bounded' if all(acceptable(b) for _, b, _ in leaves) else 'inconclusive',
                 **aggregate, initial_box_bounds=initial, leaves=len(leaves),
-                deepest_leaf=max(d for d, _ in leaves),
+                deepest_leaf=max(d for d, _, _ in leaves),
+                worst_leaf=dict(subdivision_path=worst[2], bounds=worst[1]),
                 probability_tolerance=probability_tolerance, variance_tolerance=variance_tolerance,
                 scope='Real polynomials represented by the stored binary64 coefficients; '
                       'excludes construction, exact-GP, calibration and query-evaluation error.',

@@ -36,13 +36,16 @@ def main(args):
                          observed_max_probability_error=observed['max_probability_error'],
                          bound_status=bound['status'], probability_error_bound=bound['probability_error_bound'],
                          variance_error_over_prior_bound=bound['variance_error_over_prior_bound'],
+                         worst_leaf_probes=result['worst_leaf_probes'],
                          leaves=bound['leaves'], seconds=result['seconds']))
     summary = dict(comparisons=rows, all_selected_pairs_bounded=all(r['bound_status'] == 'bounded' for r in rows[:-1]),
                    known_failure_not_accepted=rows[-1]['bound_status'] == 'inconclusive',
+                   known_failure_probe_detected=rows[-1]['worst_leaf_probes']['observed_above_tolerance'],
                    interpretation='Whole-box cache agreement, not uniform error to the exact GP. '
                                   'Inconclusive bounds alone do not prove a tolerance violation.')
     (output/'summary.json').write_text(json.dumps(summary, indent=2, allow_nan=False)+'\n')
-    if not summary['all_selected_pairs_bounded'] or not summary['known_failure_not_accepted']:
+    if not all(summary[k] for k in ('all_selected_pairs_bounded', 'known_failure_not_accepted',
+                                   'known_failure_probe_detected')):
         raise RuntimeError('regression expectations not satisfied; inspect saved results')
 
 

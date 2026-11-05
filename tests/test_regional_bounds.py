@@ -37,6 +37,10 @@ def test_negative_variance_is_inconclusive_and_never_clipped():
     assert result['status'] == 'inconclusive'
     assert result['variance_lower_bound'] < 0
     assert result['probability_error_bound'] is None
+    from reproduction.bound_hierarchical_application import inspect_leaf_probes
+    probes = inspect_leaf_probes(result, dict(field=vars(a), level=0.), dict(field=vars(b), level=0.))
+    assert probes['invalid_queries'] == 27
+    assert probes['observed_probability_difference'] is None
 
 
 def test_subdivision_recovers_positive_variance_and_tightens_probability():
@@ -123,6 +127,11 @@ def test_interior_violation_is_not_accepted():
     result = compare_moment_fields(a, b, max_leaves=64)
     assert result['status'] == 'inconclusive'
     assert result['probability_error_bound'] >= ndtr(.02)-.5 > .001
+    from reproduction.bound_hierarchical_application import inspect_leaf_probes
+    observed = inspect_leaf_probes(result, dict(field=vars(a), level=0.),
+                                   dict(field=vars(b), level=0.))
+    assert observed['observed_above_tolerance']
+    assert abs(observed['normalized_probe'][0]) < .5
 
 
 def test_exponential_enclosure_against_high_precision():

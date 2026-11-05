@@ -78,6 +78,13 @@ variance. A conservative or near-threshold case can consume the leaf budget.
 This is a validation primitive for issues #79/#83/#93, not yet an automatic
 production stopping rule or a proof of the solver's asymptotic complexity.
 
+For a padded degree array with side length \(d\) and \(L\) partition leaves,
+the current tensor restriction implementation takes \(O(Ld^4)\) arithmetic and
+at most \(O(Ld^3)\) working storage. A single-box coefficient bound costs
+\(O(d^3)\). These costs exclude cache construction and use fixed-dimensional
+three-dimensional boxes. They do not imply that the required degree or number
+of leaves stays constant for arbitrary growing datasets or query regions.
+
 ## Reproduction
 
 From the repository root:

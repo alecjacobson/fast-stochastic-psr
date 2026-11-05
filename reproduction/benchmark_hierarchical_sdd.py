@@ -16,7 +16,7 @@ from scipy.linalg import svd
 from scipy.special import ndtr
 
 from geospsr.iterative import StochasticDualDescent
-from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache
+from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache, compress_cross_covariance
 from geospsr.nonperiodic_dense_gpu import full_kernel_matmul
 from geospsr.regional_field import PolynomialMomentField
 from reproduction.benchmark_hierarchical_variance import data_from_arguments, query_batches, save_field, read_field
@@ -44,6 +44,8 @@ def run(args):
     if args.application_reference:
         application_reference = json.loads(Path(args.application_reference).read_text())
         other = application_reference['arguments']
+        if a.get('point_cloud_sha256') != other.get('point_cloud_sha256'):
+            raise ValueError('application reference point cloud mismatch')
         for key in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude', 'relative_noise', 'halfwidth']:
             if a[key] != other[key]:
                 raise ValueError(f'application reference mismatch: {key}')
@@ -65,11 +67,8 @@ def run(args):
     runtime_initialization = perf_counter()-start
     del warm, wm, wv, wp, ws
     begin = perf_counter()
-    c = model.cross_covariance(cache.nodes, x)
-    rhs = c.transpose(1, 2, 0).reshape(len(x), -1)
-    u, s, vt = svd(rhs, full_matrices=False, check_finite=False)
-    rank = int(np.count_nonzero(s > args.cross_tolerance*s[0]))
-    u, coefficients = u[:, :rank], s[:rank, None]*vt[:rank]
+    u, coefficients, cross_error = compress_cross_covariance(model, x, cache.nodes, args.cross_tolerance, args.cross_block_size)
+    rank = u.shape[1]
     compression_seconds = perf_counter()-begin
     full_rhs = np.column_stack((u, y))
     rhs = full_rhs.astype(np.float32)
@@ -131,7 +130,7 @@ def run(args):
         begin = perf_counter()
         solver = StochasticDualDescent(jnp.asarray(x, dtype=jnp.float32), jnp.asarray(rhs), kernel,
                     noise_variance=a['relative_noise'], batch=args.batch,
-                    lr=eta*args.batch/len(x), seed=a['seed'], momentum=.9, polyak=.01)
+                    lr=eta*args.batch/len(x), seed=a['seed'], momentum=.9, polyak=.01, sampling=args.sampling)
         solver.compile()
         compile_seconds = perf_counter()-begin
         config = dict(eta=eta, batch=args.batch, learning_rate=eta*args.batch/len(x),
@@ -155,7 +154,7 @@ def run(args):
             variants = dict(standard=dict(quality, projection_seconds=projection_seconds,
                                           field_seconds=finalization_seconds))
             selected = 'standard'
-            if (not quality['passes'] and application_reference is not None and
+            if (args.correction_policy != 'none' and not quality['passes'] and application_reference is not None and
                     quality['max_variance_error_over_prior'] is not None and
                     quality['max_variance_error_over_prior'] <= 1e-4 and
                     quality.get('application_max_variance_error_over_prior', 0.) <= 1e-4):
@@ -174,7 +173,7 @@ def run(args):
                     selected = 'mean_corrected'
             # Correction is optional: it can be more conservative and slower
             # for stochastic iterates with large errors orthogonal to U.
-            if not quality['passes']:
+            if not quality['passes'] and args.correction_policy == 'all':
                 start = perf_counter()
                 residual = full_rhs-full_kernel_matmul(model, x, model.amplitude*a['relative_noise'], z)
                 moment = full_rhs.T@z+z.T@residual
@@ -227,11 +226,15 @@ if __name__ == '__main__':
     parser.add_argument('--output', required=True)
     parser.add_argument('--eta', nargs='+', type=float, default=[.03, .1])
     parser.add_argument('--batch', type=int, default=128)
+    parser.add_argument('--sampling', choices=['permutation', 'rejection'], default='permutation')
     parser.add_argument('--order', type=int, default=4)
+    parser.add_argument('--cross-block-size', type=int)
     parser.add_argument('--cross-tolerance', type=float, default=1e-4)
     parser.add_argument('--application-reference', help='audited moment-cache record for full-query acceptance')
     parser.add_argument('--checkpoints', nargs='+', type=int, default=[128, 512, 2048, 8192])
     parser.add_argument('--budget', type=float, default=45)
+    parser.add_argument('--correction-policy', choices=['all', 'mean', 'none'], default='all',
+                        help='Optional full-kernel corrections; standard SDD moments are always checked first')
     parser.add_argument('--queries', type=int, default=65536)
     parser.add_argument('--batches', type=int, default=16)
     arguments = parser.parse_args()

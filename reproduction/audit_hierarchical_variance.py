@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import itertools
 import json
+import sys
 from pathlib import Path
 from time import perf_counter
 
@@ -19,12 +20,42 @@ from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem, full_kernel_matm
 from reproduction.benchmark_hierarchical_variance import data_from_arguments, read_field
 
 
-def audit(path, reference_path, random_queries=32):
+def corrected_reference_moments(rhs, solution, residual, prior_variance, noise):
+    """Full-kernel residual bounds for variance and two-sided mean correction.
+
+    For R=C-AZ and S=Y-AW, mean error is RᵀA⁻¹S. This avoids
+    multiplying the cross residual by the much larger unconditioned Y norm.
+    """
+    count = (rhs.shape[1]-3)//3
+    c, z, r = rhs[:, :-3], solution[:, :-3], residual[:, :-3]
+    w, ry = solution[:, -3:], residual[:, -3:]
+    reduction = (np.einsum('ij,ij->j', z, c)+np.einsum('ij,ij->j', z, r)).reshape(3, count).sum(axis=0)
+    variance = prior_variance-reduction
+    r2 = np.einsum('ij,ij->j', r, r).reshape(3, count)
+    variance_bound = r2.sum(axis=0)/noise
+    moments = c.T@w+z.T@ry
+    mean = sum(moments[d*count:(d+1)*count, d] for d in range(3))
+    mean_bound = (np.sqrt(r2)*np.linalg.norm(ry, axis=0)[:, None]/noise).sum(axis=0)
+    return mean, variance, mean_bound, variance_bound
+
+
+def probability_allowance(mean, variance, mean_bound, variance_bound):
+    if np.any(variance-variance_bound <= 0):
+        return np.full(len(mean), float('inf'))
+    reference = ndtr((mean[-1]-mean)/np.sqrt(variance))
+    endpoints = [ndtr((mean[-1]-mean+sign*(mean_bound[-1]+mean_bound))/np.sqrt(variance-side*variance_bound))
+                 for sign in [-1, 1] for side in [0, 1]]
+    return np.max(abs(np.asarray(endpoints)-reference), axis=0)
+
+
+def audit(path, reference_path, random_queries=32, reference_preconditioner='native'):
     record = json.loads(Path(path).read_text())
     a = record['arguments']
     contract = {k: a[k] for k in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude',
                                  'relative_noise', 'halfwidth']}
     contract['random_queries'] = random_queries
+    if a.get('point_cloud'):
+        contract.update(point_cloud=a['point_cloud'], point_cloud_sha256=a['point_cloud_sha256'])
     for key, default in [('scan', 'full'), ('normal_noise', 0.)]:
         if a.get(key, default) != default:
             contract[key] = a[key]
@@ -41,40 +72,52 @@ def audit(path, reference_path, random_queries=32):
         rng = np.random.default_rng(a['seed']+200)
         q = [1, 0, 0]+a['halfwidth']*np.vstack((rng.uniform(-1, 1, (random_queries, 3)),
                     np.array(list(itertools.product([-1., 1.], repeat=3))), np.zeros((1, 3))))
-        c = model.cross_covariance(q, x)
-        rhs = c.transpose(1, 2, 0).reshape(len(x), -1)
+        # Direct cross kernels, without regional interpolation/compression;
+        # bounded temporary storage also works for multi-million-point inputs.
+        rhs = np.empty((len(x), 3*len(q)+3))
+        for first in range(0, len(x), 8192):
+            last = min(first+8192, len(x))
+            cross = model.cross_covariance(q, x[first:last])
+            rhs[first:last, :-3] = cross.transpose(1, 2, 0).reshape(last-first, -1)
+        rhs[:, -3:] = y
         if a['n'] <= 73728:
             system = GPUDenseMaternSystem(model, x, noise, dtype='float64' if a['n'] <= 16384 else 'float32')
-            z = system.refined_solve(rhs, tolerance=1e-10, max_steps=6)
-            refinement = system.refinement_info
+            solve = system.solve
             producer = 'dense '+str(system.dtype)
         else:
             from geospsr.hierarchical import HierarchicalMaternSystem
             from geospsr.hierarchical_gpu import GPUHierarchicalSystem
             system = GPUHierarchicalSystem(HierarchicalMaternSystem(
-                model, x, noise, tolerance=1e-7, leaf_size=100, preconditioner_rank=50, neighbors=40))
-            z = system.solve(rhs, tolerance=1e-9)
-            norms = np.linalg.norm(rhs, axis=0)
-            for step in range(6):
-                r = rhs-full_kernel_matmul(model, x, noise, z)
-                relative = np.linalg.norm(r, axis=0)/norms
-                if np.all(relative < 1e-10):
-                    break
-                z += system.solve(r, tolerance=1e-9)
-            else:
-                raise RuntimeError('full-kernel reference refinement failed')
-            refinement = dict(steps=step, relative_residuals=relative.tolist())
-            producer = 'H2-initialized; refined and audited with full float64 kernel'
-        residual = rhs-full_kernel_matmul(model, x, noise, z)
-        # Q - (2 C^T Z - Z^T A Z) = R^T A^-1 R >= 0.
-        # A >= noise*I gives a computable absolute variance error bound.
-        correction = np.sum(z*(rhs+residual), axis=0).reshape(3, len(q)).sum(axis=0)
-        variance = model.prior_variance-correction
-        variance_bound = (np.sum(residual*residual, axis=0)/noise).reshape(3, len(q)).sum(axis=0)
-        mean = np.sum(z.reshape(len(x), 3, len(q))*y[:, :, None], axis=(0, 1))
-        # Cauchy-Schwarz in the A^-1 norm, using A >= noise*I.
-        mean_bound = (np.linalg.norm(residual, axis=0).reshape(3, len(q))*
-                      np.linalg.norm(y, axis=0)[:, None]/noise).sum(axis=0)
+                model, x, noise, tolerance=1e-7, leaf_size=100, preconditioner_rank=50, neighbors=40,
+                preconditioner_backend=reference_preconditioner), interaction_budget_bytes=256*2**20,
+                rhs_block_size=16 if a['n'] > 1048576 else None, release_native=True)
+            solve = lambda b: system.solve(b, tolerance=1e-7)
+            producer = 'Streamed H2 initializer; full-float64-kernel residual certification; '+reference_preconditioner
+        print(json.dumps(dict(reference_phase='initializer ready', elapsed_seconds=perf_counter()-start)),
+              file=sys.stderr, flush=True)
+        z = solve(rhs)
+        initial_solve_info = getattr(system, 'last_solve', None)
+        print(json.dumps(dict(reference_phase='initial solve complete', elapsed_seconds=perf_counter()-start)),
+              file=sys.stderr, flush=True)
+        norms = np.linalg.norm(rhs, axis=0)
+        history = []
+        for step in range(6):
+            residual = rhs-full_kernel_matmul(model, x, noise, z)
+            mean, variance, mean_bound, variance_bound = corrected_reference_moments(
+                rhs, z, residual, model.prior_variance, noise)
+            allowance = probability_allowance(mean, variance, mean_bound, variance_bound)
+            history.append(dict(step=step, max_probability_bound=float(allowance.max()),
+                                max_variance_bound_over_prior=float(variance_bound.max()/model.prior_variance)))
+            print(json.dumps(dict(reference_step=step, elapsed_seconds=perf_counter()-start, **history[-1])),
+                  file=sys.stderr, flush=True)
+            if allowance.max() <= 1e-5 and variance_bound.max()/model.prior_variance <= 1e-7:
+                break
+            if step == 5:
+                raise RuntimeError('full-kernel reference output bounds failed')
+            z += solve(residual)
+        refinement = dict(steps=step, initializer_solve=initial_solve_info, relative_residuals=(np.linalg.norm(residual, axis=0)/norms).tolist(),
+                          history=history, mean_formula='C^T W + Z^T (Y-AW)',
+                          mean_error_bound='||C-AZ|| * ||Y-AW|| / noise, summed over components')
         reference = dict(contract=contract, queries=q.tolist(), mean=mean.tolist(),
                          variance=variance.tolist(), variance_error_bound=variance_bound.tolist(),
                          mean_error_bound=mean_bound.tolist(), prior_variance=model.prior_variance,
@@ -116,5 +159,6 @@ if __name__ == '__main__':
     parser.add_argument('record')
     parser.add_argument('--reference', required=True)
     parser.add_argument('--random-queries', type=int, default=32)
+    parser.add_argument('--reference-preconditioner', choices=['native', 'prefix-kd'], default='native')
     args = parser.parse_args()
-    audit(args.record, args.reference, args.random_queries)
+    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner)

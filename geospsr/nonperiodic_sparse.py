@@ -61,7 +61,7 @@ extern "C" __global__ void radius_graph(
 '''
 
 
-def _gpu_graph(points, radius):
+def _gpu_graph(points, radius, memory_fraction=.75):
     import cupy as cp
     x = cp.asarray(points)
     bins = cp.floor((x-cp.min(x, axis=0))/radius).astype(cp.int64)
@@ -81,24 +81,27 @@ def _gpu_graph(points, radius):
     kernel(((len(x)+127)//128,), (128,), common+(empty, empty, 0))
     indptr64 = cp.r_[cp.zeros(1, dtype=cp.int64), cp.cumsum(counts, dtype=cp.int64)]
     nnz = int(indptr64[-1])
-    _check_capacity(nnz, len(x))
+    _check_capacity(nnz, len(x), memory_fraction)
     ptr = indptr64.astype(cp.int32)
     columns = cp.empty(nnz, dtype=cp.int32)
     kernel(((len(x)+127)//128,), (128,), common+(ptr, columns, 1))
     return x, permutation, ptr, columns, cp.asnumpy(counts)
 
 
-def _check_capacity(nnz, n):
+def _check_capacity(nnz, n, memory_fraction=.75):
     import cupy as cp
+    if not 0 < memory_fraction < 1:
+        raise ValueError('memory fraction must lie between zero and one')
     if nnz >= 2**31 or n >= 2**31:
         raise ValueError('sparse control requires 32-bit CSR indexing')
-    if nnz*12+(n+1)*4 > .75*cp.cuda.runtime.memGetInfo()[0]:
+    if nnz*12+(n+1)*4 > memory_fraction*cp.cuda.runtime.memGetInfo()[0]:
         raise MemoryError(f'sparse graph requires {nnz*12+(n+1)*4} bytes before solve workspace')
 
 
 class GPUSparseMaternSystem(GPUHierarchicalSystem):
     def __init__(self, model, points, noise_variance, cutoff=12., rank=8,
-                 neighbors=24, threads=4, seed=12, block_size=256, graph_backend='gpu'):
+                 neighbors=24, threads=4, seed=12, block_size=256, graph_backend='gpu',
+                 preconditioner_backend='native', rhs_block_size=None, memory_fraction=.75):
         import cupy as cp
         from cupyx.scipy.sparse import csr_matrix
         if not np.isfinite(cutoff) or cutoff <= 0 or block_size < 1:
@@ -106,21 +109,23 @@ class GPUSparseMaternSystem(GPUHierarchicalSystem):
         start = perf_counter()
         self.native = HierarchicalMaternSystem(model, points, noise_variance,
                                                preconditioner_rank=rank, neighbors=neighbors,
-                                               threads=threads, seed=seed, build_hierarchy=False)
+                                               threads=threads, seed=seed, build_hierarchy=False,
+                                               preconditioner_backend=preconditioner_backend)
         self.model, self.points = model, self.native.points
         self.noise_variance = noise_variance
+        self.rhs_block_size = rhs_block_size
         self.preconditioner_gpu = GPUAFNPreconditioner(self.native.preconditioner)
         preconditioner_seconds = perf_counter()-start
         start = perf_counter()
         radius = cutoff/model.kappa
         n = len(self.points)
         if graph_backend == 'gpu':
-            coordinates, self.permutation, ptr, columns, counts = _gpu_graph(self.points, radius)
+            coordinates, self.permutation, ptr, columns, counts = _gpu_graph(self.points, radius, memory_fraction)
         elif graph_backend == 'cpu':
             tree = cKDTree(self.points)
             counts = tree.query_ball_point(self.points, radius, workers=threads, return_length=True)
             indptr = np.r_[0, np.cumsum(counts, dtype=np.int64)]
-            _check_capacity(int(indptr[-1]), n)
+            _check_capacity(int(indptr[-1]), n, memory_fraction)
             columns = cp.empty(int(indptr[-1]), dtype=cp.int32)
             # Bounded CPU neighbor lists avoid an O(nnz) Python-object peak.
             for first in range(0, n, block_size):
@@ -148,7 +153,7 @@ class GPUSparseMaternSystem(GPUHierarchicalSystem):
         self.device_matrix_bytes = estimated_bytes+self.preconditioner_gpu.nbytes
         self.last_solve = None
         self.diagnostics = dict(cutoff=cutoff, radius=radius, nnz=nnz,
-                                graph_backend=graph_backend,
+                                graph_backend=graph_backend, memory_fraction=memory_fraction,
                                 mean_neighbors=float(counts.mean()), max_neighbors=int(counts.max()),
                                 matrix_bytes=estimated_bytes, preconditioner_seconds=preconditioner_seconds,
                                 graph_seconds=perf_counter()-start,

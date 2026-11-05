@@ -1,0 +1,21 @@
+Set random seed to 12
+Change OpenMP threads to 4
+Init precond done
+Build AFN preconditioner dtype 1
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 318, in <module>
+    run(arguments)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 155, in run
+    system = GPUSparseMaternSystem(model, x, noise, cutoff=args.sparse_cutoff,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic_sparse.py", line 121, in __init__
+    coordinates, self.permutation, ptr, columns, counts = _gpu_graph(self.points, radius)
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic_sparse.py", line 84, in _gpu_graph
+    _check_capacity(nnz, len(x))
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic_sparse.py", line 96, in _check_capacity
+    raise MemoryError(f'sparse graph requires {nnz*12+(n+1)*4} bytes before solve workspace')
+MemoryError: sparse graph requires 18851148484 bytes before solve workspace
+Dealloc precond done

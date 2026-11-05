@@ -1,0 +1,80 @@
+{
+  "command": [
+    "./reproduction/run_env.sh",
+    "-m",
+    "pytest",
+    "tests/test_hierarchical_streamed.py",
+    "tests/test_hierarchical.py",
+    "tests/test_nonperiodic_sparse.py",
+    "tests/test_nonperiodic.py",
+    "tests/test_large_cloud_preparation.py",
+    "tests/test_full_kernel_tiles.py",
+    "tests/test_reference_bounds.py",
+    "tests/test_sdd_subset.py",
+    "tests/test_iterative_reference.py",
+    "tests/test_spectral.py",
+    "tests/test_nufft_batches.py",
+    "tests/test_fourier_gradient_moments.py",
+    "tests/test_posterior.py",
+    "-q"
+  ],
+  "passed": 66,
+  "seconds": 38.92,
+  "warnings": 3,
+  "warning_scope": "Upstream gpytoolbox deprecated NumPy/SciPy imports",
+  "comparisons": [
+    {
+      "path": "eagle/application-sparse-gpu-32768.json",
+      "passes": true,
+      "queries": 1048576
+    },
+    {
+      "path": "eagle/application-dense-float32-32768.json",
+      "passes": true,
+      "queries": 1048576
+    },
+    {
+      "path": "eagle/application-sparse-gpu-77824.json",
+      "passes": true,
+      "queries": 1048576
+    },
+    {
+      "path": "eagle/application-dense-float32-77824.json",
+      "passes": true,
+      "queries": 1048576
+    },
+    {
+      "path": "eagle/application-196608-cut15.json",
+      "passes": true,
+      "queries": 1048576
+    },
+    {
+      "path": "eagle/application-796825.json",
+      "passes": true,
+      "queries": 1048576
+    }
+  ],
+  "scope": "Targeted regression suite and explicit selected-query comparisons; not the entire historical test suite or a fresh full timing replay.",
+  "replay_smoke": {
+    "path": "pilot/replay-smoke",
+    "n": 32768,
+    "methods": [
+      "h2-gpu",
+      "sparse-gpu"
+    ],
+    "fresh_reference": true,
+    "independent_audits_pass": true,
+    "full_query_comparison_pass": true,
+    "queries": 1048576,
+    "scope": "Fresh end-to-end driver smoke replay; timings are not substituted into headline measurements.",
+    "resume_with_fingerprinted_comparisons_passes": true
+  },
+  "regression_code_commit": "9950670a494d3c015c6ff150df307ed4f8f3149c",
+  "recorded_at": "2026-11-05T00:24:39.270436+00:00",
+  "negative_query_variance_rejected": true,
+  "finalization_source_sha256": {
+    "reproduction/compare_hierarchical_application.py": "8074aae4eed42a1df950a2d54e4b931f582e88832ffb9b72e3e76f8156bfb6c8",
+    "reproduction/plot_poissonrecon_large.py": "d27a59c4c722dd691d55fdea435103dbcc26a95c7db39e76eadcf11bcdbb2b22",
+    "reproduction/replay_poissonrecon.py": "35fdea9c0b754bc3b70e3bf5087c1878f99c381855fcf28e1e9ef6d088f1712d"
+  }
+}

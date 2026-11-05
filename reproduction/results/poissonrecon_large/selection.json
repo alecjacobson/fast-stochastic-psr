@@ -1,0 +1,73 @@
+{
+  "description": "Explicit passing timings and required full-query pairs; all full workloads include mean, variance, setup and 1048576 queries.",
+  "series": [
+    {
+      "dataset": "eagle",
+      "method": "H2",
+      "records": [
+        "eagle/tuned/h2-gpu-32768-0.json",
+        "eagle/tuned/h2-gpu-77824-0.json",
+        "eagle/tuned/h2-gpu-196608-0.json",
+        "eagle/eight-large/h2-streamed-796825-0.json"
+      ]
+    },
+    {
+      "dataset": "eagle",
+      "method": "Sparse",
+      "records": [
+        "eagle/tuned/sparse-gpu-32768-0.json",
+        "eagle/tuned/sparse-gpu-77824-0.json",
+        "eagle/cached-control-15/sparse-gpu-196608-0.json",
+        "eagle/large-control/sparse-streamed-796825-0.json"
+      ]
+    },
+    {
+      "dataset": "eagle",
+      "method": "Cholesky",
+      "records": [
+        "eagle/tuned/dense-float32-32768-0.json",
+        "eagle/tuned/dense-float32-77824-0.json"
+      ]
+    },
+    {
+      "dataset": "torso",
+      "method": "H2",
+      "records": [
+        "torso/final/h2-streamed-77824-0.json",
+        "torso/final/h2-streamed-196608-0.json"
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "candidate": "eagle/tuned/h2-gpu-32768-0.json",
+      "baseline": "eagle/tuned/sparse-gpu-32768-0.json",
+      "output": "eagle/application-sparse-gpu-32768.json"
+    },
+    {
+      "candidate": "eagle/tuned/h2-gpu-32768-0.json",
+      "baseline": "eagle/tuned/dense-float32-32768-0.json",
+      "output": "eagle/application-dense-float32-32768.json"
+    },
+    {
+      "candidate": "eagle/tuned/h2-gpu-77824-0.json",
+      "baseline": "eagle/tuned/sparse-gpu-77824-0.json",
+      "output": "eagle/application-sparse-gpu-77824.json"
+    },
+    {
+      "candidate": "eagle/tuned/h2-gpu-77824-0.json",
+      "baseline": "eagle/tuned/dense-float32-77824-0.json",
+      "output": "eagle/application-dense-float32-77824.json"
+    },
+    {
+      "candidate": "eagle/tuned/h2-gpu-196608-0.json",
+      "baseline": "eagle/cached-control-15/sparse-gpu-196608-0.json",
+      "output": "eagle/application-196608-cut15.json"
+    },
+    {
+      "candidate": "eagle/eight-large/h2-streamed-796825-0.json",
+      "baseline": "eagle/large-control/sparse-streamed-796825-0.json",
+      "output": "eagle/application-796825.json"
+    }
+  ]
+}

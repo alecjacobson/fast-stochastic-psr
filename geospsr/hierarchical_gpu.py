@@ -72,14 +72,21 @@ class GPUAFNPreconditioner:
 
 
 class GPUHierarchicalSystem:
-    def __init__(self, native_system):
+    rhs_block_size = None
+
+    def __init__(self, native_system, interaction_budget_bytes=None, rhs_block_size=None,
+                 release_native=False):
         import cupy as cp
         from cupyx.scipy.sparse import csr_matrix as gpu_csr
         self.native = native_system
         self.model = native_system.model
         self.points = native_system.points
         self.noise_variance = native_system.noise_variance
+        self.rhs_block_size = rhs_block_size
         snapshot = native_system.operator.snapshot()
+        if release_native:
+            # snapshot owns its arrays; the GPU route no longer needs CPU actions.
+            native_system.operator = None
         permutation = snapshot['permutation'].ravel()
         self.permutation = cp.asarray(permutation)
         self.inverse_permutation = cp.asarray(np.argsort(permutation))
@@ -165,22 +172,33 @@ class GPUHierarchicalSystem:
                 offset += nc
         indptr = np.cumsum(indptr)
         self.interaction_nnz = int(indptr[-1])
-        if self.augmented_size >= 2**31 or self.interaction_nnz >= 2**31:
+        if self.augmented_size >= 2**31 or (interaction_budget_bytes is None and self.interaction_nnz >= 2**31):
             raise ValueError('this GPU prototype requires 32-bit CSR indexing')
         metadata = np.asarray(metadata, dtype=np.int64)
         tiles = np.r_[0, np.cumsum((metadata[:, 2]*metadata[:, 3]+255)//256)]
-        values = cp.empty(self.interaction_nnz, dtype=cp.float64)
-        columns = cp.empty(self.interaction_nnz, dtype=cp.int32)
-        kernel = cp.RawKernel(_FILL, 'fill')
-        kernel((int(tiles[-1]),), (256,),
-               (cp.asarray(coordinates), cp.asarray(indptr), cp.asarray(tiles),
-                cp.asarray(metadata), len(metadata), self.model.kappa, values, columns))
-        self.interactions = gpu_csr((values, columns, cp.asarray(indptr, dtype=cp.int32)),
-                                    shape=(self.augmented_size, self.augmented_size))
-        self.interactions.has_canonical_format = True
+        if interaction_budget_bytes is None:
+            values = cp.empty(self.interaction_nnz, dtype=cp.float64)
+            columns = cp.empty(self.interaction_nnz, dtype=cp.int32)
+            kernel = cp.RawKernel(_FILL, 'fill')
+            kernel((int(tiles[-1]),), (256,),
+                   (cp.asarray(coordinates), cp.asarray(indptr), cp.asarray(tiles),
+                    cp.asarray(metadata), len(metadata), self.model.kappa, values, columns))
+            self.interactions = gpu_csr((values, columns, cp.asarray(indptr, dtype=cp.int32)),
+                                        shape=(self.augmented_size, self.augmented_size))
+            self.interactions.has_canonical_format = True
+            interaction_bytes = values.nbytes+columns.nbytes+self.interactions.indptr.nbytes
+            self.interaction_workspace_bytes = 0
+        else:
+            from .hierarchical_interactions import StreamedInteractions
+            self.interactions = StreamedInteractions(coordinates, indptr, metadata,
+                                                     self.model.kappa, interaction_budget_bytes)
+            interaction_bytes = self.interactions.nbytes
+            self.interaction_workspace_bytes = self.interactions.workspace_bytes
         self.preconditioner_gpu = GPUAFNPreconditioner(native_system.preconditioner)
-        matrices = [self.interactions]+[t for pair in self.transfers for t in pair]
-        self.device_matrix_bytes = sum(m.data.nbytes+m.indices.nbytes+m.indptr.nbytes for m in matrices)
+        if release_native:
+            native_system.preconditioner = None
+        matrices = [t for pair in self.transfers for t in pair]
+        self.device_matrix_bytes = interaction_bytes+sum(m.data.nbytes+m.indices.nbytes+m.indptr.nbytes for m in matrices)
         self.device_matrix_bytes += self.preconditioner_gpu.nbytes
         self.last_solve = None
         cp.cuda.get_current_stream().synchronize()
@@ -210,6 +228,19 @@ class GPUHierarchicalSystem:
 
     def solve(self, rhs, tolerance=1e-6, max_iterations=500):
         import cupy as cp
+        if self.rhs_block_size and np.ndim(rhs) == 2 and rhs.shape[1] > self.rhs_block_size:
+            outputs, infos = [], []
+            for first in range(0, rhs.shape[1], self.rhs_block_size):
+                x, info = batched_pcg(self.matmul, self.precondition, rhs[:, first:first+self.rhs_block_size],
+                                     tolerance=tolerance, max_iterations=max_iterations, xp=cp)
+                outputs.append(cp.asnumpy(x)); infos.append(info)
+            self.last_solve = dict(converged=all(i['converged'] for i in infos),
+                iterations=sum([i['iterations'] for i in infos], []),
+                relative_residuals=sum([i['relative_residuals'] for i in infos], []),
+                max_iterations=max(i['max_iterations'] for i in infos), tolerance=tolerance)
+            if not self.last_solve['converged']:
+                raise RuntimeError('blocked GPU PCG did not converge')
+            return np.column_stack(outputs)
         x, info = batched_pcg(self.matmul, self.precondition, rhs, tolerance=tolerance,
                              max_iterations=max_iterations, xp=cp)
         self.last_solve = info
@@ -217,13 +248,14 @@ class GPUHierarchicalSystem:
             raise RuntimeError(f'GPU PCG did not converge: {info}')
         return cp.asnumpy(x)
 
-    def project(self, basis, vectors, variance_iterations=5, mean_tolerance=1e-6):
+    def project(self, basis, vectors, variance_iterations=5, mean_tolerance=1e-6, progress=None):
         """Use residual-corrected quadratic forms for approximate variance solves.
 
         For Z≈A^-1 U and R=U-AZ, G=UᵀZ+ZᵀR differs from UᵀA^-1U
         by -RᵀA^-1R. The mean is solved independently. This identity is with
         respect to the represented H2 operator; its kernel approximation error
         must still pass an independent full-kernel accuracy check.
+        An optional progress callback receives completed mean/variance stages.
         """
         import cupy as cp
         u = cp.asarray(basis)
@@ -231,9 +263,31 @@ class GPUHierarchicalSystem:
                                        tolerance=mean_tolerance, xp=cp)
         if not mean_info['converged']:
             raise RuntimeError('mean conditioning did not converge')
-        z, variance_info, residual = batched_pcg(
-            self.matmul, self.precondition, u, tolerance=1e-10,
-            max_iterations=variance_iterations, xp=cp, return_residual=True)
+        if progress:
+            progress(dict(phase='mean complete', iterations=mean_info['iterations']))
+        if self.rhs_block_size and u.shape[1] > self.rhs_block_size:
+            z, residual = cp.empty_like(u), cp.empty_like(u)
+            infos = []
+            for first in range(0, u.shape[1], self.rhs_block_size):
+                stop = min(first+self.rhs_block_size, u.shape[1])
+                z[:, first:stop], info, residual[:, first:stop] = batched_pcg(
+                    self.matmul, self.precondition, u[:, first:stop], tolerance=1e-10,
+                    max_iterations=variance_iterations, xp=cp, return_residual=True)
+                infos.append(info)
+                if progress:
+                    progress(dict(phase='variance block complete', first=first, stop=stop,
+                                  iterations=info['max_iterations']))
+            variance_info = dict(converged=all(i['converged'] for i in infos),
+                                 iterations=sum([i['iterations'] for i in infos], []),
+                                 relative_residuals=sum([i['relative_residuals'] for i in infos], []),
+                                 max_iterations=max(i['max_iterations'] for i in infos), tolerance=1e-10,
+                                 rhs_block_size=self.rhs_block_size)
+        else:
+            z, variance_info, residual = batched_pcg(
+                self.matmul, self.precondition, u, tolerance=1e-10,
+                max_iterations=variance_iterations, xp=cp, return_residual=True)
+            if progress:
+                progress(dict(phase='variance complete', iterations=variance_info['max_iterations']))
         gram = u.T@z+z.T@residual
         gram = .5*(gram+gram.T)
         self.last_solve = dict(mean=mean_info, variance=variance_info,

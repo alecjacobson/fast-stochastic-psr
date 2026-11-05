@@ -6,6 +6,7 @@ an analytic Laplace FMM and does not approximate the Poisson kernel by wrapping.
 Build the pinned extension with reproduction/setup_higp.py.
 """
 import numpy as np
+from time import perf_counter
 
 from .nonperiodic import _points
 
@@ -13,8 +14,13 @@ from .nonperiodic import _points
 class HierarchicalMaternSystem:
     def __init__(self, model, points, noise_variance, tolerance=1e-8,
                  preconditioner_rank=50, neighbors=40, threads=4, seed=12,
-                 leaf_size=400, build_hierarchy=True):
-        import psr_higp_cext as native
+                 leaf_size=400, build_hierarchy=True, preconditioner_backend='native'):
+        if preconditioner_backend == 'native':
+            import psr_higp_cext as native
+        elif preconditioner_backend == 'prefix-kd':
+            import psr_higp_kd_cext as native
+        else:
+            raise ValueError('unknown preconditioner backend')
         self.model = model
         self.points = _points(points).copy()
         n = len(self.points)
@@ -30,10 +36,16 @@ class HierarchicalMaternSystem:
         kw = dict(data=self.coordinates, kernel_type=2, l=model.lengthscale,
                   f=np.sqrt(model.amplitude), s=self.noise_variance,
                   nthreads=int(threads), seed=int(seed))
+        start = perf_counter()
         self.operator = (native.krnlmat.setup(**kw, use_h2=1, h2_tol=tolerance,
                                              h2_leaf_nmax=int(leaf_size)) if build_hierarchy else None)
+        hierarchy_seconds = perf_counter()-start
+        start = perf_counter()
         self.preconditioner = native.precond.setup_afn(
             **kw, rank=min(int(preconditioner_rank), n-1), lfil=min(int(neighbors), n-1))
+        self.setup_timings = dict(hierarchy_seconds=hierarchy_seconds,
+                                  preconditioner_seconds=perf_counter()-start,
+                                  preconditioner_backend=preconditioner_backend)
         self.last_solve = None
 
     def _apply(self, native_operator, value):

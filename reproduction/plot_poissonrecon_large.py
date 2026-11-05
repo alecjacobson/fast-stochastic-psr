@@ -15,12 +15,22 @@ def main(root):
     fig, panels = plt.subplots(2, 2, figsize=(11, 8))
     axes = panels.ravel()
     summary = []
+    hardware = None
     colors = {'H2': '#1764a2', 'Sparse': '#c14c25', 'H2 cached': '#1764a2', 'H2 streamed': '#17a2a0',
               'Sparse cached': '#d18119', 'Sparse streamed': '#c14c25', 'Cholesky': '#777777'}
     for group in selection['series']:
         records = [json.loads((root/p).read_text()) for p in group['records']]
         if not all(d.get('independent_audit', {}).get('passes') for d in records):
             raise ValueError('Selected timing series contains an unaudited or failed record')
+        for d in records:
+            current = tuple(d[k] for k in ['device', 'device_memory_bytes', 'cpu_quota', 'host_memory_limit'])
+            if hardware is None:
+                hardware = current
+            if current != hardware:
+                raise ValueError('Selected measurements use different hardware contracts')
+            if (d['arguments']['geometry'] != group['dataset'] or
+                    d['arguments']['queries']*d['arguments']['batches'] != 1048576):
+                raise ValueError('Selected dataset/query contract does not match the plot')
         records.sort(key=lambda d: d['arguments']['n'])
         n = np.array([d['arguments']['n'] for d in records])
         times = [d['total_seconds'] for d in records]

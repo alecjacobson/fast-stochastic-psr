@@ -62,7 +62,7 @@ tracks this separately; increasing bandwidth can only add another scaling
 constraint to the current timings.
 
 The global Cholesky–NUFFT variance route uses **float64 FFT work** in the final
-fixed-setting series: 21.86 s at N=2,048 and 88.40 s at N=8,192. Both pass the
+fixed-setting series: 21.81 s at N=2,048 and 88.37 s at N=8,192. Both pass the
 numerical/full-query checks; it is already slower than H² at the overlapping
 8k size, so this series stops there. The faster float32 FFT trials are retained
 in [hybrid-float32](hybrid-float32): variance error/prior is 1.063e-4 at 8k and

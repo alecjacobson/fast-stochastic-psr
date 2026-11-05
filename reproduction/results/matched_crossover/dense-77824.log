@@ -1,0 +1,40 @@
+common_runtime_excluded 0.060380202950909734
+cross_spectrum 0.02377297799102962
+regional_cross_compression 3.1687020799145103
+matrix_construction 0.10613350803032517
+cholesky_factorization 8.670425695134327
+solve 0.1326329552102834
+field 0.02318960684351623
+CUDA error at /project/src/cuda/memtransfer_wrapper.cu:343 code=2(cudaErrorMemoryAllocation) "cudaMallocWrapper( &d_plan->fw, maxbatchsize * nf1 * nf2 * nf3 * sizeof(cuda_complex<T>), stream, d_plan->supports_pools)" 
+[allocgpumem3d_plan] error:unrecognized error code
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 437, in <module>
+    main(a)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 368, in main
+    c=timed('reference_cross_excluded',lambda:cp.asarray(model.cross_covariance(qcheck,x)))
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 83, in timed
+    sync(); start = perf_counter(); value = fn(); sync()
+                                            ^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 368, in <lambda>
+    c=timed('reference_cross_excluded',lambda:cp.asarray(model.cross_covariance(qcheck,x)))
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 180, in cross_covariance
+    values.append(cp.asnumpy(op.cross_values(delta.reshape(-1,3))).reshape(-1,len(points),3))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/spectral.py", line 105, in cross_values
+    return self.evaluate(differences,coefficients).T
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/spectral.py", line 81, in evaluate
+    return self.plan(2,points,len(coefficients)).execute(coefficients).real
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/spectral.py", line 60, in plan
+    plan = cufinufft.Plan(kind,self.shape,n_trans=n_trans,eps=self.eps,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 152, in __init__
+    self._init_plan()
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cufinufft/_plan.py", line 219, in _init_plan
+    raise RuntimeError('Error creating plan.')
+RuntimeError: Error creating plan.

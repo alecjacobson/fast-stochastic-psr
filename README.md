@@ -222,6 +222,10 @@ coarse scale, original SPSR and H² have similar local held-out surface error,
 but different uncertainty widths. Finer matched original grids reach host
 memory limits. The report includes mean-and-variance timings, probability
 profiles and explicit bandwidth/calibration limitations.
+The [larger-N continuation](reproduction/results/matched_crossover/README.md)
+finds dense GeoSPR still faster at 77,824 points, followed by a matrix allocation
+failure at 81,920. H² continues to 196,608 with stricter accuracy settings; this
+establishes a capacity advantage, not an observed dense/H² runtime crossover.
 
 The [regional accuracy follow-up](reproduction/results/regional_accuracy/README.md)
 bounds agreement of all six selected Eagle cache pairs over the entire query

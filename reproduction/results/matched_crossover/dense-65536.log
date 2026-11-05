@@ -1,0 +1,26 @@
+common_runtime_excluded 0.06024710298515856
+cross_spectrum 0.023808486992493272
+regional_cross_compression 2.717022000811994
+matrix_construction 0.0662055229768157
+cholesky_factorization 5.306559226941317
+solve 0.10256677796132863
+field 0.019162828102707863
+reference_cross_excluded 0.719531477894634
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 437, in <module>
+    main(a)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 376, in main
+    action=timed('reference_action_excluded',lambda:LeafCachedRangeKernel(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 83, in timed
+    sync(); start = perf_counter(); value = fn(); sync()
+                                            ^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 376, in <lambda>
+    action=timed('reference_action_excluded',lambda:LeafCachedRangeKernel(
+                                                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/periodic_leaf_cache.py", line 44, in __init__
+    if self.record['cache_bytes']+size>max_cache_bytes:raise MemoryError('combined periodic/leaf cache exceeds byte cap')
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+MemoryError: combined periodic/leaf cache exceeds byte cap

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 427, in <module>
+    main(a)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 102, in main
+    mean, variance, _ = timed('original_full_fit', lambda: fn(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 83, in timed
+    sync(); start = perf_counter(); value = fn(); sync()
+                                            ^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 102, in <lambda>
+    mean, variance, _ = timed('original_full_fit', lambda: fn(
+                                                           ^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/stochastic_poisson_surface_reconstruction.py", line 354, in stochastic_poisson_surface_reconstruction
+    D = lu.solve(cov_divergence.toarray())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: SUPERLU_MALLOC failed for buf in doubleCalloc()
+ at line 705 in file ../scipy/sparse/linalg/_dsolve/SuperLU/SRC/dmemory.c

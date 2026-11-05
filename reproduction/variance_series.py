@@ -37,7 +37,7 @@ def prepare_variance_series(points, cholesky, operator, batch=8, method='squares
         for start in range(0,n,inverse_batch):
             count=min(inverse_batch,n-start);rhs=cp.zeros((n,count),dtype='d')
             rhs[start+cp.arange(count),cp.arange(count)]=1
-            full_weights[:,start:start+count]=cla.solve_triangular(cholesky.T,rhs,lower=False)
+            full_weights[:,start:start+count]=cla.solve_triangular(cholesky,rhs,lower=True,trans='T')
         profile['inverse_factor']+=clock()-begin
     from types import SimpleNamespace
     import numpy as np
@@ -53,7 +53,7 @@ def prepare_variance_series(points, cholesky, operator, batch=8, method='squares
         if full_weights is None:
             rhs = cp.zeros((n, count), dtype='d')
             rhs[start+cp.arange(count), cp.arange(count)] = 1.
-            weights = cla.solve_triangular(cholesky.T, rhs, lower=False)
+            weights = cla.solve_triangular(cholesky, rhs, lower=True, trans='T')
         else:weights=full_weights[:,start:start+count]
         profile['inverse_factor']+=clock()-begin
         begin=clock()

@@ -14,7 +14,7 @@ from reproduction.benchmark_hierarchical_variance import read_field, query_batch
 def main(root):
     root=Path(root);results=[]
     for path in sorted((root/'periodic').glob('*.json')):
-        if path.name.endswith('.status.json'):continue
+        if path.name.endswith(('.status.json','.audit.json')):continue
         d=json.loads(path.read_text())
         if not d.get('complete') or not d.get('quality',{}).get('passes'):continue
         a=d['arguments'];reference=root/'periodic'/f"dense-{a['n']}.json"

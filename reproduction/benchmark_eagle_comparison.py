@@ -105,12 +105,21 @@ def main(a):
                 h = np.array(r['grid']['spacing'])
                 lo = np.array(r['grid']['corner'])
             save()
+            sigma, sigma_n = .05, .005
+            controlled = getattr(a, 'original_normalization', 'published') == 'controlled'
+            if controlled:
+                from reproduction.density_protocol import original_parameters, replace_original_floor
+                parameters = original_parameters(h, a.amplitude, a.amplitude*a.relative_noise)
+                sigma, sigma_n = parameters['sigma'], parameters['sigma_n']
+                r['original_parameter_control'] = parameters
             import cProfile, pstats
             profiler=cProfile.Profile();profiler.enable()
             mean, variance, _ = timed('original_full_fit', lambda: fn(
                 x, y, gs=gs, h=h, corner=lo, output_variance=True,
-                solve_subspace_dim=a.subspace, sigma_n=.005, sigma=.05))
+                solve_subspace_dim=a.subspace, sigma_n=sigma_n, sigma=sigma))
             profiler.disable()
+            if controlled:
+                variance = timed('controlled_scalar_floor', lambda: replace_original_floor(variance, parameters))
             stats=pstats.Stats(profiler)
             np.savez_compressed(out.with_suffix('.npz'),mean=mean,variance=variance)
             r['original_grid_file']=str(out.with_suffix('.npz'))
@@ -124,7 +133,8 @@ def main(a):
             qm, qv = predict(qcheck)
             r['probes'] = dict(query=qcheck.tolist(), mean=qm.tolist(), variance=qv.tolist(),
                                probability=ndtr((level-qm)/np.sqrt(qv)).tolist())
-            r['accuracy_status'] = 'unmodified original implementation; grid/model convergence not established'
+            r['accuracy_status'] = ('controlled prior/noise and scalar floor; original density-lumped solver; grid/model convergence not established'
+                                    if controlled else 'unmodified original implementation; grid/model convergence not established')
             r['query_seconds'], r['probability_checksums'] = [], []
             for q in query_batches(a):
                 start = perf_counter(); m, v = predict(q)
@@ -135,7 +145,9 @@ def main(a):
                 r['query_seconds'].append(perf_counter()-start)
                 r['probability_checksums'].append(checksum)
             r['preparation_seconds'] = r['stages']['original_full_fit']
+            r['preparation_seconds'] += r['stages'].get('controlled_scalar_floor', 0.)
             r['total_seconds'] = r['preparation_seconds']+sum(r['query_seconds'])
+            r['production_host_peak_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
             r['complete'] = True
             return
 
@@ -147,7 +159,7 @@ def main(a):
         r['device'] = cp.cuda.runtime.getDeviceProperties(0)['name'].decode()
         r['device_memory'] = cp.cuda.runtime.memGetInfo()[1]
         from reproduction.gpu_audit import GpuProcessAudit
-        audit = GpuProcessAudit(cp.cuda.Device().pci_bus_id, cuda_device=cp.cuda.Device().id).start()
+        audit = GpuProcessAudit(cp.cuda.Device().pci_bus_id, interval=.1, cuda_device=cp.cuda.Device().id).start()
         r['model'] = dict(training='analytic periodic product Matern32',
                           lengthscale=a.ell, physical_axis_lengthscale=2*np.pi*a.ell,
                           per_axis_variance=a.amplitude**(1/3), noise_variance=a.amplitude*a.relative_noise,
@@ -317,6 +329,7 @@ def main(a):
             base=perf_counter()-begin
             # Reference excluded and recorded explicitly. Checkpoints assess
             # own-model output accuracy, not residual alone.
+            r['sdd_pre_reference_gpu_audit']=audit.stop()
             chol=timed('reference_cholesky_excluded',factor)
             def solve(b):
                 return cla.solve_triangular(chol,cla.solve_triangular(chol,cp.asarray(b),lower=True),lower=True,trans='T')
@@ -326,6 +339,9 @@ def main(a):
                 rr=cp.ascontiguousarray(c.transpose(1,0,2).reshape(n,-1));w=cla.solve_triangular(chol,rr,lower=True)
                 return cp.asnumpy(cp.einsum('qnd,nd->q',c,alpha)),prior-cp.asnumpy((w*w).sum(0).reshape(-1,3).sum(1))
             mr,vr=timed('reference_moments_excluded',direct_reference)
+            del chol, cref
+            cp.get_default_memory_pool().free_all_blocks()
+            audit=GpuProcessAudit(cp.cuda.Device().pci_bus_id, interval=.1, cuda_device=cp.cuda.Device().id).start()
             elapsed=0.; selected=False
             for target in [256,512,1024,2048,4096,8192,16384,32768,65536,131072]:
                 sync(); t=perf_counter()
@@ -354,6 +370,9 @@ def main(a):
         if a.method!='sdd':r['preparation_seconds']=perf_counter()-begin
         r.update(replay(field))
         r['total_seconds']=r['preparation_seconds']+sum(r['query_seconds'])
+        r['production_host_peak_bytes']=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+        r['gpu_process_audit']=audit.stop()
+        save()
         # Independent (uncompressed) regional probes against double Cholesky.
         if a.method!='sdd':
             if a.method=='nufft-cg':
@@ -394,7 +413,7 @@ def main(a):
         r['probes']=dict(query=qcheck.tolist(),mean=qm.tolist(),variance=qv.tolist(),
                          reference_mean=mr.tolist(),reference_variance=vr.tolist(),prior=prior)
         r['complete']=True
-        r['gpu_process_audit']=audit.stop()
+        if 'gpu_process_audit' not in r:r['gpu_process_audit']=audit.stop()
     except Exception as exc:
         r['failure']=f'{type(exc).__name__}: {exc}'
         raise
@@ -432,6 +451,7 @@ if __name__=='__main__':
     p.add_argument('--grid',type=int,default=16);p.add_argument('--subspace',type=int,default=0)
     p.add_argument('--original-lengthscale',type=float,
                    help='Override --grid using isotropic half-correlation matching to a physical Matern32 lengthscale')
+    p.add_argument('--original-normalization', choices=['published','controlled'], default='published')
     a=p.parse_args()
     if a.queries%64 or a.batches<1:p.error('positive batches and queries divisible by 64 required')
     main(a)

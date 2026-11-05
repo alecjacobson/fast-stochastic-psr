@@ -102,6 +102,8 @@ def run(args):
     if args.point_cloud:
         cloud_metadata = json.loads(Path(args.point_cloud).with_suffix('.json').read_text())
         args.point_cloud_sha256 = cloud_metadata['normalized_sha256']
+    from reproduction.gpu_audit import GpuProcessAudit
+    gpu_audit = GpuProcessAudit(cp.cuda.Device().pci_bus_id, interval=.1, cuda_device=cp.cuda.Device().id).start()
     model = FreeSpacePoissonMatern(args.lengthscale, args.amplitude)
     noise = args.amplitude*args.relative_noise
     provenance = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in [
@@ -218,6 +220,7 @@ def run(args):
         decisions.append(dict(winner=winner, score=float(scores[winner].item())))
         checksums.append(checksum)
         minimum_variances.append(minimum)
+    record['production_gpu_audit'] = gpu_audit.stop()
     record.update(setup_seconds=setup, regional_cache_seconds=cache_seconds,
                   regional_cache_timings=cache.preparation_timings,
                   field_seconds=field_seconds, preparation_seconds=preparation,

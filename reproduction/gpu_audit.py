@@ -86,7 +86,8 @@ class GpuProcessAudit:
                 pids = sorted({int(v[0].strip()) for v in rows})
                 own_memory=[float(v[1].strip())*1024**2 for v in rows if int(v[0].strip())==self.own_pid and v[1].strip().isdigit()]
             self.observations.append({'started_seconds':begin,'seconds':time.perf_counter()-self.started,
-                                      'pids':pids,'own_memory_bytes':sum(own_memory) if own_memory else None})
+                                      'pids':pids,'own_memory_bytes':sum(own_memory) if own_memory else None,
+                                      'own_host_rss_bytes':int(open('/proc/self/statm').read().split()[1])*os.sysconf('SC_PAGE_SIZE')})
             foreign = [pid for pid in pids if pid != self.own_pid]
             self.samples += 1
             if foreign:

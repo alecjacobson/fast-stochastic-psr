@@ -1,0 +1,40 @@
+common_runtime_excluded 0.06510633183643222
+cross_spectrum 0.5081935699563473
+regional_cross_compression 8.629712959052995
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/single_transform_control.py", line 41, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/single_transform_control.py", line 33, in main
+    try:runpy.run_module(a.module,run_name='__main__')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 457, in <module>
+    main(a)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 224, in main
+    chol=timed('matrix_construction',production_matrix)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 83, in timed
+    sync(); start = perf_counter(); value = fn(); sync()
+                                            ^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py", line 220, in production_matrix
+    mat=analytic_covariance_rows32(x,x,a.ell,amplitude_axis)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/dense_covariance.py", line 30, in analytic_covariance_rows32
+    out=cp.empty((len(q),len(x)),dtype='f')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupy/_creation/basic.py", line 34, in empty
+    return cupy.ndarray(shape, dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 176, in cupy._core.core.ndarray.__new__
+  File "cupy/_core/core.pyx", line 282, in cupy._core.core._ndarray_base._init
+  File "cupy/cuda/memory.pyx", line 904, in cupy.cuda.memory.alloc
+  File "cupy/cuda/memory.pyx", line 1614, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1635, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1350, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1376, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+  File "cupy/cuda/memory.pyx", line 1560, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 24,226,299,904 bytes (allocated so far: 1,955,215,872 bytes).

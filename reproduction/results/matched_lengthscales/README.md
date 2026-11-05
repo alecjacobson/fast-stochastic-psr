@@ -1,5 +1,11 @@
 # Eagle with matched interpolation widths (follow-up to PR #106)
 
+The [larger-N continuation](../matched_crossover/README.md) now extends this
+coarse-scale sweep through the dense GPU memory boundary and to N=196,608.
+Dense remains faster at the largest completed overlap; H² continues beyond
+the allocation limit. The continuation retains failed H² accuracy trials
+and includes the stricter settings needed at the largest point.
+
 This comparison chooses the original Sellán–Jacobson grid from a physical
 kernel width rather than fixing it arbitrarily at 16³. All production times
 include preparation, **mean and marginal variance**, CDF and ambiguity scores

@@ -65,6 +65,16 @@ def replay(args):
             failures.append(relative)
     if failures:
         raise RuntimeError('No complete accepted replay; inspect '+repr(failures))
+    for pair in selection.get('comparisons', []):
+        target = output/pair['output']
+        target.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run([sys.executable, '-m', 'reproduction.compare_hierarchical_application',
+                        str(output/pair['candidate']), str(output/pair['baseline']),
+                        '--output', str(target)], check=True)
+        if not json.loads(target.read_text())['passes']:
+            failures.append(pair['output'])
+    if failures:
+        raise RuntimeError('Full-query replay comparisons failed; inspect '+repr(failures))
     subprocess.run([sys.executable, '-m', 'reproduction.plot_poissonrecon_large', '--root', str(output)], check=True)
 
 

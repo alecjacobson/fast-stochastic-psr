@@ -99,8 +99,10 @@ sharing its interpolation nor these finite probes proves uniform exact-GP error.
 Scaling figures select explicit passing records in `selection.json`. They are
 single-run exploratory measurements. Accuracy settings and cached/streamed
 storage policies may change with N and are recorded per row; fitted slopes are
-not complexity proofs. Logical interaction counts include regenerated entries,
-whereas stored representation sizes exclude workspaces and solver vectors.
+not complexity proofs. Logical interaction counts include regenerated entries.
+The memory panel shows the retained CuPy pool at workload completion, including
+reusable workspace; it is not a formally sampled peak or total context memory.
+Raw stored-representation sizes separately exclude workspaces and solver vectors.
 
 Hardware: RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb (23.625 GiB visible),
 four-core CPU quota, 16 GiB host limit. Raw files record source and data hashes,

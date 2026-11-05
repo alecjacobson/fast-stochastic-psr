@@ -1,5 +1,6 @@
 """Compare complete saved probability workloads, including decision regret."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,7 +12,8 @@ from reproduction.benchmark_hierarchical_variance import query_batches, read_fie
 
 
 def compare(candidate, baseline, output):
-    c, b = [json.loads(Path(p).read_text()) for p in [candidate, baseline]]
+    payloads = [Path(p).read_bytes() for p in [candidate, baseline]]
+    c, b = [json.loads(payload) for payload in payloads]
     for key in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude', 'relative_noise',
                 'halfwidth', 'queries', 'batches']:
         if c['arguments'][key] != b['arguments'][key]:
@@ -23,6 +25,8 @@ def compare(candidate, baseline, output):
         raise ValueError('comparison point cloud mismatch')
     cf, bf = read_field(c['field']), read_field(b['field'])
     result = dict(candidate=candidate, baseline=baseline, max_mean_error=0.,
+                  candidate_sha256=hashlib.sha256(payloads[0]).hexdigest(),
+                  baseline_sha256=hashlib.sha256(payloads[1]).hexdigest(),
                   max_variance_error_over_prior=0., max_probability_error=0.,
                   max_decision_regret=0., exact_winner_agreements=0,
                   max_error_if_prior_variance_is_used=0.,
@@ -35,6 +39,10 @@ def compare(candidate, baseline, output):
     contact_variance = float(bf.predict([[1, 0, 0]])[1][0])
     for q in query_batches(SimpleNamespace(**b['arguments'])):
         cm, cv = cf.predict_gpu(q); bm, bv = bf.predict_gpu(q)
+        if not bool(cp.isfinite(cm).all() and cp.isfinite(bm).all() and
+                    cp.isfinite(cv).all() and cp.isfinite(bv).all() and
+                    (cv > 0).all() and (bv > 0).all()):
+            raise ValueError('Full-query comparison requires finite means and positive finite variances')
         cpred = ndtr((c['level']-cm)/cp.sqrt(cv)); bpred = ndtr((b['level']-bm)/cp.sqrt(bv))
         if known_shape:
             inside = cp.sum((cp.asarray(q)/axes)**2, axis=1) <= 1

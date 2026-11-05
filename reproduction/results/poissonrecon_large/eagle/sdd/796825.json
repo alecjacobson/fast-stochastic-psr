@@ -1,0 +1,148 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/poissonrecon_large/eagle/references/796825.json",
+    "output": "reproduction/results/poissonrecon_large/eagle/sdd/796825.json",
+    "eta": [
+      0.1
+    ],
+    "batch": 128,
+    "sampling": "rejection",
+    "order": 7,
+    "cross_block_size": 4096,
+    "cross_tolerance": 1e-08,
+    "application_reference": "reproduction/results/poissonrecon_large/eagle/eight-large/h2-streamed-796825-0.json",
+    "checkpoints": [
+      512,
+      2048,
+      8192,
+      32768,
+      131072
+    ],
+    "budget": 400.0,
+    "correction_policy": "mean",
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 796825,
+    "seed": 12,
+    "geometry": "eagle",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 8,
+    "point_cloud": "/home/horde/.cache/fast-stochastic-psr/poissonrecon/eagle.npy",
+    "point_cloud_sha256": "3eea25538b3254fceed883ab38261cc08b72a608bfe50de69c5d08c417463604",
+    "order": 7,
+    "cross_tolerance": 1e-08
+  },
+  "solve_rank": 129,
+  "compression_seconds": 68.92020917497575,
+  "common_runtime_initialization_seconds": 0.21865527611225843,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "8578689147d3f09aad006be958583578b2b7e5544e2c8c15351014941bb1b2c1",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "c43816129fd77cde8fe04cd8ee5c74ed5f5e1b9a3dea5ddfc2f28d5b7b67dd78",
+    "geospsr/nonperiodic.py": "43136013e80eed602420438f13babc308654e9553f28e71fb9e540883cdc4366",
+    "geospsr/nonperiodic_dense_gpu.py": "03bada461bf4edb8c4b33187b826ac3a3fb54cd50a78c200f637cecc1421f951",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "16a814b6d9fef1731cf06b4d9f9669b030228223611e0a0c01f7b49724bde3d8",
+    "reproduction/benchmark_hierarchical_variance.py": "46d8033dd09f67146bcfea2c98fa097343b94694b7b5062ac8be24b09a0bebf1"
+  },
+  "configurations": [
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "learning_rate": 1.606375301979732e-05,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.9960440741851926,
+      "history": [
+        {
+          "iterations": 512,
+          "solve_seconds": 7.568030598107725,
+          "preparation_seconds": 78.3703476022929,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.07240426263869693,
+              "max_variance_error_over_prior": 0.08765025377928744,
+              "minimum_variance": 1.117905416337916e-06,
+              "passes": false,
+              "projection_seconds": 0.8747336380183697,
+              "field_seconds": 0.011330117005854845
+            }
+          },
+          "max_probability_error": 0.07240426263869693,
+          "max_variance_error_over_prior": 0.08765025377928744,
+          "minimum_variance": 1.117905416337916e-06,
+          "passes": false
+        },
+        {
+          "iterations": 2048,
+          "solve_seconds": 29.708636423107237,
+          "preparation_seconds": 100.5070853093639,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.1019441846081851,
+              "max_variance_error_over_prior": 0.05814307265959524,
+              "minimum_variance": 1.0515484879175173e-06,
+              "passes": false,
+              "projection_seconds": 0.8722748891450465,
+              "field_seconds": 0.009920747950673103
+            }
+          },
+          "max_probability_error": 0.1019441846081851,
+          "max_variance_error_over_prior": 0.05814307265959524,
+          "minimum_variance": 1.0515484879175173e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 117.88345834217034,
+          "preparation_seconds": 188.68687640642747,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.07670132465666896,
+              "max_variance_error_over_prior": 0.04194072057185437,
+              "minimum_variance": 1.0101435672538893e-06,
+              "passes": false,
+              "projection_seconds": 0.8774773271288723,
+              "field_seconds": 0.009687487967312336
+            }
+          },
+          "max_probability_error": 0.07670132465666896,
+          "max_variance_error_over_prior": 0.04194072057185437,
+          "minimum_variance": 1.0101435672538893e-06,
+          "passes": false
+        },
+        {
+          "iterations": 28160,
+          "solve_seconds": 403.7730220751837,
+          "preparation_seconds": 474.574854856357,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.06815125292649615,
+              "max_variance_error_over_prior": 0.027218414877667796,
+              "minimum_variance": 9.74954663406817e-07,
+              "passes": false,
+              "projection_seconds": 0.8759216731414199,
+              "field_seconds": 0.00965785887092352
+            }
+          },
+          "max_probability_error": 0.06815125292649615,
+          "max_variance_error_over_prior": 0.027218414877667796,
+          "minimum_variance": 9.74954663406817e-07,
+          "passes": false
+        }
+      ],
+      "status": "no passing observed checkpoint within budget"
+    }
+  ],
+  "application_reference_sha256": "96aa5b8d436eaa405783d71595e96292ab255744920f489d2a3f6a9b71da42e2"
+}

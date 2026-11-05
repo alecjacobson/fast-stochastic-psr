@@ -198,6 +198,15 @@ The largest result uses one noisy partial scan and a tighter reference field,
 not a dense factor that cannot fit. The report retains failed tolerances and
 compares SDD using a stronger full-query accuracy check.
 
+The [PoissonRecon real-scan study](reproduction/results/poissonrecon_large/README.md)
+reaches the full **796,825-point Eagle** on a Blackwell MIG 24 GiB partition:
+setup, mean, variance and 1,048,576 probability queries take **305.04 s with H²
+versus 2,465.47 s with streamed locality (8.08×)**. The smaller 196,608-point
+comparison is **1.86×**, while locality wins at 32k and 78k. Both large pairs pass
+sampled independent audits and full-query comparisons. These are single-run
+measurements on different hardware from the earlier L40 results. Torso's 3.49m
+input is prepared, with validated subset runs through 196,608 points.
+
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
 [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).

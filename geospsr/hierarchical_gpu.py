@@ -248,13 +248,14 @@ class GPUHierarchicalSystem:
             raise RuntimeError(f'GPU PCG did not converge: {info}')
         return cp.asnumpy(x)
 
-    def project(self, basis, vectors, variance_iterations=5, mean_tolerance=1e-6):
+    def project(self, basis, vectors, variance_iterations=5, mean_tolerance=1e-6, progress=None):
         """Use residual-corrected quadratic forms for approximate variance solves.
 
         For Z≈A^-1 U and R=U-AZ, G=UᵀZ+ZᵀR differs from UᵀA^-1U
         by -RᵀA^-1R. The mean is solved independently. This identity is with
         respect to the represented H2 operator; its kernel approximation error
         must still pass an independent full-kernel accuracy check.
+        An optional progress callback receives completed mean/variance stages.
         """
         import cupy as cp
         u = cp.asarray(basis)
@@ -262,6 +263,8 @@ class GPUHierarchicalSystem:
                                        tolerance=mean_tolerance, xp=cp)
         if not mean_info['converged']:
             raise RuntimeError('mean conditioning did not converge')
+        if progress:
+            progress(dict(phase='mean complete', iterations=mean_info['iterations']))
         if self.rhs_block_size and u.shape[1] > self.rhs_block_size:
             z, residual = cp.empty_like(u), cp.empty_like(u)
             infos = []
@@ -271,6 +274,9 @@ class GPUHierarchicalSystem:
                     self.matmul, self.precondition, u[:, first:stop], tolerance=1e-10,
                     max_iterations=variance_iterations, xp=cp, return_residual=True)
                 infos.append(info)
+                if progress:
+                    progress(dict(phase='variance block complete', first=first, stop=stop,
+                                  iterations=info['max_iterations']))
             variance_info = dict(converged=all(i['converged'] for i in infos),
                                  iterations=sum([i['iterations'] for i in infos], []),
                                  relative_residuals=sum([i['relative_residuals'] for i in infos], []),
@@ -280,6 +286,8 @@ class GPUHierarchicalSystem:
             z, variance_info, residual = batched_pcg(
                 self.matmul, self.precondition, u, tolerance=1e-10,
                 max_iterations=variance_iterations, xp=cp, return_residual=True)
+            if progress:
+                progress(dict(phase='variance complete', iterations=variance_info['max_iterations']))
         gram = u.T@z+z.T@residual
         gram = .5*(gram+gram.T)
         self.last_solve = dict(mean=mean_info, variance=variance_info,

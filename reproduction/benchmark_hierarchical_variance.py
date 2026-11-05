@@ -130,6 +130,8 @@ def run(args):
     if cloud_metadata:
         record['point_cloud_metadata'] = cloud_metadata
     begin = perf_counter()
+    def progress(event):
+        print(json.dumps(dict(elapsed_seconds=perf_counter()-begin, **event)), flush=True)
     if args.method.startswith('dense'):
         from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem
         system = GPUDenseMaternSystem(model, x, noise, dtype=args.method.split('-')[1])
@@ -150,7 +152,7 @@ def run(args):
             preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size,
             budget_bytes=args.interaction_budget_mib*2**20)
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
-                                              mean_tolerance=args.solve_tolerance)
+                                              mean_tolerance=args.solve_tolerance, progress=progress)
     elif args.method == 'sparse-gpu':
         from geospsr.nonperiodic_sparse import GPUSparseMaternSystem
         system = GPUSparseMaternSystem(model, x, noise, cutoff=args.sparse_cutoff,
@@ -159,7 +161,7 @@ def run(args):
                                        preconditioner_backend=args.preconditioner_backend, rhs_block_size=args.rhs_block_size,
                                        memory_fraction=args.sparse_memory_fraction)
         project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
-                                              mean_tolerance=args.solve_tolerance)
+                                              mean_tolerance=args.solve_tolerance, progress=progress)
     else:
         from geospsr.hierarchical import HierarchicalMaternSystem
         system = HierarchicalMaternSystem(model, x, noise, tolerance=args.h2_tolerance,
@@ -174,9 +176,17 @@ def run(args):
         project = None
         if args.method in ['h2-gpu', 'h2-streamed'] and args.variance_iterations:
             project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations,
-                                                  mean_tolerance=args.solve_tolerance)
+                                                  mean_tolerance=args.solve_tolerance, progress=progress)
     cp.cuda.get_current_stream().synchronize()
     setup = perf_counter()-begin
+    progress(dict(phase='system ready', setup_seconds=setup))
+    if project is not None:
+        raw_project = project
+        def project(u, y):
+            progress(dict(phase='conditioning start', cross_rank=u.shape[1]))
+            result = raw_project(u, y)
+            progress(dict(phase='conditioning complete'))
+            return result
     start = perf_counter()
     solve = (system.solve if args.method.startswith('dense') else
              lambda b: system.solve(b, tolerance=args.solve_tolerance))

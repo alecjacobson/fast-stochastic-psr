@@ -97,6 +97,14 @@ def main(a):
             gs = np.full(3, a.grid); h = (hi-lo)/(a.grid-1)
             r['grid'] = dict(shape=gs.tolist(), spacing=h.tolist(), corner=lo.tolist(),
                              kernel_sigma=float(1.5*min(h)), subspace_dim=a.subspace)
+            if getattr(a, 'original_lengthscale', None) is not None:
+                from reproduction.matched_lengthscale import matched_grid
+                r['grid'] = matched_grid(lo, hi, a.original_lengthscale)
+                r['grid']['subspace_dim'] = a.subspace
+                gs = np.array(r['grid']['shape'])
+                h = np.array(r['grid']['spacing'])
+                lo = np.array(r['grid']['corner'])
+            save()
             import cProfile, pstats
             profiler=cProfile.Profile();profiler.enable()
             mean, variance, _ = timed('original_full_fit', lambda: fn(
@@ -422,6 +430,8 @@ if __name__=='__main__':
     p.add_argument('--batch',type=int,default=512);p.add_argument('--eta',type=float,default=1.)
     p.add_argument('--budget',type=float,default=120.)
     p.add_argument('--grid',type=int,default=16);p.add_argument('--subspace',type=int,default=0)
+    p.add_argument('--original-lengthscale',type=float,
+                   help='Override --grid using isotropic half-correlation matching to a physical Matern32 lengthscale')
     a=p.parse_args()
     if a.queries%64 or a.batches<1:p.error('positive batches and queries divisible by 64 required')
     main(a)

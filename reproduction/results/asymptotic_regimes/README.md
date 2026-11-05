@@ -10,7 +10,12 @@ ambiguity evaluation for 16 batches of 65,536 queries in the same contact box.
 **The strongest supported comparison is H² versus locality within the same
 free-space model.** Periodic GeoSPR and original grid SPSR instantiate different
 models. Their timings do not establish equal reconstruction or calibration
-quality. The original's grid resolution remains unvalidated.
+quality. The original's fixed 16³ grid is not width-matched: its half-correlation
+distance is 3.38 times broader than the ℓ=.03 Matérn setting. The
+[matched-lengthscale follow-up](../matched_lengthscales/README.md) selects its
+grid from physical kernel width, adds a feasible coarse-scale N sweep, and
+reports held-out local geometry, uncertainty differences and memory limits.
+The historical measurements below remain unchanged.
 
 ## Measured results
 

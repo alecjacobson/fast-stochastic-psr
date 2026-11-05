@@ -216,6 +216,13 @@ NUFFT variance routes, with measured memory/accuracy endpoints. These are
 within-model numerical comparisons; the periodic scalar/cross bandwidth is
 not converged, and original-grid reconstruction quality is not matched.
 
+The [matched-lengthscale comparison](reproduction/results/matched_lengthscales/README.md)
+selects the original grid by physical kernel half correlation. At the feasible
+coarse scale, original SPSR and H² have similar local held-out surface error,
+but different uncertainty widths. Finer matched original grids reach host
+memory limits. The report includes mean-and-variance timings, probability
+profiles and explicit bandwidth/calibration limitations.
+
 The [regional accuracy follow-up](reproduction/results/regional_accuracy/README.md)
 bounds agreement of all six selected Eagle cache pairs over the entire query
 box. These bounds concern the stored polynomials, not uniform error to the

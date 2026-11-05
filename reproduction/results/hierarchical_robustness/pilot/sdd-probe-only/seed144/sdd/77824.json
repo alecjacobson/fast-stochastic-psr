@@ -1,0 +1,354 @@
+{
+  "arguments": {
+    "reference": "reproduction/results/hierarchical_robustness/partial/seed144/references/77824.json",
+    "output": "reproduction/results/hierarchical_robustness/partial/seed144/sdd/77824.json",
+    "eta": [
+      0.1,
+      0.15
+    ],
+    "batch": 128,
+    "order": 4,
+    "cross_tolerance": 1e-06,
+    "checkpoints": [
+      2048,
+      8192,
+      16384,
+      32768,
+      49152,
+      65536,
+      98304,
+      131072
+    ],
+    "budget": 90.0,
+    "queries": 65536,
+    "batches": 16
+  },
+  "contract": {
+    "n": 77824,
+    "seed": 144,
+    "geometry": "ellipsoid",
+    "lengthscale": 0.03,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "halfwidth": 0.005,
+    "random_queries": 8,
+    "scan": "front",
+    "normal_noise": 0.005,
+    "order": 4,
+    "cross_tolerance": 1e-06
+  },
+  "solve_rank": 42,
+  "compression_seconds": 0.9457690300187096,
+  "common_runtime_initialization_seconds": 0.20251609606202692,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "reference_sha256": "28d1eea347f08e771d1158fae64b539118bd9762cd3ded22fac8bbbc068e26f3",
+  "description": "Compiled original SDD update on the same isotropic nonperiodic kernel; same regional SVD and cache as H2/Cholesky",
+  "source_sha256": {
+    "geospsr/iterative.py": "686b1ebc0a4d1b7b691292d51d1fe25073adc5ea4dd8447a200482001d5f0528",
+    "geospsr/nonperiodic.py": "24eaa6bc1a72914f7466cb58b847826efb99ac42089b6991f185f26c89d22116",
+    "geospsr/nonperiodic_dense_gpu.py": "e46f1ab9360934be1c6cb527fc26ee713cd2d4beb8409332fb9ea34abb236922",
+    "geospsr/regional_field.py": "360a0fdb6ea494fc1bf502fd427bb0991f392a9f3fff75fcde25ac1336b088c0",
+    "reproduction/benchmark_hierarchical_sdd.py": "3dbaa44729ef2279ef793e31783901a93beae32f99201976c9aebdec44d20631",
+    "reproduction/benchmark_hierarchical_variance.py": "758a528af61f79f44bb4607fbd1d44da62533641154f41036ec6242c3ac7e5db"
+  },
+  "configurations": [
+    {
+      "eta": 0.1,
+      "batch": 128,
+      "learning_rate": 0.0001644736842105263,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.6859037500107661,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 1.4118714650394395,
+          "preparation_seconds": 3.0591496031265706,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0003610180928586004,
+              "max_variance_error_over_prior": 0.00031912375847830456,
+              "minimum_variance": 1.3176536147465869e-06,
+              "passes": false,
+              "projection_seconds": 0.01444844901561737,
+              "field_seconds": 0.0011569090420380235
+            },
+            "corrected": {
+              "max_probability_error": 0.016866762520147183,
+              "max_variance_error_over_prior": 0.017531922270054793,
+              "minimum_variance": 1.3551744253106786e-06,
+              "passes": false,
+              "projection_seconds": 3.726406425004825,
+              "field_seconds": 0.0010776700219139457
+            }
+          },
+          "max_probability_error": 0.0003610180928586004,
+          "max_variance_error_over_prior": 0.00031912375847830456,
+          "minimum_variance": 1.3176536147465869e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 5.361951424041763,
+          "preparation_seconds": 7.009294202085584,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.002072911627733265,
+              "max_variance_error_over_prior": 0.0001759156659397943,
+              "minimum_variance": 1.31768779996348e-06,
+              "passes": false,
+              "projection_seconds": 0.014577388064935803,
+              "field_seconds": 0.0010926099494099617
+            },
+            "corrected": {
+              "max_probability_error": 0.009070768385996408,
+              "max_variance_error_over_prior": 0.008005187001721212,
+              "minimum_variance": 1.3348992081387103e-06,
+              "passes": false,
+              "projection_seconds": 3.683766940026544,
+              "field_seconds": 0.0009518390288576484
+            }
+          },
+          "max_probability_error": 0.002072911627733265,
+          "max_variance_error_over_prior": 0.0001759156659397943,
+          "minimum_variance": 1.31768779996348e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 10.624053220031783,
+          "preparation_seconds": 12.272053568158299,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0015302981645463065,
+              "max_variance_error_over_prior": 6.794594904914361e-05,
+              "minimum_variance": 1.3175709947808211e-06,
+              "passes": false,
+              "projection_seconds": 0.01538189803250134,
+              "field_seconds": 0.0009456700645387173
+            },
+            "corrected": {
+              "max_probability_error": 0.004973822439460318,
+              "max_variance_error_over_prior": 0.004486771056515175,
+              "minimum_variance": 1.3273044631634775e-06,
+              "passes": false,
+              "projection_seconds": 3.680980969918892,
+              "field_seconds": 0.0009468200150877237
+            }
+          },
+          "max_probability_error": 0.0015302981645463065,
+          "max_variance_error_over_prior": 6.794594904914361e-05,
+          "minimum_variance": 1.3175709947808211e-06,
+          "passes": false
+        },
+        {
+          "iterations": 32768,
+          "solve_seconds": 21.145326851052232,
+          "preparation_seconds": 22.7932133191498,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0006618833991240969,
+              "max_variance_error_over_prior": 3.779305454506704e-05,
+              "minimum_variance": 1.3176004951652583e-06,
+              "passes": true,
+              "projection_seconds": 0.015241109067574143,
+              "field_seconds": 0.0009725790005177259
+            }
+          },
+          "max_probability_error": 0.0006618833991240969,
+          "max_variance_error_over_prior": 3.779305454506704e-05,
+          "minimum_variance": 1.3176004951652583e-06,
+          "passes": true,
+          "query_seconds": [
+            0.004972310038283467,
+            0.000950500019825995,
+            0.0008664489723742008,
+            0.0008717500604689121,
+            0.0008430500747635961,
+            0.000855729915201664,
+            0.0008488299790769815,
+            0.0008463200647383928,
+            0.0008683799533173442,
+            0.0008535690139979124,
+            0.0008466400904580951,
+            0.0008572100196033716,
+            0.0008432399481534958,
+            0.0008384700631722808,
+            0.0008397100027650595,
+            0.0008468399755656719
+          ],
+          "total_seconds": 22.811062317341566
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_robustness/partial/seed144/sdd/77824-eta0.1-passing.json",
+      "status": "passing complete workload"
+    },
+    {
+      "eta": 0.15,
+      "batch": 128,
+      "learning_rate": 0.0002467105263157895,
+      "momentum": 0.9,
+      "polyak": 0.01,
+      "compile_seconds": 0.4870335340965539,
+      "history": [
+        {
+          "iterations": 2048,
+          "solve_seconds": 1.3029853070620447,
+          "preparation_seconds": 2.75182087009307,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0024494119019218275,
+              "max_variance_error_over_prior": 0.000303689012238925,
+              "minimum_variance": 1.316868354721561e-06,
+              "passes": false,
+              "projection_seconds": 0.015041838982142508,
+              "field_seconds": 0.0009911599336192012
+            },
+            "corrected": {
+              "max_probability_error": 0.04444567403966915,
+              "max_variance_error_over_prior": 0.051920088827784726,
+              "minimum_variance": 1.4270148626707156e-06,
+              "passes": false,
+              "projection_seconds": 3.6813667400274426,
+              "field_seconds": 0.0009488400537520647
+            }
+          },
+          "max_probability_error": 0.0024494119019218275,
+          "max_variance_error_over_prior": 0.000303689012238925,
+          "minimum_variance": 1.316868354721561e-06,
+          "passes": false
+        },
+        {
+          "iterations": 8192,
+          "solve_seconds": 5.196601273026317,
+          "preparation_seconds": 6.645299135125242,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.001771330080554523,
+              "max_variance_error_over_prior": 0.00017380694294929298,
+              "minimum_variance": 1.3176067240290843e-06,
+              "passes": false,
+              "projection_seconds": 0.01494381797965616,
+              "field_seconds": 0.0009514800040051341
+            },
+            "corrected": {
+              "max_probability_error": 0.018958457080419655,
+              "max_variance_error_over_prior": 0.021577485095772068,
+              "minimum_variance": 1.363710987566413e-06,
+              "passes": false,
+              "projection_seconds": 3.68004301993642,
+              "field_seconds": 0.0008837900822982192
+            }
+          },
+          "max_probability_error": 0.001771330080554523,
+          "max_variance_error_over_prior": 0.00017380694294929298,
+          "minimum_variance": 1.3176067240290843e-06,
+          "passes": false
+        },
+        {
+          "iterations": 16384,
+          "solve_seconds": 10.387466666987166,
+          "preparation_seconds": 11.836479669203982,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.002175450067399165,
+              "max_variance_error_over_prior": 3.402178597035682e-05,
+              "minimum_variance": 1.3175175557026313e-06,
+              "passes": false,
+              "projection_seconds": 0.01529077801387757,
+              "field_seconds": 0.0009196600876748562
+            },
+            "corrected": {
+              "max_probability_error": 0.008339079910044345,
+              "max_variance_error_over_prior": 0.01064413235860603,
+              "minimum_variance": 1.3402884235249717e-06,
+              "passes": false,
+              "projection_seconds": 3.6798106000060216,
+              "field_seconds": 0.0008882699767127633
+            }
+          },
+          "max_probability_error": 0.002175450067399165,
+          "max_variance_error_over_prior": 3.402178597035682e-05,
+          "minimum_variance": 1.3175175557026313e-06,
+          "passes": false
+        },
+        {
+          "iterations": 32768,
+          "solve_seconds": 20.764065594994463,
+          "preparation_seconds": 22.212732677115127,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.0014847110905259475,
+              "max_variance_error_over_prior": 6.30331304354388e-05,
+              "minimum_variance": 1.3176204190913126e-06,
+              "passes": false,
+              "projection_seconds": 0.014926607953384519,
+              "field_seconds": 0.0009379100520163774
+            },
+            "corrected": {
+              "max_probability_error": 0.0026726374482656245,
+              "max_variance_error_over_prior": 0.003509056719965732,
+              "minimum_variance": 1.3249301590027008e-06,
+              "passes": false,
+              "projection_seconds": 3.6798564509954304,
+              "field_seconds": 0.0009021689184010029
+            }
+          },
+          "max_probability_error": 0.0014847110905259475,
+          "max_variance_error_over_prior": 6.30331304354388e-05,
+          "minimum_variance": 1.3176204190913126e-06,
+          "passes": false
+        },
+        {
+          "iterations": 49152,
+          "solve_seconds": 31.14172680291813,
+          "preparation_seconds": 32.59076252602972,
+          "selected_variant": "standard",
+          "variants": {
+            "standard": {
+              "max_probability_error": 0.00028177812349668846,
+              "max_variance_error_over_prior": 2.6885671074192e-05,
+              "minimum_variance": 1.3175428990057983e-06,
+              "passes": true,
+              "projection_seconds": 0.015276188962161541,
+              "field_seconds": 0.0009569700341671705
+            }
+          },
+          "max_probability_error": 0.00028177812349668846,
+          "max_variance_error_over_prior": 2.6885671074192e-05,
+          "minimum_variance": 1.3175428990057983e-06,
+          "passes": true,
+          "query_seconds": [
+            0.0011782790534198284,
+            0.0008949399925768375,
+            0.0008489598985761404,
+            0.0008494999492540956,
+            0.0008377099875360727,
+            0.0008379700593650341,
+            0.0008500800468027592,
+            0.0008302900241687894,
+            0.0008471800247207284,
+            0.0008433500770479441,
+            0.000836540013551712,
+            0.0008439399534836411,
+            0.000841009896248579,
+            0.0008528799517080188,
+            0.0008479900425300002,
+            0.0008428290020674467
+          ],
+          "total_seconds": 32.60464597400278
+        }
+      ],
+      "passing_workload": "reproduction/results/hierarchical_robustness/partial/seed144/sdd/77824-eta0.15-passing.json",
+      "status": "passing complete workload"
+    }
+  ]
+}

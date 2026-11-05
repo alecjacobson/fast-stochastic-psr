@@ -16,6 +16,9 @@ def compare(candidate, baseline, output):
                 'halfwidth', 'queries', 'batches']:
         if c['arguments'][key] != b['arguments'][key]:
             raise ValueError(f'comparison contract mismatch: {key}')
+    for key, default in [('scan', 'full'), ('normal_noise', 0.)]:
+        if c['arguments'].get(key, default) != b['arguments'].get(key, default):
+            raise ValueError(f'comparison contract mismatch: {key}')
     cf, bf = read_field(c['field']), read_field(b['field'])
     result = dict(candidate=candidate, baseline=baseline, max_mean_error=0.,
                   max_variance_error_over_prior=0., max_probability_error=0.,
@@ -24,10 +27,15 @@ def compare(candidate, baseline, output):
                   max_error_if_constant_contact_variance_is_used=0., batches=[],
                   max_constant_variance_error_over_prior=0.,
                   interpretation='Same-model numerical and decision comparison; marginal probabilities, not joint collision events or calibration evidence.')
+    brier_sums = dict(candidate=0., baseline=0.)
+    axes = cp.asarray([1., .8, .6] if b['arguments']['geometry'] == 'ellipsoid' else [1., 1., 1.])
     contact_variance = float(bf.predict([[1, 0, 0]])[1][0])
     for q in query_batches(SimpleNamespace(**b['arguments'])):
         cm, cv = cf.predict_gpu(q); bm, bv = bf.predict_gpu(q)
         cpred = ndtr((c['level']-cm)/cp.sqrt(cv)); bpred = ndtr((b['level']-bm)/cp.sqrt(bv))
+        inside = cp.sum((cp.asarray(q)/axes)**2, axis=1) <= 1
+        brier_sums['candidate'] += float(cp.sum((cpred-inside)**2))
+        brier_sums['baseline'] += float(cp.sum((bpred-inside)**2))
         if not bool(cp.isfinite(cpred).all() and cp.isfinite(bpred).all()):
             raise RuntimeError('nonfinite probability')
         cs = (4*cpred*(1-cpred)).reshape(-1, 64).mean(axis=1)
@@ -46,6 +54,8 @@ def compare(candidate, baseline, output):
         for key, value in values.items():
             result[key] = max(result[key], value)
     result['queries'] = b['arguments']['queries']*b['arguments']['batches']
+    result['shape_brier'] = {key: value/result['queries'] for key, value in brier_sums.items()}
+    result['shape_brier_scope'] = 'Known synthetic ellipsoid/sphere inside labels, at anchored local contact; not a repeated-scan calibration certificate.'
     Path(output).write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps({k: v for k, v in result.items() if k != 'batches'}), flush=True)
 

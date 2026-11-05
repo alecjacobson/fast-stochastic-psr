@@ -19,15 +19,15 @@ from geospsr.iterative import StochasticDualDescent
 from geospsr.nonperiodic import FreeSpacePoissonMatern, RegionalVarianceCache
 from geospsr.nonperiodic_dense_gpu import full_kernel_matmul
 from geospsr.regional_field import PolynomialMomentField
-from reproduction.benchmark_hierarchical_variance import data, query_batches, save_field
+from reproduction.benchmark_hierarchical_variance import data_from_arguments, query_batches, save_field, read_field
 
 
 def run(args):
     import cupy as cp
     from cupyx.scipy.special import ndtr as gpu_ndtr
     reference = json.loads(Path(args.reference).read_text())
-    a = reference['contract']
-    x, y, _ = data(a['n'], a['seed'], a['geometry'])
+    a = dict(reference['contract'], order=args.order, cross_tolerance=args.cross_tolerance)
+    x, y, _ = data_from_arguments(a)
     model = FreeSpacePoissonMatern(a['lengthscale'], a['amplitude'])
     q = np.array(reference['queries'])
     mr, vr = np.array(reference['mean']), np.array(reference['variance'])
@@ -37,11 +37,27 @@ def run(args):
         ndtr((mr[-1]-mr+sign*(mb[-1]+mb))/np.sqrt(vr-endpoint*vb))
         for sign in [-1, 1] for endpoint in [0, 1]])-pref), axis=0)
     cache = RegionalVarianceCache.__new__(RegionalVarianceCache)
-    cache._initialize_box([1, 0, 0], a['halfwidth'], 4)
+    cache._initialize_box([1, 0, 0], a['halfwidth'], args.order)
     cache.prior_variance = model.prior_variance
     query_args = SimpleNamespace(seed=a['seed'], halfwidth=a['halfwidth'], queries=args.queries, batches=args.batches)
+    application_reference = None
+    if args.application_reference:
+        application_reference = json.loads(Path(args.application_reference).read_text())
+        other = application_reference['arguments']
+        for key in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude', 'relative_noise', 'halfwidth']:
+            if a[key] != other[key]:
+                raise ValueError(f'application reference mismatch: {key}')
+        for key, default in [('scan', 'full'), ('normal_noise', 0.), ('order', 4), ('cross_tolerance', 1e-4)]:
+            if a.get(key, default) != other.get(key, default):
+                raise ValueError(f'application reference mismatch: {key}')
+        if other['queries'] != args.queries or other['batches'] != args.batches:
+            raise ValueError('application reference query contract mismatch')
+        if not application_reference.get('independent_audit', {}).get('passes'):
+            raise ValueError('application reference must pass the independent full-kernel audit')
+        reference_field = read_field(application_reference['field'])
     start = perf_counter()
-    cache.correction = np.zeros((64, 64)); cache.mean_coefficients = np.zeros(64)
+    nodes = args.order**3
+    cache.correction = np.zeros((nodes, nodes)); cache.mean_coefficients = np.zeros(nodes)
     warm = PolynomialMomentField(cache)
     wm, wv = warm.predict_gpu(np.tile([1., 0, 0], (args.queries, 1)))
     wp = gpu_ndtr(wm/cp.sqrt(wv)); ws = (4*wp*(1-wp)).reshape(-1, 64).mean(axis=1)
@@ -52,7 +68,7 @@ def run(args):
     c = model.cross_covariance(cache.nodes, x)
     rhs = c.transpose(1, 2, 0).reshape(len(x), -1)
     u, s, vt = svd(rhs, full_matrices=False, check_finite=False)
-    rank = int(np.count_nonzero(s > 1e-4*s[0]))
+    rank = int(np.count_nonzero(s > args.cross_tolerance*s[0]))
     u, coefficients = u[:, :rank], s[:rank, None]*vt[:rank]
     compression_seconds = perf_counter()-begin
     full_rhs = np.column_stack((u, y))
@@ -70,11 +86,13 @@ def run(args):
                     ['geospsr/iterative.py', 'geospsr/nonperiodic.py', 'geospsr/nonperiodic_dense_gpu.py',
                      'geospsr/regional_field.py', 'reproduction/benchmark_hierarchical_sdd.py',
                      'reproduction/benchmark_hierarchical_variance.py']}, configurations=[])
+    if application_reference is not None:
+        record['application_reference_sha256'] = hashlib.sha256(Path(args.application_reference).read_bytes()).hexdigest()
     out = Path(args.output); out.parent.mkdir(parents=True, exist_ok=True)
 
     def evaluate(gram, projected_mean):
         start = perf_counter()
-        r = 4**3
+        r = args.order**3
         cache.correction = sum(coefficients[:, d*r:(d+1)*r].T@gram@coefficients[:, d*r:(d+1)*r] for d in range(3))
         cache.mean_coefficients = sum(coefficients[:, d*r:(d+1)*r].T@projected_mean[:, d] for d in range(3))
         field = PolynomialMomentField(cache)
@@ -88,6 +106,25 @@ def run(args):
         quality = dict(max_probability_error=pe, max_variance_error_over_prior=ve,
                        minimum_variance=float(variance.min()) if np.isfinite(variance).all() else None,
                        passes=bool(valid and pe <= 1e-3 and ve <= 1e-4))
+        if quality['passes'] and application_reference is not None:
+            # Offline acceptance check on every actual query, separate from
+            # the final timed replay. The finite probe audit alone can miss
+            # interior errors of a stochastic iterate's polynomial field.
+            max_pe, max_ve = 0., 0.
+            for queries in query_batches(query_args):
+                qm, qv = field.predict_gpu(queries)
+                bm, bv = reference_field.predict_gpu(queries)
+                if float(cp.min(qv)) <= 0 or not bool(cp.isfinite(qm).all() and cp.isfinite(qv).all()):
+                    max_pe, max_ve = float('inf'), float('inf')
+                    break
+                pp = gpu_ndtr((level-qm)/cp.sqrt(qv))
+                bp = gpu_ndtr((application_reference['level']-bm)/cp.sqrt(bv))
+                max_pe = max(max_pe, float(cp.max(abs(pp-bp))))
+                max_ve = max(max_ve, float(cp.max(abs(qv-bv)))/model.prior_variance)
+            quality.update(application_max_probability_error=max_pe,
+                           application_max_variance_error_over_prior=max_ve,
+                           application_queries=args.queries*args.batches,
+                           passes=bool(max_pe <= 1e-3 and max_ve <= 1e-4))
         return field, level, quality, seconds
 
     for eta in args.eta:
@@ -118,6 +155,23 @@ def run(args):
             variants = dict(standard=dict(quality, projection_seconds=projection_seconds,
                                           field_seconds=finalization_seconds))
             selected = 'standard'
+            if (not quality['passes'] and application_reference is not None and
+                    quality['max_variance_error_over_prior'] is not None and
+                    quality['max_variance_error_over_prior'] <= 1e-4 and
+                    quality.get('application_max_variance_error_over_prior', 0.) <= 1e-4):
+                start = perf_counter()
+                residual_y = y-full_kernel_matmul(model, x, model.amplitude*a['relative_noise'], z[:, rank:])
+                # U^T A^-1 y - (U^T Zy + Zu^T (y-A Zy))
+                # = (U-A Zu)^T A^-1 (y-A Zy). Keep standard variance.
+                mean_moment = projected_mean+z[:, :rank].T@residual_y
+                mean_projection_seconds = projection_seconds+perf_counter()-start
+                mean_corrected = evaluate(gram, mean_moment)
+                variants['mean_corrected'] = dict(mean_corrected[2], projection_seconds=mean_projection_seconds,
+                                                  field_seconds=mean_corrected[3])
+                if mean_corrected[2]['passes']:
+                    field, level, quality, finalization_seconds = mean_corrected
+                    projection_seconds = mean_projection_seconds
+                    selected = 'mean_corrected'
             # Correction is optional: it can be more conservative and slower
             # for stochastic iterates with large errors orthogonal to U.
             if not quality['passes']:
@@ -173,11 +227,18 @@ if __name__ == '__main__':
     parser.add_argument('--output', required=True)
     parser.add_argument('--eta', nargs='+', type=float, default=[.03, .1])
     parser.add_argument('--batch', type=int, default=128)
+    parser.add_argument('--order', type=int, default=4)
+    parser.add_argument('--cross-tolerance', type=float, default=1e-4)
+    parser.add_argument('--application-reference', help='audited moment-cache record for full-query acceptance')
     parser.add_argument('--checkpoints', nargs='+', type=int, default=[128, 512, 2048, 8192])
     parser.add_argument('--budget', type=float, default=45)
     parser.add_argument('--queries', type=int, default=65536)
     parser.add_argument('--batches', type=int, default=16)
     arguments = parser.parse_args()
+    if arguments.order < 2:
+        parser.error('order must be at least two')
+    if not 0 < arguments.cross_tolerance < 1:
+        parser.error('cross tolerance must be in (0, 1)')
     if arguments.queries <= 0 or arguments.queries % 64 or arguments.batches < 1:
         parser.error('queries must be a positive multiple of 64 and batches positive')
     if any(t <= 0 for t in arguments.checkpoints) or any(b <= a for a, b in zip(arguments.checkpoints, arguments.checkpoints[1:])):

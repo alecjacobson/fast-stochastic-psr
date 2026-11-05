@@ -13,6 +13,13 @@ reproduction or a calibrated robotics result. Cholesky wins at smaller sizes.
 [The long-correlation case](../README.md) is retained as a counterexample:
 SDD completes it in 2.35 s, faster than either hierarchical or dense preparation.
 
+**Follow-up:** [Noisy partial scans and GPU locality control](../../hierarchical_robustness/README.md)
+adds a faster GPU distance-truncated baseline. It beats H² at the smaller sizes
+here, while a larger N=196,608 case produces a measured H² crossover after
+including setup and variance. The follow-up also retains cross-basis failures
+and strengthens SDD acceptance beyond the finite probe audit. The measurements
+below remain the original fixed experiment; they do not rank all locality methods.
+
 ![Measured log-log scaling, storage, ranks and iterations](scaling.png)
 
 ## Complete workload and results

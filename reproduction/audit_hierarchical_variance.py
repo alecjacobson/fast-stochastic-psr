@@ -48,12 +48,17 @@ def probability_allowance(mean, variance, mean_bound, variance_bound):
     return np.max(abs(np.asarray(endpoints)-reference), axis=0)
 
 
-def audit(path, reference_path, random_queries=32, reference_preconditioner='native'):
+def audit(path, reference_path, random_queries=32, reference_preconditioner='native', queries=None, result_path=None):
     record = json.loads(Path(path).read_text())
     a = record['arguments']
     contract = {k: a[k] for k in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude',
                                  'relative_noise', 'halfwidth']}
     contract['random_queries'] = random_queries
+    if queries is not None:
+        queries=np.asarray(queries,dtype=float)
+        if queries.ndim!=2 or queries.shape[1]!=3 or not len(queries) or not np.isfinite(queries).all() or not np.array_equal(queries[-1],[1,0,0]):
+            raise ValueError('Custom queries must be finite (Q,3), with the contact last')
+        contract['custom_queries']=queries.tolist()
     if a.get('point_cloud'):
         contract.update(point_cloud=a['point_cloud'], point_cloud_sha256=a['point_cloud_sha256'])
     for key, default in [('scan', 'full'), ('normal_noise', 0.)]:
@@ -72,6 +77,7 @@ def audit(path, reference_path, random_queries=32, reference_preconditioner='nat
         rng = np.random.default_rng(a['seed']+200)
         q = [1, 0, 0]+a['halfwidth']*np.vstack((rng.uniform(-1, 1, (random_queries, 3)),
                     np.array(list(itertools.product([-1., 1.], repeat=3))), np.zeros((1, 3))))
+        if queries is not None:q=queries
         # Direct cross kernels, without regional interpolation/compression;
         # bounded temporary storage also works for multi-million-point inputs.
         rhs = np.empty((len(x), 3*len(q)+3))
@@ -149,8 +155,12 @@ def audit(path, reference_path, random_queries=32, reference_preconditioner='nat
                   max_reference_probability_bound=float(probability_bound.max()))
     result['passes'] = bool(result['max_variance_error_over_prior'] <= 1e-4 and
                             result['max_probability_error'] <= 1e-3 and np.all(variance > 0))
-    record['independent_audit'] = result
-    Path(path).write_text(json.dumps(record, indent=2)+'\n')
+    if result_path is None:
+        record['independent_audit'] = result
+        Path(path).write_text(json.dumps(record, indent=2)+'\n')
+    else:
+        result.update(source=str(path),source_sha256=hashlib.sha256(Path(path).read_bytes()).hexdigest())
+        Path(result_path).write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result), flush=True)
 
 
@@ -160,5 +170,8 @@ if __name__ == '__main__':
     parser.add_argument('--reference', required=True)
     parser.add_argument('--random-queries', type=int, default=32)
     parser.add_argument('--reference-preconditioner', choices=['native', 'prefix-kd'], default='native')
+    parser.add_argument('--query-json',help='Optional explicit query list ending with contact (1,0,0)')
+    parser.add_argument('--result',help='Write a separate audit without modifying the production record')
     args = parser.parse_args()
-    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner)
+    queries=json.loads(Path(args.query_json).read_text()) if args.query_json else None
+    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner,queries,args.result)

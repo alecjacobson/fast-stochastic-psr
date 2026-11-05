@@ -1,5 +1,12 @@
 # PoissonRecon scans: H² accelerates mean and variance
 
+**Updated accuracy finding:** the [issue #104 follow-up](../asymptotic_regimes/README.md)
+finds CDF error .001329 at a targeted full-kernel probe for the older 196,608-point
+Eagle cached-locality control, exceeding the .001 gate. Its earlier accepted
+status applied to the probes then tested; it is excluded from the updated
+accepted plot. Historical raw records below are retained unchanged.
+
+
 On the **full Eagle scan (796,825 oriented points)**, H² completes setup, mean,
 variance and **1,048,576 probability queries in 305.04 s**, versus **2,465.47 s**
 for the improved streamed radius-kernel control: **8.08× faster**. Both methods

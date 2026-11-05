@@ -38,11 +38,14 @@ def test_variance_series_matches_dense_factor_at_new_queries():
 
 @pytest.mark.parametrize('working_dtype',['float64','float32'])
 @pytest.mark.parametrize('paired',[False,True])
-def test_gradient_variance_series_matches_independent_dense_variance(working_dtype,paired):
+@pytest.mark.parametrize('factor_layout',['clean-c','inplace-f'])
+def test_gradient_variance_series_matches_independent_dense_variance(working_dtype,paired,factor_layout):
     rng=np.random.default_rng(728)
     x=rng.uniform(-1,1,(17,3)).astype('f');q=rng.uniform(-1,1,(31,3)).astype('f')
     a=analytic_covariance_rows64(x,x,lengthscale=.2);a.flat[::18]+=.02
-    chol=cp.linalg.cholesky(a);op=FourierPoisson(4,lengthscale=.2,dtype='float64',eps=1e-12)
+    from reproduction.benchmark_eagle_comparison import cholesky_in_place
+    chol=cp.linalg.cholesky(a) if factor_layout=='clean-c' else cholesky_in_place(a)
+    op=FourierPoisson(4,lengthscale=.2,dtype='float64',eps=1e-12)
     c=op.cross_values((q[:,None].astype('d')-x[None].astype('d')).reshape(-1,3)).reshape(len(q),len(x),3)
     z=cla.solve_triangular(chol,c.transpose(1,0,2).reshape(len(x),-1),lower=True)
     coeff,record=prepare_variance_series(x,chol,op,batch=5,method='gradient',working_dtype=working_dtype,

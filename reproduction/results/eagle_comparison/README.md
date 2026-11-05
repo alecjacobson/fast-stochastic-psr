@@ -1,5 +1,17 @@
 # Eagle mean-and-variance comparison across method families
 
+**Updated accuracy finding:** the [issue #104 follow-up](../asymptotic_regimes/README.md)
+finds CDF error .001329 at a targeted full-kernel probe for the older 196,608-point
+Eagle cached-locality control, exceeding the .001 gate. Its earlier accepted
+status applied to the probes then tested; it is excluded from the updated
+accepted plot. Historical raw records below are retained unchanged.
+
+
+The [extended scaling study](../asymptotic_regimes/README.md) supersedes these
+short-range slope estimates with fixed-setting sweeps, separate factorization
+timings, resource limits, and query/grid/bandwidth checks. These original records
+remain available for provenance.
+
 This comparison uses the scenario with the strongest demonstrated H² result:
 a fixed Eagle scan, a small contact region, and **16 changing batches of 65,536
 queries**. Every completed timing includes preparation, mean, marginal variance,

@@ -1,0 +1,1104 @@
+{
+  "arguments": {
+    "method": "original",
+    "n": 8192,
+    "point_cloud": "/home/horde/.cache/fast-stochastic-psr/poissonrecon/eagle.npy",
+    "output": "reproduction/results/asymptotic_regimes/original/subspace3072-grid16-8192.json",
+    "seed": 12,
+    "queries": 65536,
+    "batches": 16,
+    "halfwidth": 0.005,
+    "order": 5,
+    "cross_tolerance": 1e-08,
+    "ell": 0.00477464829275686,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "cutoff": 50,
+    "reference": "refine",
+    "dense_dtype": "float32",
+    "moment_dtype": "float32",
+    "fit_cutoff": 50,
+    "warm_iterations": 20,
+    "variance_rtol": 0.001,
+    "preconditioner_block": 128,
+    "rhs_block_size": 32,
+    "batch": 512,
+    "eta": 1.0,
+    "budget": 120.0,
+    "grid": 16,
+    "subspace": 3072
+  },
+  "complete": true,
+  "stages": {
+    "original_full_fit": 5.521521270973608
+  },
+  "checkpoints": [],
+  "point_cloud_metadata": {
+    "dataset": "eagle",
+    "source_url": "https://www.cs.jhu.edu/~misha/Code/PoissonRecon/eagle.points.ply",
+    "source_ply_sha256": "468e41b3679f775b98fe8cc79132cb99e8d6dfc4dcc1bb684e571a90e326e478",
+    "source_points": 796825,
+    "normalized_sha256": "3eea25538b3254fceed883ab38261cc08b72a608bfe50de69c5d08c417463604",
+    "permutation_seed": 12,
+    "source_bounds": [
+      [
+        -0.8689860105514526,
+        -1.5494799613952637,
+        -1.8521300554275513
+      ],
+      [
+        3.6290700435638428,
+        7.075570106506348,
+        4.5885701179504395
+      ]
+    ],
+    "coordinate_scale": 0.2318827118978777,
+    "anchor_source_index": 273280,
+    "anchor_source": [
+      3.342829942703247,
+      2.7926199436187744,
+      0.9013050198554993
+    ],
+    "normal_source": [
+      0.9721770941382609,
+      -0.1407010053991882,
+      0.18728300700422498
+    ],
+    "rotation": [
+      [
+        0.9721770941382609,
+        0.13816069875586892,
+        -0.18916479310954518
+      ],
+      [
+        -0.1407010053991882,
+        0.9900521335160375,
+        3.469446951953614e-18
+      ],
+      [
+        0.18728300700422498,
+        0.02661567657664243,
+        0.981945355428612
+      ]
+    ],
+    "normal_length_min": 0.9999991213629537,
+    "normal_length_max": 1.0000009224957287,
+    "preprocessing": "Preserve supplied positions and normal directions; normalize normal lengths; rigid contact frame; global longest bounding-box side = 2 before rotation; deterministic nested permutation.",
+    "contact_policy": "Nearest original sample to bbox center plus .35 longest-side along original +x; anchor maps to (1,0,0), normal maps to +x. Mean-level anchoring only, no scalar conditioning.",
+    "ground_truth": "No ground-truth inside labels; torso envelope is not used as geometry truth or model conditioning."
+  },
+  "point_sha256": "d57ff98cbbccf6f170e13231e4cfc282c7400244f0acdca9a29b0f42e60094df",
+  "normal_sha256": "4265ba5b380bb56ba538542e00abae3d139b4721dd3a4601404878838ba47069",
+  "source_sha256": "1c09ea1411f9343a736d6aff5afe6a84bc78fc5297c5584a11bbd139ce480f72",
+  "queries_total": 1048576,
+  "cpu_quota": "400000 100000",
+  "host_limit": "17179869184",
+  "numerical_gate": {
+    "probability_max_error": 0.001,
+    "variance_max_error_over_prior": 0.0001
+  },
+  "comparison_scope": "Same workload, different instantiated models; no equal reconstruction/calibration claim",
+  "gpytoolbox_version": "0.3.8",
+  "original_source_sha256": "75819ff5e91bd9cb983c449d08acccc551b5f9d05d41614d6a29353927c85c03",
+  "grid": {
+    "shape": [
+      16,
+      16,
+      16
+    ],
+    "spacing": [
+      0.09071590788402592,
+      0.14510127465117106,
+      0.11062859144417188
+    ],
+    "corner": [
+      -0.21950539137853067,
+      -1.1564214454859063,
+      -0.627305238846004
+    ],
+    "kernel_sigma": 0.13607386182603887,
+    "subspace_dim": 3072
+  },
+  "original_grid_file": "reproduction/results/asymptotic_regimes/original/subspace3072-grid16-8192.npz",
+  "original_profile": [
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/lib/_shape_base_impl.py",
+      "line": 1199,
+      "function": "tile",
+      "calls": 40,
+      "self_seconds": 0.0002741,
+      "cumulative_seconds": 0.036107564
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 399,
+      "function": "_matmul_multivector",
+      "calls": 2,
+      "self_seconds": 2.7550000000000002e-05,
+      "cumulative_seconds": 0.969831709
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 760,
+      "function": "__sub__",
+      "calls": 3,
+      "self_seconds": 1.0170000000000001e-05,
+      "cumulative_seconds": 0.010497599
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 30,
+      "function": "__init__",
+      "calls": 83,
+      "self_seconds": 0.00061309,
+      "cumulative_seconds": 0.08596476900000001
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 415,
+      "function": "_matmul_sparse",
+      "calls": 12,
+      "self_seconds": 0.00017334000000000002,
+      "cumulative_seconds": 0.4006116
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_coo.py",
+      "line": 316,
+      "function": "tocsc",
+      "calls": 1,
+      "self_seconds": 1.253e-05,
+      "cumulative_seconds": 0.011671549000000002
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 901,
+      "function": "_rmatmul_dispatch",
+      "calls": 4,
+      "self_seconds": 2.144e-05,
+      "cumulative_seconds": 0.970012289
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 788,
+      "function": "_matmul_dispatch",
+      "calls": 223,
+      "self_seconds": 0.00034475,
+      "cumulative_seconds": 1.376374229
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1189,
+      "function": "_binopt",
+      "calls": 5,
+      "self_seconds": 6.449e-05,
+      "cumulative_seconds": 0.010994259000000001
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_coo.py",
+      "line": 32,
+      "function": "__init__",
+      "calls": 16,
+      "self_seconds": 0.00018854,
+      "cumulative_seconds": 0.015659667000000002
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_coo.py",
+      "line": 383,
+      "function": "_coo_to_compressed",
+      "calls": 12,
+      "self_seconds": 0.00021558000000000002,
+      "cumulative_seconds": 0.049092865000000006
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/matrix_from_function.py",
+      "line": 5,
+      "function": "matrix_from_function",
+      "calls": 3,
+      "self_seconds": 0.130127604,
+      "cumulative_seconds": 0.6212240330000001
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/stochastic_poisson_surface_reconstruction.py",
+      "line": 12,
+      "function": "stochastic_poisson_surface_reconstruction",
+      "calls": 1,
+      "self_seconds": 2.647973382,
+      "cumulative_seconds": 5.5192204910000005
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/linalg/_dsolve/linsolve.py",
+      "line": 134,
+      "function": "spsolve",
+      "calls": 2,
+      "self_seconds": 7.584e-05,
+      "cumulative_seconds": 0.278284695
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/compactly_supported_normal.py",
+      "line": 3,
+      "function": "compactly_supported_normal",
+      "calls": 6,
+      "self_seconds": 0.027998277000000002,
+      "cumulative_seconds": 0.39977308
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/grid_laplacian_eigenfunctions.py",
+      "line": 48,
+      "function": "psi",
+      "calls": 3072,
+      "self_seconds": 0.35859319500000003,
+      "cumulative_seconds": 0.36359600400000003
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/compactly_supported_normal.py",
+      "line": 53,
+      "function": "compactly_supported_normal_centered",
+      "calls": 6,
+      "self_seconds": 0.344565587,
+      "cumulative_seconds": 0.34662142700000004
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/grid_laplacian_eigenfunctions.py",
+      "line": 5,
+      "function": "grid_laplacian_eigenfunctions",
+      "calls": 1,
+      "self_seconds": 0.096401678,
+      "cumulative_seconds": 0.46711031100000006
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/grid_neighbors.py",
+      "line": 4,
+      "function": "grid_neighbors",
+      "calls": 3,
+      "self_seconds": 0.023580578,
+      "cumulative_seconds": 0.035390656
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse.linalg._dsolve._superlu.gssv>",
+      "calls": 2,
+      "self_seconds": 0.278104685,
+      "cumulative_seconds": 0.278104685
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/gpytoolbox/stochastic_poisson_surface_reconstruction.py",
+      "line": 153,
+      "function": "kernel_fun",
+      "calls": 6,
+      "self_seconds": 0.020364668000000002,
+      "cumulative_seconds": 0.420298808
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_matmat_maxnnz>",
+      "calls": 12,
+      "self_seconds": 0.143505823,
+      "cumulative_seconds": 0.143505823
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_matmat>",
+      "calls": 12,
+      "self_seconds": 0.23311586,
+      "cumulative_seconds": 0.23311586
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_matvecs>",
+      "calls": 2,
+      "self_seconds": 0.9697112790000001,
+      "cumulative_seconds": 0.9697112790000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_minus_csr>",
+      "calls": 3,
+      "self_seconds": 0.010057949,
+      "cumulative_seconds": 0.010057949
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_sort_indices>",
+      "calls": 6,
+      "self_seconds": 0.026457737000000002,
+      "cumulative_seconds": 0.026457737000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_eliminate_zeros>",
+      "calls": 3,
+      "self_seconds": 0.023531417000000002,
+      "cumulative_seconds": 0.023531417000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.coo_tocsr>",
+      "calls": 12,
+      "self_seconds": 0.048620585,
+      "cumulative_seconds": 0.048620585
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_data.py",
+      "line": 32,
+      "function": "_deduped_data",
+      "calls": 1,
+      "self_seconds": 2.19e-06,
+      "cumulative_seconds": 0.022252467
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1025,
+      "function": "eliminate_zeros",
+      "calls": 3,
+      "self_seconds": 1.8310000000000003e-05,
+      "cumulative_seconds": 0.024484237000000002
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 260,
+      "function": "_sub_sparse",
+      "calls": 3,
+      "self_seconds": 1.142e-05,
+      "cumulative_seconds": 0.010423179000000001
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1063,
+      "function": "sum_duplicates",
+      "calls": 15,
+      "self_seconds": 4.673e-05,
+      "cumulative_seconds": 0.031896716
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1110,
+      "function": "sort_indices",
+      "calls": 6,
+      "self_seconds": 1.81e-05,
+      "cumulative_seconds": 0.026496177000000003
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 451,
+      "function": "asformat",
+      "calls": 33,
+      "self_seconds": 4.5350000000000005e-05,
+      "cumulative_seconds": 0.023042107000000003
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 919,
+      "function": "__matmul__",
+      "calls": 221,
+      "self_seconds": 0.00011182000000000001,
+      "cumulative_seconds": 0.40710954000000005
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 925,
+      "function": "__rmatmul__",
+      "calls": 2,
+      "self_seconds": 5.2e-06,
+      "cumulative_seconds": 0.9699517190000001
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/scipy/sparse/_data.py",
+      "line": 69,
+      "function": "astype",
+      "calls": 4,
+      "self_seconds": 8.66e-06,
+      "cumulative_seconds": 0.023180477
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 170,
+      "function": "ones",
+      "calls": 3100,
+      "self_seconds": 0.013018378,
+      "cumulative_seconds": 0.013917358000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'repeat' of 'numpy.ndarray' objects>",
+      "calls": 40,
+      "self_seconds": 0.035682844000000005,
+      "cumulative_seconds": 0.035682844000000005
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "calls": 166,
+      "self_seconds": 0.016275336,
+      "cumulative_seconds": 0.016275336
+    },
+    {
+      "file": "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/numpy/_core/shape_base.py",
+      "line": 218,
+      "function": "vstack",
+      "calls": 33,
+      "self_seconds": 0.011102508,
+      "cumulative_seconds": 0.011327008000000001
+    },
+    {
+      "file": "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py",
+      "line": 82,
+      "function": "timed",
+      "calls": 1,
+      "self_seconds": 1.913e-05,
+      "cumulative_seconds": 5.52209868
+    },
+    {
+      "file": "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_eagle_comparison.py",
+      "line": 102,
+      "function": "<lambda>",
+      "calls": 1,
+      "self_seconds": 0.00229449,
+      "cumulative_seconds": 5.521514981
+    }
+  ],
+  "level": 0.08246504186513451,
+  "probes": {
+    "query": [
+      [
+        0.9987896771836534,
+        0.004984986333480844,
+        0.004708874289524481
+      ],
+      [
+        1.0012151778847882,
+        0.0029576676133961166,
+        -0.004529634377951955
+      ],
+      [
+        0.9980224689002695,
+        -0.002750339319794637,
+        -0.0015751819510681287
+      ],
+      [
+        0.9955671236864505,
+        0.00372967708865508,
+        -0.0005761171739582393
+      ],
+      [
+        1.0017497266347557,
+        -0.0030377041943168547,
+        -0.0003381959242296151
+      ],
+      [
+        0.998198680656762,
+        -0.0035150337018138443,
+        -0.0037999413252430116
+      ],
+      [
+        1.0037133040521375,
+        0.0004377004419098973,
+        -0.0014776831158905901
+      ],
+      [
+        1.0036854765633514,
+        -0.003193362268300101,
+        -0.004081387945727899
+      ],
+      [
+        0.9986807256294863,
+        -0.0035355142949520368,
+        0.0018367501704917022
+      ],
+      [
+        0.995880609506322,
+        -0.0008502829807103818,
+        -0.00039881123156266466
+      ],
+      [
+        1.003275516356787,
+        0.000960621282322498,
+        -0.001980712947561699
+      ],
+      [
+        0.9955015294210785,
+        -0.004821669119043466,
+        -0.003378268990867792
+      ],
+      [
+        0.9977328012031691,
+        0.0038270192367041403,
+        -0.0033016131726740627
+      ],
+      [
+        1.001461467901085,
+        0.0021445308062617695,
+        0.0005184448442159562
+      ],
+      [
+        0.9987983527295855,
+        0.00206027638323962,
+        -0.00289324239018634
+      ],
+      [
+        0.9953494559112451,
+        0.004760132801134071,
+        0.0020271322110179202
+      ],
+      [
+        0.9979688379370861,
+        -0.0034424133380635148,
+        0.003910231468060449
+      ],
+      [
+        0.9970085010181644,
+        0.0016966838100570892,
+        -0.003438705686318726
+      ],
+      [
+        1.000484690685961,
+        0.0044369957690146575,
+        -0.0013504721965067912
+      ],
+      [
+        0.9966862573753822,
+        0.0005302314387410045,
+        -0.0013163607155287583
+      ],
+      [
+        0.998958153430777,
+        -0.0014231960683754408,
+        0.0038631981483210434
+      ],
+      [
+        0.997877052669872,
+        -0.0022803714793649113,
+        0.000799581299735671
+      ],
+      [
+        0.9969689822121762,
+        -0.0007171814242391895,
+        -0.0022757550651451553
+      ],
+      [
+        1.0014452934676323,
+        -0.004090889292091473,
+        -0.0016920616725744242
+      ],
+      [
+        1.0021880985838598,
+        -0.004026074030824084,
+        0.0017016026259272443
+      ],
+      [
+        0.9966108548435936,
+        0.003431318793910049,
+        -0.00027224710949348083
+      ],
+      [
+        0.999537972682834,
+        -0.0009264576631855382,
+        0.004715850046520171
+      ],
+      [
+        0.9978656141336447,
+        0.0035116411284713523,
+        -0.0014681559340923023
+      ],
+      [
+        0.9975831086897606,
+        0.004969298694924898,
+        -0.00038336930654567117
+      ],
+      [
+        0.9998085871280105,
+        -0.001092051245587925,
+        0.0023110456793399804
+      ],
+      [
+        1.0008181283069824,
+        0.0036159510827924045,
+        0.0004714961860162692
+      ],
+      [
+        0.9988241495075695,
+        -0.0019192977730861183,
+        -0.0010841807825046435
+      ],
+      [
+        1.0000353348288322,
+        0.0003712498058202529,
+        0.0037525340636557825
+      ],
+      [
+        1.0044032173681023,
+        -0.0021818771344688883,
+        -0.003390632839727066
+      ],
+      [
+        1.0036554122949883,
+        -0.0046975334112384715,
+        0.0009835590233459647
+      ],
+      [
+        1.0017006584892603,
+        0.0026435052117327394,
+        0.0029504376698107795
+      ],
+      [
+        1.0014334043354471,
+        -0.0034820082312146507,
+        -0.0016742511337268229
+      ],
+      [
+        0.9950969793684851,
+        0.004878927468527522,
+        -0.001585401758893802
+      ],
+      [
+        1.00170808411308,
+        -0.004002360023451097,
+        -0.003240156360135713
+      ],
+      [
+        1.0041213575175663,
+        -0.0005559208848503539,
+        -0.0043988715770265354
+      ],
+      [
+        0.9984493773349651,
+        -0.0036074071343426685,
+        -0.0018446603973661223
+      ],
+      [
+        1.000368652436765,
+        -0.002494536391859732,
+        0.0020633650988490237
+      ],
+      [
+        1.0010189393197806,
+        -0.0002470174805803116,
+        0.002212235364199855
+      ],
+      [
+        1.0013864062875462,
+        -0.0027849852031950075,
+        0.0016709689493898839
+      ],
+      [
+        0.9983038039965979,
+        0.0022407668068097596,
+        0.0007886393266282266
+      ],
+      [
+        0.9957809674234949,
+        0.002197958266896568,
+        0.002976792442009124
+      ],
+      [
+        1.001822430732212,
+        -8.900559506510364e-05,
+        -0.0023483881720144507
+      ],
+      [
+        0.9956488476447415,
+        0.0025838485286537585,
+        0.003664003314482481
+      ],
+      [
+        1.002427632033906,
+        -0.002315061630940584,
+        0.001048918825216394
+      ],
+      [
+        0.9963078920605606,
+        0.0011648956941913125,
+        0.0015025014566967133
+      ],
+      [
+        0.9993523923372876,
+        0.001509583708255119,
+        0.0028166263387448365
+      ],
+      [
+        1.0036132582160822,
+        0.004873412958538218,
+        -0.004312575430799392
+      ],
+      [
+        1.001058780193429,
+        -0.0014955667907390014,
+        0.0010579322514524603
+      ],
+      [
+        1.0033728963957742,
+        0.0035408496905605215,
+        -0.003805569143973546
+      ],
+      [
+        0.996614251732939,
+        -0.003387310917368033,
+        0.0018855458946947302
+      ],
+      [
+        0.9960993831609289,
+        0.0019988329872788224,
+        -0.00043581780455373756
+      ],
+      [
+        0.9987116763556185,
+        -0.0034826624482603087,
+        -0.00037310302407158046
+      ],
+      [
+        0.9979184959810762,
+        0.00418366227350818,
+        0.002963134284568624
+      ],
+      [
+        1.0009564173395353,
+        -0.00347705028823454,
+        -0.0016832598517769293
+      ],
+      [
+        0.997742372638164,
+        0.0018086926072552723,
+        -0.0014295510503058995
+      ],
+      [
+        1.003834808326073,
+        0.0031934147089591057,
+        0.0009646229173309551
+      ],
+      [
+        1.0037292643988713,
+        0.0030974796438343454,
+        -0.0021432414901660824
+      ],
+      [
+        1.0024252843984132,
+        -0.0013271226149042204,
+        0.00032813731510481837
+      ],
+      [
+        1.0046828093398905,
+        0.00446520375834993,
+        -0.004898885041404915
+      ],
+      [
+        0.995,
+        -0.005,
+        -0.005
+      ],
+      [
+        0.995,
+        -0.005,
+        0.005
+      ],
+      [
+        0.995,
+        0.005,
+        -0.005
+      ],
+      [
+        0.995,
+        0.005,
+        0.005
+      ],
+      [
+        1.005,
+        -0.005,
+        -0.005
+      ],
+      [
+        1.005,
+        -0.005,
+        0.005
+      ],
+      [
+        1.005,
+        0.005,
+        -0.005
+      ],
+      [
+        1.005,
+        0.005,
+        0.005
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "mean": [
+      0.07992558753221694,
+      0.08573829641315667,
+      0.07919196195974479,
+      0.07543346085766826,
+      0.08522857145130511,
+      0.07989668803558794,
+      0.08909650784573794,
+      0.08923289044248042,
+      0.07950496752778682,
+      0.07548294767947075,
+      0.08850326438319393,
+      0.07512493182305229,
+      0.07970995727718033,
+      0.08503213430887371,
+      0.08124431093122898,
+      0.07461313748815065,
+      0.07785030233845562,
+      0.07831643445610761,
+      0.08398584708693677,
+      0.07718627486279434,
+      0.07973917059523603,
+      0.07847456895647056,
+      0.07775776969458001,
+      0.084890376122217,
+      0.08547613750037042,
+      0.07710159011335788,
+      0.08059620250495977,
+      0.07949750278614418,
+      0.07899589659959212,
+      0.08155254624010687,
+      0.08408392076655674,
+      0.0805229729143849,
+      0.08176780425170277,
+      0.09040015933964515,
+      0.08806177698049347,
+      0.08498171743080729,
+      0.0849224017020347,
+      0.07505160095587318,
+      0.08565626380903969,
+      0.09026789200514881,
+      0.0798918165387748,
+      0.08243351927088778,
+      0.08371422507939708,
+      0.08422489460555001,
+      0.07962378416177382,
+      0.0748373388753786,
+      0.08602849242283457,
+      0.07449095434645323,
+      0.08616723472268517,
+      0.07597210600717383,
+      0.08090248280186209,
+      0.08995569214377508,
+      0.08390804961879955,
+      0.08926536101742359,
+      0.07598029586691735,
+      0.07613566061471727,
+      0.08003396831060802,
+      0.07866967182471181,
+      0.08411664256379903,
+      0.07911908966215729,
+      0.08906320162390834,
+      0.08949323021768746,
+      0.08639589638909782,
+      0.09177237316013215,
+      0.07462660410407104,
+      0.07236690228086248,
+      0.07571221120398341,
+      0.07338196920843147,
+      0.09145946760031773,
+      0.08956889725428915,
+      0.09244171631398722,
+      0.09048979462041781,
+      0.08246504186513451
+    ],
+    "variance": [
+      0.001829305425040873,
+      0.0018516606128288204,
+      0.0018335873463126355,
+      0.001830294692640034,
+      0.0018406660596570856,
+      0.001837384690355418,
+      0.0018504142435198968,
+      0.0018522584764862596,
+      0.0018286459810440267,
+      0.0018274336948508353,
+      0.0018506327557396098,
+      0.0018287094100994084,
+      0.0018410161130583897,
+      0.001842210658494756,
+      0.0018416434077345662,
+      0.001825508828908752,
+      0.0018232588837029785,
+      0.001837739480874506,
+      0.0018449116644448462,
+      0.0018321612105755974,
+      0.0018271968512112657,
+      0.0018293457430328254,
+      0.0018336766064243571,
+      0.0018415158453886382,
+      0.0018373898471162249,
+      0.0018321964891230458,
+      0.0018274510662621222,
+      0.0018377027527178508,
+      0.0018357990918011814,
+      0.001832374401624139,
+      0.0018417345612735745,
+      0.0018353849784842203,
+      0.0018313390614068353,
+      0.0018536598389176195,
+      0.0018418908866545134,
+      0.001838624145718325,
+      0.0018419207599339837,
+      0.0018316126122442863,
+      0.0018450183614433112,
+      0.0018561026675608108,
+      0.0018345065725672534,
+      0.0018332442832619039,
+      0.001836218322440488,
+      0.0018363148376871622,
+      0.001833708040323602,
+      0.0018232343995940605,
+      0.0018467618970877302,
+      0.0018219027158257312,
+      0.0018404173619455638,
+      0.001826544417766949,
+      0.001832117848346452,
+      0.0018588034733583857,
+      0.0018375260488550072,
+      0.0018563619945933987,
+      0.0018234464608886673,
+      0.0018301391527536627,
+      0.001832669238216119,
+      0.001830052876895378,
+      0.001840722617306349,
+      0.00183603530951732,
+      0.0018482125158281446,
+      0.0018537732762184032,
+      0.001842453151531018,
+      0.0018625735359473975,
+      0.0018300700073211945,
+      0.001812908423421963,
+      0.0018377481778476968,
+      0.0018191745191816417,
+      0.0018558273838002756,
+      0.001837839763298332,
+      0.0018637761379712197,
+      0.0018444708969391087,
+      0.0018378535349544516
+    ],
+    "probability": [
+      0.523672943036442,
+      0.4696827022299396,
+      0.5304644351347167,
+      0.5652755797381597,
+      0.4743205070756263,
+      0.5238893907183745,
+      0.43874131962325075,
+      0.43752260176277047,
+      0.5275931418041577,
+      0.5648705338782484,
+      0.44418706117548207,
+      0.5681415408062691,
+      0.5255986969147659,
+      0.4761535868565399,
+      0.5113466766443189,
+      0.5729044513255829,
+      0.5430316812915107,
+      0.5385472120807093,
+      0.4858777095636613,
+      0.5490750744180238,
+      0.5254230980631763,
+      0.5371669424413424,
+      0.5437667227721189,
+      0.47746472930683503,
+      0.47199878335821255,
+      0.5498578057364671,
+      0.5174349554784956,
+      0.5275944748424983,
+      0.532266039810489,
+      0.5085035615286366,
+      0.48495445513012925,
+      0.5180785003557646,
+      0.5064996097292331,
+      0.4268868922854167,
+      0.4481219887537224,
+      0.47659861646122376,
+      0.47716999002997523,
+      0.568761529368045,
+      0.47038802671124985,
+      0.4281390076511032,
+      0.5239533936612258,
+      0.5002937120799286,
+      0.4883717987734373,
+      0.48362087269991866,
+      0.5264506916925348,
+      0.5708888083479086,
+      0.4669571207609756,
+      0.574098280658301,
+      0.4656147525500156,
+      0.5603765064499912,
+      0.5145604015653503,
+      0.4310344337015707,
+      0.4865729699377833,
+      0.437294175711236,
+      0.5603517439744834,
+      0.5588094546773937,
+      0.5226429363706905,
+      0.535347843978763,
+      0.4846462771877549,
+      0.5311206102771426,
+      0.43901056570499936,
+      0.4351664385787307,
+      0.46351686761539757,
+      0.41462661245618704,
+      0.5726910697715469,
+      0.59373620736347,
+      0.5625834991809676,
+      0.5843204537073271,
+      0.4173070354977936,
+      0.43419385327333504,
+      0.4086208349230196,
+      0.4258886736459225,
+      0.5
+    ]
+  },
+  "accuracy_status": "unmodified original implementation; grid/model convergence not established",
+  "query_seconds": [
+    0.007162728812545538,
+    0.006797828944399953,
+    0.006806558929383755,
+    0.0068208889570087194,
+    0.006761539028957486,
+    0.006769329076632857,
+    0.0067488099448382854,
+    0.006739549105986953,
+    0.006719609024003148,
+    0.006738058989867568,
+    0.006725979037582874,
+    0.0067283890675753355,
+    0.006713768932968378,
+    0.006726008839905262,
+    0.006737740011885762,
+    0.006727639120072126
+  ],
+  "probability_checksums": [
+    32764.572401434278,
+    32768.217607022096,
+    32785.644929896254,
+    32763.119283983207,
+    32787.884868600304,
+    32789.59031171656,
+    32791.24200830379,
+    32765.1013028876,
+    32769.96566649592,
+    32778.073815148746,
+    32772.00698648653,
+    32780.72945276687,
+    32779.61782896485,
+    32771.63876461002,
+    32752.045619943634,
+    32766.65266331497
+  ],
+  "preparation_seconds": 5.521521270973608,
+  "total_seconds": 5.629945696797222,
+  "peak_host_rss_bytes": 899604480
+}

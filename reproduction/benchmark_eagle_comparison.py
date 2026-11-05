@@ -97,9 +97,17 @@ def main(a):
             gs = np.full(3, a.grid); h = (hi-lo)/(a.grid-1)
             r['grid'] = dict(shape=gs.tolist(), spacing=h.tolist(), corner=lo.tolist(),
                              kernel_sigma=float(1.5*min(h)), subspace_dim=a.subspace)
+            import cProfile, pstats
+            profiler=cProfile.Profile();profiler.enable()
             mean, variance, _ = timed('original_full_fit', lambda: fn(
                 x, y, gs=gs, h=h, corner=lo, output_variance=True,
                 solve_subspace_dim=a.subspace, sigma_n=.005, sigma=.05))
+            profiler.disable()
+            stats=pstats.Stats(profiler)
+            np.savez_compressed(out.with_suffix('.npz'),mean=mean,variance=variance)
+            r['original_grid_file']=str(out.with_suffix('.npz'))
+            r['original_profile']=[dict(file=k[0],line=k[1],function=k[2],calls=v[1],self_seconds=v[2],cumulative_seconds=v[3])
+                for k,v in stats.stats.items() if v[3]>.01]
             def predict(q):
                 w = gpy.fd_interpolate(q, gs=gs, h=h, corner=lo)
                 return np.asarray(w@mean).ravel(), np.asarray(w@variance).ravel()
@@ -186,9 +194,18 @@ def main(a):
         # The SDD reference factor is built after production timing below.
         chol=None
         if a.method in ('dense','nufft-hybrid'):
-            chol=timed('analytic_matrix_cholesky',factor)
+            if a.method=='dense' and a.dense_dtype=='float32':
+                from reproduction.dense_covariance import analytic_covariance_rows32
+                def production_matrix():
+                    mat=analytic_covariance_rows32(x,x,a.ell,amplitude_axis)
+                    mat.flat[::n+1]+=noise
+                    return mat
+            else:production_matrix=matrix
+            chol=timed('matrix_construction',production_matrix)
+            r['matrix_bytes']=chol.nbytes
+            chol=timed('cholesky_factorization',lambda:cholesky_in_place(chol))
             def solve(b):
-                return cla.solve_triangular(chol.T,cla.solve_triangular(chol,cp.asarray(b,dtype=chol.dtype),lower=True),lower=False).astype('d')
+                return cla.solve_triangular(chol,cla.solve_triangular(chol,cp.asarray(b,dtype=chol.dtype),lower=True),lower=True,trans='T').astype('d')
         def finish(z):
             gram=.5*(u.T@z[:,:rank]+z[:,:rank].T@u)
             if a.method=='nufft-cg':
@@ -220,7 +237,7 @@ def main(a):
             from geospsr.training_spectrum import FourierCovariance
             from reproduction.analytic_posterior import _AnalyticCG
             action=timed('analytic_action_setup',lambda:LeafCachedRangeKernel(
-                x,a.ell,amplitude_axis,noise,leaf_size=128,max_cache_bytes=2**30,max_entries=100_000_000))
+                x.astype('f'),a.ell,amplitude_axis,noise,leaf_size=128,max_cache_bytes=2**30,max_entries=100_000_000))
             spectrum=timed('training_spectrum',lambda:FourierCovariance(
                 a.fit_cutoff,a.ell,amplitude_axis,eps=1e-6,dtype='float32'))
             from geospsr.preconditioning import SpatialBlockJacobi
@@ -228,14 +245,17 @@ def main(a):
                 x,noise,a.ell,amplitude_axis,block_size=a.preconditioner_block,dtype='float64')) if a.preconditioner_block else None
             exact=_AnalyticCG(action);z=np.empty_like(rhs);r['solve_blocks']=[]
             start=perf_counter()
-            plans={}
+            plans={};fourier_seconds=analytic_seconds=0.
             for first in range(0,rank,a.rhs_block_size):
                 bb=cp.asarray(rhs[:,first:min(first+a.rhs_block_size,rank)]);count=bb.shape[1]
                 if count not in plans:plans[count]=PackedFourierKernel(x,spectrum,noise,rhs_count=count)
                 # A deliberately bounded warm start; its truncation and solve
                 # error are removed by CG against the full analytic action.
+                sync();part=perf_counter()
                 initial,finite_info=plans[count].solve(bb,rtol=1e-3,maxiter=a.warm_iterations)
+                sync();fourier_seconds+=perf_counter()-part;part=perf_counter()
                 value,info=exact.solve(bb,rtol=a.variance_rtol,maxiter=2000,x0=initial,preconditioner=preconditioner)
+                sync();analytic_seconds+=perf_counter()-part
                 z[:,first:first+count]=cp.asnumpy(value)
                 r['solve_blocks'].append(dict(first=first,finite=finite_info,analytic=info))
                 save()
@@ -244,8 +264,12 @@ def main(a):
                     r['status']='censored: conditioning budget exhausted before all regional RHS'
                     r['censored_preparation_seconds']=perf_counter()-begin
                     return
+            sync();part=perf_counter()
             initial,finite_info=PackedFourierKernel(x,spectrum,noise,rhs_count=3).solve(y,rtol=1e-3,maxiter=a.warm_iterations)
+            sync();fourier_seconds+=perf_counter()-part;part=perf_counter()
             value,info=exact.solve(y,rtol=1e-6,maxiter=2000,x0=initial,preconditioner=preconditioner)
+            sync();analytic_seconds+=perf_counter()-part
+            r['solve_breakdown']=dict(fourier_seconds=fourier_seconds,analytic_seconds=analytic_seconds)
             if not info['converged']:raise RuntimeError('analytic mean correction failed')
             z[:,rank:]=cp.asnumpy(value);r['mean_solve']=dict(finite=finite_info,analytic=info)
             r['stages']['solve']=perf_counter()-start
@@ -287,7 +311,7 @@ def main(a):
             # own-model output accuracy, not residual alone.
             chol=timed('reference_cholesky_excluded',factor)
             def solve(b):
-                return cla.solve_triangular(chol.T,cla.solve_triangular(chol,cp.asarray(b),lower=True),lower=False)
+                return cla.solve_triangular(chol,cla.solve_triangular(chol,cp.asarray(b),lower=True),lower=True,trans='T')
             cref=timed('reference_cross_excluded',lambda:model.cross_covariance(qcheck,x))
             def direct_reference():
                 c=cp.asarray(cref);alpha=solve(y)
@@ -313,6 +337,8 @@ def main(a):
                     r['preparation_seconds']=row['preparation_seconds'];selected=True;break
                 if elapsed>=a.budget:break
             r['quality']=quality
+            r['stages']['solve']=elapsed;r['stages']['field']=finalize
+            r['seconds_per_iteration']=elapsed/solver.iterations
             if not selected:
                 r['status']='censored: no passing observed checkpoint'
                 r['censored_preparation_seconds']=r['checkpoints'][-1]['preparation_seconds']
@@ -327,8 +353,8 @@ def main(a):
                 cp.get_default_memory_pool().free_all_blocks()
                 chol=timed('reference_cholesky_excluded',lambda:cholesky_in_place(matrix()))
                 def solve(b):
-                    return cla.solve_triangular(chol.T,cla.solve_triangular(chol,cp.asarray(b),lower=True),lower=False)
-            if a.method=='dense' and a.dense_dtype=='float32':
+                    return cla.solve_triangular(chol,cla.solve_triangular(chol,cp.asarray(b),lower=True),lower=True,trans='T')
+            if a.method=='dense' and a.dense_dtype=='float32' and a.reference=='double':
                 del chol;cp.get_default_memory_pool().free_all_blocks()
                 chol=timed('reference_cholesky_excluded',lambda:cholesky_in_place(matrix()))
             c=timed('reference_cross_excluded',lambda:cp.asarray(model.cross_covariance(qcheck,x)))
@@ -336,8 +362,27 @@ def main(a):
                 alpha=solve(y);rr=cp.ascontiguousarray(c.transpose(1,0,2).reshape(n,-1))
                 w=cla.solve_triangular(chol,rr,lower=True)
                 return cp.asnumpy(cp.einsum('qnd,nd->q',c,alpha)),prior-cp.asnumpy((w*w).sum(0).reshape(-1,3).sum(1))
-            mr,vr=timed('reference_moments_excluded',direct)
+            if a.method=='dense' and a.reference=='refine':
+                from geospsr.periodic_leaf_cache import LeafCachedRangeKernel
+                from reproduction.scaling_reference import refined_moments
+                action=timed('reference_action_excluded',lambda:LeafCachedRangeKernel(
+                    x.astype('f'),a.ell,amplitude_axis,noise,leaf_size=128,max_cache_bytes=2**30,max_entries=100_000_000))
+                mr,vr,details=timed('reference_moments_excluded',lambda:refined_moments(solve,action,c,y,prior,noise))
+                # Independently verify the fast analytic action on direct rows.
+                check=cp.asarray(np.random.default_rng(13).normal(size=(n,3)))
+                ids=np.linspace(0,n-1,32,dtype=int)
+                exact=analytic_covariance_rows64(x[ids],x,a.ell,amplitude_axis)@check+noise*check[ids]
+                details['action_max_absolute_error']=float(cp.max(abs(action(check)[ids]-exact)))
+                if details['action_max_absolute_error']>1e-9:raise ArithmeticError('reference action validation failed')
+                r['reference_details']=details
+            else:mr,vr=timed('reference_moments_excluded',direct)
             qm,qv=field.predict(qcheck);r['quality']=assess(qm,qv,mr,vr,prior)
+            if 'reference_details' in r:
+                # Keep reference uncertainty far below the output gates.
+                reference_ok=(max(details['variance_error_bound'])/prior<1e-8 and
+                              max(details['mean_error_bound'])/np.sqrt(min(vr))<1e-6)
+                r['quality']['reference_bounds_pass']=bool(reference_ok)
+                r['quality']['passes'] &= bool(reference_ok)
         r['probes']=dict(query=qcheck.tolist(),mean=qm.tolist(),variance=qv.tolist(),
                          reference_mean=mr.tolist(),reference_variance=vr.tolist(),prior=prior)
         r['complete']=True
@@ -366,6 +411,7 @@ if __name__=='__main__':
     p.add_argument('--ell',type=float,default=.03/(2*np.pi))
     p.add_argument('--amplitude',type=float,default=.0025);p.add_argument('--relative-noise',type=float,default=.01)
     p.add_argument('--cutoff',type=int,default=50)
+    p.add_argument('--reference',choices=['double','refine'],default='refine')
     p.add_argument('--dense-dtype',choices=['float32','float64'],default='float32')
     p.add_argument('--moment-dtype',choices=['float32','float64'],default='float32')
     p.add_argument('--fit-cutoff',type=int,default=50)

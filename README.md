@@ -19,7 +19,7 @@ other or silently changes its covariance model.
 | Route | Model and intended use | Reproduction |
 |---|---|---|
 | **NUFFT / Fourier** | Existing periodic GeoSPSR-compatible mean, posterior-sample and marginal-variance implementations; useful for Fourier evaluation and broad repeated query batches | [Mean scaling](reproduction/results/practical_scaling/README.md), [variance reuse](reproduction/results/variance_probability/README.md) |
-| **H² / FMM-style** | Free-space Matérn formulation of stochastic PSR with hierarchical conditioning and regional marginal variance; optional pinned HiGP backend | [Method](reproduction/results/hierarchical_variance/METHOD.md), [contact benchmark](reproduction/results/hierarchical_variance/short/README.md), [PoissonRecon Eagle/Torso scans](reproduction/results/poissonrecon_large/README.md), [cross-method mean/variance plot](reproduction/results/eagle_comparison/README.md) |
+| **H² / FMM-style** | Free-space Matérn formulation of stochastic PSR with hierarchical conditioning and regional marginal variance; optional pinned HiGP backend | [Method](reproduction/results/hierarchical_variance/METHOD.md), [contact benchmark](reproduction/results/hierarchical_variance/short/README.md), [PoissonRecon Eagle/Torso scans](reproduction/results/poissonrecon_large/README.md), [cross-method scaling and stage plots](reproduction/results/asymptotic_regimes/README.md) |
 
 The H² backend is imported only when requested; using NUFFT does not require
 building HiGP. Cross-model comparisons use geometry and uncertainty quality,
@@ -201,10 +201,20 @@ compares SDD using a stronger full-query accuracy check.
 The [PoissonRecon real-scan study](reproduction/results/poissonrecon_large/README.md)
 reaches the full **796,825-point Eagle** on a Blackwell MIG 24 GiB partition:
 setup, mean, variance and 1,048,576 probability queries take **305.04 s with H²
-versus 2,465.47 s with streamed locality (8.08×)**. The smaller 196,608-point
-comparison is **1.86×**, while locality wins at 32k and 78k. Both large pairs pass
+versus 2,465.47 s with streamed locality (8.08×)**. A fixed-setting 196,608-point rerun takes **78.54 s versus 121.15 s**.
+The older cached-locality comparator at that size fails a newer targeted
+full-kernel check and is excluded from the updated accepted results. Locality
+still wins at smaller sizes. The current H²/streamed-locality pairs pass
 sampled independent audits and full-query comparisons. These are single-run
 measurements on different hardware from the earlier L40 results.
+
+The [fixed-setting scaling follow-up](reproduction/results/asymptotic_regimes/README.md)
+finds large-range total-time slopes of **0.97 for H²** and **1.90 for streamed
+locality**, and separates dense factorization's approximately cubic growth
+from cache overhead. It includes original SPSR, GeoSPR Cholesky/SDD and both
+NUFFT variance routes, with measured memory/accuracy endpoints. These are
+within-model numerical comparisons; the periodic scalar/cross bandwidth is
+not converged, and original-grid reconstruction quality is not matched.
 
 The [regional accuracy follow-up](reproduction/results/regional_accuracy/README.md)
 bounds agreement of all six selected Eagle cache pairs over the entire query

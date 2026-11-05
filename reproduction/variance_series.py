@@ -31,13 +31,16 @@ def prepare_variance_series(points, cholesky, operator, batch=8, method='squares
     def clock():
         cp.cuda.get_current_stream().synchronize()
         return time.perf_counter()
+    # Preserve the no-copy solve for both conventional C-order factors and
+    # the in-place Fortran-order factors used by the large dense baseline.
+    factor,lower,transpose=(cholesky,True,'T') if cholesky.flags.f_contiguous else (cholesky.T,False,'N')
     full_weights=None
     if inverse_batch:
         begin=clock();full_weights=cp.empty((n,n),dtype='d')
         for start in range(0,n,inverse_batch):
             count=min(inverse_batch,n-start);rhs=cp.zeros((n,count),dtype='d')
             rhs[start+cp.arange(count),cp.arange(count)]=1
-            full_weights[:,start:start+count]=cla.solve_triangular(cholesky.T,rhs,lower=False)
+            full_weights[:,start:start+count]=cla.solve_triangular(factor,rhs,lower=lower,trans=transpose)
         profile['inverse_factor']+=clock()-begin
     from types import SimpleNamespace
     import numpy as np
@@ -53,7 +56,7 @@ def prepare_variance_series(points, cholesky, operator, batch=8, method='squares
         if full_weights is None:
             rhs = cp.zeros((n, count), dtype='d')
             rhs[start+cp.arange(count), cp.arange(count)] = 1.
-            weights = cla.solve_triangular(cholesky.T, rhs, lower=False)
+            weights = cla.solve_triangular(factor, rhs, lower=lower, trans=transpose)
         else:weights=full_weights[:,start:start+count]
         profile['inverse_factor']+=clock()-begin
         begin=clock()

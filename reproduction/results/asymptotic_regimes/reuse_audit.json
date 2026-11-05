@@ -1,0 +1,54 @@
+[
+  {
+    "source": "reproduction/results/poissonrecon_large/eagle/eight-large/h2-streamed-796825-0.json",
+    "sha256": "96aa5b8d436eaa405783d71595e96292ab255744920f489d2a3f6a9b71da42e2",
+    "changes": [
+      {
+        "path": "geospsr/hierarchical_gpu.py",
+        "recorded_sha256": "e5aad8755f55c9fb7caf19f130c58ddb827fc674f3d0a227abd98589b42be6e5",
+        "current_sha256": "d6761838ee4cd89f9ca508799331bc6a771e323b484b9e393a37af4e7aa3fb43",
+        "review": "Only optional progress callbacks added to project; linear algebra and kernels unchanged."
+      },
+      {
+        "path": "geospsr/nonperiodic_local_gpu.py",
+        "recorded_sha256": "cd1143f4b6e8d959cedf6911da070c60e6c422b79dcfa067759db98698d4d87e",
+        "current_sha256": "2692594dc5229c9ad079dd611c6875c4ce4b59c24989e92c846eb4533d680025",
+        "review": "Unused by H2; locality endpoint already uses current warp-parallel fill."
+      },
+      {
+        "path": "reproduction/benchmark_hierarchical_variance.py",
+        "recorded_sha256": "21101c02dd2d51bb82784c72dd37b338c42f608b3cadacc473b46fee60b9996f",
+        "current_sha256": "46d8033dd09f67146bcfea2c98fa097343b94694b7b5062ac8be24b09a0bebf1",
+        "review": "Metadata module lookup fix and progress logging only; timing boundaries and numerical calls unchanged."
+      }
+    ],
+    "reviewed_against_commits": [
+      "0eab6dfeb7a145aa5813abacaee9270fef2f70fd",
+      "014d6f6947910965ec21697ec33a13591b396bc1"
+    ],
+    "scope": "Numerical implementation and settings match; earlier endpoint omits progress printing. No kernel speed optimization is mixed into the fitted series."
+  },
+  {
+    "source": "reproduction/results/poissonrecon_large/eagle/large-control/sparse-streamed-796825-0.json",
+    "sha256": "be49639c79dee5cb8fd0f79365eec3a0dcba89bee2fc6dce427b697ed3c3bf6b",
+    "changes": [
+      {
+        "path": "geospsr/hierarchical_gpu.py",
+        "recorded_sha256": "e5aad8755f55c9fb7caf19f130c58ddb827fc674f3d0a227abd98589b42be6e5",
+        "current_sha256": "d6761838ee4cd89f9ca508799331bc6a771e323b484b9e393a37af4e7aa3fb43",
+        "review": "Only optional progress callbacks added to project; linear algebra and kernels unchanged."
+      },
+      {
+        "path": "reproduction/benchmark_hierarchical_variance.py",
+        "recorded_sha256": "21101c02dd2d51bb82784c72dd37b338c42f608b3cadacc473b46fee60b9996f",
+        "current_sha256": "46d8033dd09f67146bcfea2c98fa097343b94694b7b5062ac8be24b09a0bebf1",
+        "review": "Metadata module lookup fix and progress logging only; timing boundaries and numerical calls unchanged."
+      }
+    ],
+    "reviewed_against_commits": [
+      "0eab6dfeb7a145aa5813abacaee9270fef2f70fd",
+      "014d6f6947910965ec21697ec33a13591b396bc1"
+    ],
+    "scope": "Numerical implementation and settings match; earlier endpoint omits progress printing. No kernel speed optimization is mixed into the fitted series."
+  }
+]

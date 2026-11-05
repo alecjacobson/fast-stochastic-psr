@@ -1,0 +1,204 @@
+{
+  "arguments": {
+    "method": "dense",
+    "n": 77824,
+    "point_cloud": "/home/horde/.cache/fast-stochastic-psr/poissonrecon/eagle.npy",
+    "output": "reproduction/results/density_sweep/dense-77824.json",
+    "seed": 12,
+    "queries": 200000,
+    "batches": 5,
+    "halfwidth": 0.005,
+    "order": 5,
+    "cross_tolerance": 1e-08,
+    "ell": 0.006196401851604696,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "cutoff": 155,
+    "reference": "refine",
+    "dense_dtype": "float32",
+    "moment_dtype": "float32",
+    "fit_cutoff": 155,
+    "warm_iterations": 20,
+    "variance_rtol": 0.001,
+    "preconditioner_block": 128,
+    "rhs_block_size": 32,
+    "batch": 512,
+    "eta": 1.0,
+    "budget": 120.0,
+    "grid": 16,
+    "subspace": 0,
+    "original_lengthscale": null,
+    "original_normalization": "published"
+  },
+  "complete": false,
+  "stages": {
+    "common_runtime_excluded": 0.06864678207784891,
+    "cross_spectrum": 0.5080698600504547
+  },
+  "checkpoints": [],
+  "point_cloud_metadata": {
+    "dataset": "eagle",
+    "source_url": "https://www.cs.jhu.edu/~misha/Code/PoissonRecon/eagle.points.ply",
+    "source_ply_sha256": "468e41b3679f775b98fe8cc79132cb99e8d6dfc4dcc1bb684e571a90e326e478",
+    "source_points": 796825,
+    "normalized_sha256": "3eea25538b3254fceed883ab38261cc08b72a608bfe50de69c5d08c417463604",
+    "permutation_seed": 12,
+    "source_bounds": [
+      [
+        -0.8689860105514526,
+        -1.5494799613952637,
+        -1.8521300554275513
+      ],
+      [
+        3.6290700435638428,
+        7.075570106506348,
+        4.5885701179504395
+      ]
+    ],
+    "coordinate_scale": 0.2318827118978777,
+    "anchor_source_index": 273280,
+    "anchor_source": [
+      3.342829942703247,
+      2.7926199436187744,
+      0.9013050198554993
+    ],
+    "normal_source": [
+      0.9721770941382609,
+      -0.1407010053991882,
+      0.18728300700422498
+    ],
+    "rotation": [
+      [
+        0.9721770941382609,
+        0.13816069875586892,
+        -0.18916479310954518
+      ],
+      [
+        -0.1407010053991882,
+        0.9900521335160375,
+        3.469446951953614e-18
+      ],
+      [
+        0.18728300700422498,
+        0.02661567657664243,
+        0.981945355428612
+      ]
+    ],
+    "normal_length_min": 0.9999991213629537,
+    "normal_length_max": 1.0000009224957287,
+    "preprocessing": "Preserve supplied positions and normal directions; normalize normal lengths; rigid contact frame; global longest bounding-box side = 2 before rotation; deterministic nested permutation.",
+    "contact_policy": "Nearest original sample to bbox center plus .35 longest-side along original +x; anchor maps to (1,0,0), normal maps to +x. Mean-level anchoring only, no scalar conditioning.",
+    "ground_truth": "No ground-truth inside labels; torso envelope is not used as geometry truth or model conditioning."
+  },
+  "point_sha256": "bbc691712310ef910d170ba6b1e080241c3f54049da82f39a7d1b5ec893bd929",
+  "normal_sha256": "790059a7e507298cebae4a4106db7c33c2de1e423245ccd3fba7adc7f73732df",
+  "source_sha256": "779f5672ba437a0d75ee3a196e2207a5bbcef09665ba5938ffd4377f86dee067",
+  "queries_total": 1000000,
+  "cpu_quota": "400000 100000",
+  "host_limit": "17179869184",
+  "numerical_gate": {
+    "probability_max_error": 0.001,
+    "variance_max_error_over_prior": 0.0001
+  },
+  "comparison_scope": "Same workload, different instantiated models; no equal reconstruction/calibration claim",
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "model": {
+    "training": "analytic periodic product Matern32",
+    "lengthscale": 0.006196401851604696,
+    "physical_axis_lengthscale": 0.03893314107138301,
+    "per_axis_variance": 0.13572088082974534,
+    "noise_variance": 2.5e-05,
+    "cross_and_scalar_cutoff": 155,
+    "normalization": "analytic"
+  },
+  "failure": "RuntimeError: Error creating plan.",
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 0.1,
+    "process_query_backend": "nvml_cuda_device",
+    "device_uuid": "MIG-511f6689-bc8a-5114-95a9-ef15f2b059d4",
+    "samples": 8,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 0.05209067394025624,
+        "seconds": 0.05711781303398311,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 161480704,
+        "own_host_rss_bytes": 374157312
+      },
+      {
+        "started_seconds": 0.15750380186364055,
+        "seconds": 0.15937722101807594,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 163577856,
+        "own_host_rss_bytes": 789786624
+      },
+      {
+        "started_seconds": 0.25955923995934427,
+        "seconds": 0.2610992689151317,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 163577856,
+        "own_host_rss_bytes": 2106769408
+      },
+      {
+        "started_seconds": 0.3612153579015285,
+        "seconds": 0.3627597279846668,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 887095296,
+        "own_host_rss_bytes": 2350571520
+      },
+      {
+        "started_seconds": 0.4628583858720958,
+        "seconds": 0.4643722160253674,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 887095296,
+        "own_host_rss_bytes": 3020537856
+      },
+      {
+        "started_seconds": 0.5644818439614028,
+        "seconds": 0.5661203139461577,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 1128267776,
+        "own_host_rss_bytes": 2793410560
+      },
+      {
+        "started_seconds": 0.6662363819777966,
+        "seconds": 0.6677838519681245,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 4534042624,
+        "own_host_rss_bytes": 1840328704
+      },
+      {
+        "started_seconds": 0.6831769898999482,
+        "seconds": 0.685031299944967,
+        "pids": [
+          338660
+        ],
+        "own_memory_bytes": 17154703360,
+        "own_host_rss_bytes": 1847570432
+      }
+    ],
+    "own_pid": 338660,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  },
+  "peak_host_rss_bytes": 3233042432,
+  "retained_gpu_pool_bytes": 4361634816
+}

@@ -1,0 +1,343 @@
+{
+  "arguments": {
+    "method": "sdd",
+    "n": 2048,
+    "point_cloud": "/home/horde/.cache/fast-stochastic-psr/poissonrecon/eagle.npy",
+    "output": "reproduction/results/density_sweep/sdd-2048.json",
+    "seed": 12,
+    "queries": 200000,
+    "batches": 5,
+    "halfwidth": 0.005,
+    "order": 5,
+    "cross_tolerance": 1e-08,
+    "ell": 0.03819718634205488,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "cutoff": 25,
+    "reference": "refine",
+    "dense_dtype": "float32",
+    "moment_dtype": "float32",
+    "fit_cutoff": 25,
+    "warm_iterations": 20,
+    "variance_rtol": 0.001,
+    "preconditioner_block": 128,
+    "rhs_block_size": 32,
+    "batch": 512,
+    "eta": 0.1,
+    "budget": 120.0,
+    "grid": 16,
+    "subspace": 0,
+    "original_lengthscale": null,
+    "original_normalization": "published"
+  },
+  "complete": false,
+  "stages": {
+    "common_runtime_excluded": 0.06902534305118024,
+    "cross_spectrum": 0.012621309142559767,
+    "regional_cross_compression": 0.44083737093023956,
+    "sdd_compile": 0.8740076730027795,
+    "reference_cholesky_excluded": 0.03718694602139294,
+    "reference_cross_excluded": 0.04730280512012541,
+    "reference_moments_excluded": 0.059180593118071556,
+    "solve": 0.0954700589645654,
+    "field": 0.0019928799010813236
+  },
+  "checkpoints": [
+    {
+      "iterations": 256,
+      "solve_seconds": 0.0954700589645654,
+      "preparation_seconds": 1.7220968587789685,
+      "quality": {
+        "passes": false,
+        "positive": false
+      }
+    }
+  ],
+  "point_cloud_metadata": {
+    "dataset": "eagle",
+    "source_url": "https://www.cs.jhu.edu/~misha/Code/PoissonRecon/eagle.points.ply",
+    "source_ply_sha256": "468e41b3679f775b98fe8cc79132cb99e8d6dfc4dcc1bb684e571a90e326e478",
+    "source_points": 796825,
+    "normalized_sha256": "3eea25538b3254fceed883ab38261cc08b72a608bfe50de69c5d08c417463604",
+    "permutation_seed": 12,
+    "source_bounds": [
+      [
+        -0.8689860105514526,
+        -1.5494799613952637,
+        -1.8521300554275513
+      ],
+      [
+        3.6290700435638428,
+        7.075570106506348,
+        4.5885701179504395
+      ]
+    ],
+    "coordinate_scale": 0.2318827118978777,
+    "anchor_source_index": 273280,
+    "anchor_source": [
+      3.342829942703247,
+      2.7926199436187744,
+      0.9013050198554993
+    ],
+    "normal_source": [
+      0.9721770941382609,
+      -0.1407010053991882,
+      0.18728300700422498
+    ],
+    "rotation": [
+      [
+        0.9721770941382609,
+        0.13816069875586892,
+        -0.18916479310954518
+      ],
+      [
+        -0.1407010053991882,
+        0.9900521335160375,
+        3.469446951953614e-18
+      ],
+      [
+        0.18728300700422498,
+        0.02661567657664243,
+        0.981945355428612
+      ]
+    ],
+    "normal_length_min": 0.9999991213629537,
+    "normal_length_max": 1.0000009224957287,
+    "preprocessing": "Preserve supplied positions and normal directions; normalize normal lengths; rigid contact frame; global longest bounding-box side = 2 before rotation; deterministic nested permutation.",
+    "contact_policy": "Nearest original sample to bbox center plus .35 longest-side along original +x; anchor maps to (1,0,0), normal maps to +x. Mean-level anchoring only, no scalar conditioning.",
+    "ground_truth": "No ground-truth inside labels; torso envelope is not used as geometry truth or model conditioning."
+  },
+  "point_sha256": "c2f13a154962850d3f94125cd98d49772605c4b9f19a33b140e479cc7a0cecf4",
+  "normal_sha256": "fd45eaa0f33be434c81e16a320621812e494dfc609129a91e79e83cd867c0753",
+  "source_sha256": "779f5672ba437a0d75ee3a196e2207a5bbcef09665ba5938ffd4377f86dee067",
+  "queries_total": 1000000,
+  "cpu_quota": "400000 100000",
+  "host_limit": "17179869184",
+  "numerical_gate": {
+    "probability_max_error": 0.001,
+    "variance_max_error_over_prior": 0.0001
+  },
+  "comparison_scope": "Same workload, different instantiated models; no equal reconstruction/calibration claim",
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb",
+  "device_memory": 25367150592,
+  "model": {
+    "training": "analytic periodic product Matern32",
+    "lengthscale": 0.03819718634205488,
+    "physical_axis_lengthscale": 0.24,
+    "per_axis_variance": 0.13572088082974534,
+    "noise_variance": 2.5e-05,
+    "cross_and_scalar_cutoff": 25,
+    "normalization": "analytic"
+  },
+  "solve_rank": 34,
+  "cross_error": 4.51546100719464e-09,
+  "sdd_pre_reference_gpu_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 0.1,
+    "process_query_backend": "nvml_cuda_device",
+    "device_uuid": "MIG-511f6689-bc8a-5114-95a9-ef15f2b059d4",
+    "samples": 17,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 0.02650752803310752,
+        "seconds": 0.028073767200112343,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 161480704,
+        "own_host_rss_bytes": 370458624
+      },
+      {
+        "started_seconds": 0.12847923603840172,
+        "seconds": 0.13164783618412912,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 262144000,
+        "own_host_rss_bytes": 508121088
+      },
+      {
+        "started_seconds": 0.23182742507196963,
+        "seconds": 0.23439766513183713,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 262144000,
+        "own_host_rss_bytes": 590954496
+      },
+      {
+        "started_seconds": 0.33451347309164703,
+        "seconds": 0.33793623303063214,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 262144000,
+        "own_host_rss_bytes": 627388416
+      },
+      {
+        "started_seconds": 0.4380574421957135,
+        "seconds": 0.44402497122064233,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 262144000,
+        "own_host_rss_bytes": 657854464
+      },
+      {
+        "started_seconds": 0.5561725990846753,
+        "seconds": 0.560365678044036,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 195035136,
+        "own_host_rss_bytes": 718270464
+      },
+      {
+        "started_seconds": 0.6708776860032231,
+        "seconds": 0.6914437541272491,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 195035136,
+        "own_host_rss_bytes": 747450368
+      },
+      {
+        "started_seconds": 0.7922455631196499,
+        "seconds": 0.7938959621824324,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 195035136,
+        "own_host_rss_bytes": 763351040
+      },
+      {
+        "started_seconds": 0.8943171210121363,
+        "seconds": 0.8958879511337727,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 195035136,
+        "own_host_rss_bytes": 910999552
+      },
+      {
+        "started_seconds": 0.996012220159173,
+        "seconds": 0.9975518300198019,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1006485504
+      },
+      {
+        "started_seconds": 1.1085102681536227,
+        "seconds": 1.158076262101531,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1013956608
+      },
+      {
+        "started_seconds": 1.2651388901285827,
+        "seconds": 1.2667511601466686,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1032097792
+      },
+      {
+        "started_seconds": 1.3668762492015958,
+        "seconds": 1.3684433191083372,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1057947648
+      },
+      {
+        "started_seconds": 1.468551108147949,
+        "seconds": 1.4701287772040814,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1066520576
+      },
+      {
+        "started_seconds": 1.570238416083157,
+        "seconds": 1.5717992461286485,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1068892160
+      },
+      {
+        "started_seconds": 1.6719069050159305,
+        "seconds": 1.6734753651544452,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1068896256
+      },
+      {
+        "started_seconds": 1.726816819049418,
+        "seconds": 1.7286464490462095,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 218103808,
+        "own_host_rss_bytes": 1068920832
+      }
+    ],
+    "own_pid": 336632,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  },
+  "diverged": true,
+  "quality": {
+    "passes": false,
+    "positive": false
+  },
+  "seconds_per_iteration": 0.0003729299178303336,
+  "status": "censored: no passing observed checkpoint",
+  "censored_preparation_seconds": 1.7220968587789685,
+  "gpu_process_audit": {
+    "pci_bus_id": "0000:0B:00.0",
+    "interval_seconds": 0.1,
+    "process_query_backend": "nvml_cuda_device",
+    "device_uuid": "MIG-511f6689-bc8a-5114-95a9-ef15f2b059d4",
+    "samples": 2,
+    "foreign_process_samples": [],
+    "errors": [],
+    "observations": [
+      {
+        "started_seconds": 0.014467127854004502,
+        "seconds": 0.017328797839581966,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 281018368,
+        "own_host_rss_bytes": 1263382528
+      },
+      {
+        "started_seconds": 0.11599728697910905,
+        "seconds": 0.117758106905967,
+        "pids": [
+          336632
+        ],
+        "own_memory_bytes": 310378496,
+        "own_host_rss_bytes": 1531613184
+      }
+    ],
+    "own_pid": 336632,
+    "sampled_isolation_pass": true,
+    "qualification": "Periodic process samples can miss short-lived GPU work; no other job was stopped."
+  },
+  "peak_host_rss_bytes": 1516113920,
+  "retained_gpu_pool_bytes": 8503808
+}

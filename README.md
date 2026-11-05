@@ -227,6 +227,15 @@ finds dense GeoSPR still faster at 77,824 points, followed by a matrix allocatio
 failure at 81,920. H² continues to 196,608 with stricter accuracy settings; this
 establishes a capacity advantage, not an observed dense/H² runtime crossover.
 
+The [density-dependent sweep](reproduction/results/density_sweep/README.md) uses
+ℓ(N)=.12√(8192/N), fixed vector amplitude/noise, matched original grids and exactly
+one million mean-and-variance queries. H² and locality have similar total-time
+slopes (**1.09/1.14**) and take **123.03/127.79 s** at 262k; locality uses less GPU
+memory. H² is 12.56× faster than the controlled original at 16k, before that grid
+hits the host guard. Dense remains faster through its feasible overlap; periodic
+bandwidth still fails the output gate. Timing, separate host/device memory and
+held-out geometry plots expose these limitations without claiming matched calibration.
+
 The [regional accuracy follow-up](reproduction/results/regional_accuracy/README.md)
 bounds agreement of all six selected Eagle cache pairs over the entire query
 box. These bounds concern the stored polynomials, not uniform error to the

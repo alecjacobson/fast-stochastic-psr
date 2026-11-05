@@ -1,0 +1,141 @@
+{
+  "arguments": {
+    "method": "original",
+    "n": 32768,
+    "point_cloud": "/home/horde/.cache/fast-stochastic-psr/poissonrecon/eagle.npy",
+    "output": "reproduction/results/density_sweep/original-32768.json",
+    "seed": 12,
+    "queries": 200000,
+    "batches": 5,
+    "halfwidth": 0.005,
+    "order": 5,
+    "cross_tolerance": 1e-08,
+    "ell": 0.00954929658551372,
+    "amplitude": 0.0025,
+    "relative_noise": 0.01,
+    "cutoff": 100,
+    "reference": "refine",
+    "dense_dtype": "float32",
+    "moment_dtype": "float32",
+    "fit_cutoff": 100,
+    "warm_iterations": 20,
+    "variance_rtol": 0.001,
+    "preconditioner_block": 128,
+    "rhs_block_size": 32,
+    "batch": 512,
+    "eta": 1.0,
+    "budget": 120.0,
+    "grid": 16,
+    "subspace": 0,
+    "original_lengthscale": 0.06,
+    "original_normalization": "controlled"
+  },
+  "complete": false,
+  "stages": {},
+  "checkpoints": [],
+  "point_cloud_metadata": {
+    "dataset": "eagle",
+    "source_url": "https://www.cs.jhu.edu/~misha/Code/PoissonRecon/eagle.points.ply",
+    "source_ply_sha256": "468e41b3679f775b98fe8cc79132cb99e8d6dfc4dcc1bb684e571a90e326e478",
+    "source_points": 796825,
+    "normalized_sha256": "3eea25538b3254fceed883ab38261cc08b72a608bfe50de69c5d08c417463604",
+    "permutation_seed": 12,
+    "source_bounds": [
+      [
+        -0.8689860105514526,
+        -1.5494799613952637,
+        -1.8521300554275513
+      ],
+      [
+        3.6290700435638428,
+        7.075570106506348,
+        4.5885701179504395
+      ]
+    ],
+    "coordinate_scale": 0.2318827118978777,
+    "anchor_source_index": 273280,
+    "anchor_source": [
+      3.342829942703247,
+      2.7926199436187744,
+      0.9013050198554993
+    ],
+    "normal_source": [
+      0.9721770941382609,
+      -0.1407010053991882,
+      0.18728300700422498
+    ],
+    "rotation": [
+      [
+        0.9721770941382609,
+        0.13816069875586892,
+        -0.18916479310954518
+      ],
+      [
+        -0.1407010053991882,
+        0.9900521335160375,
+        3.469446951953614e-18
+      ],
+      [
+        0.18728300700422498,
+        0.02661567657664243,
+        0.981945355428612
+      ]
+    ],
+    "normal_length_min": 0.9999991213629537,
+    "normal_length_max": 1.0000009224957287,
+    "preprocessing": "Preserve supplied positions and normal directions; normalize normal lengths; rigid contact frame; global longest bounding-box side = 2 before rotation; deterministic nested permutation.",
+    "contact_policy": "Nearest original sample to bbox center plus .35 longest-side along original +x; anchor maps to (1,0,0), normal maps to +x. Mean-level anchoring only, no scalar conditioning.",
+    "ground_truth": "No ground-truth inside labels; torso envelope is not used as geometry truth or model conditioning."
+  },
+  "point_sha256": "8580b1a044f2acc6ce8152e406e539e9f13af3b7a72cccbd1739fe6195a9c968",
+  "normal_sha256": "9618a312c67441875b817fd26dd1bc37ef3da62393eef915038bae6bbd4837bb",
+  "source_sha256": "779f5672ba437a0d75ee3a196e2207a5bbcef09665ba5938ffd4377f86dee067",
+  "queries_total": 1000000,
+  "cpu_quota": "400000 100000",
+  "host_limit": "17179869184",
+  "numerical_gate": {
+    "probability_max_error": 0.001,
+    "variance_max_error_over_prior": 0.0001
+  },
+  "comparison_scope": "Same workload, different instantiated models; no equal reconstruction/calibration claim",
+  "gpytoolbox_version": "0.3.8",
+  "original_source_sha256": "75819ff5e91bd9cb983c449d08acccc551b5f9d05d41614d6a29353927c85c03",
+  "grid": {
+    "shape": [
+      27,
+      42,
+      32
+    ],
+    "spacing": [
+      0.053657743376937524,
+      0.053657743376937524,
+      0.053657743376937524
+    ],
+    "corner": [
+      -0.23668674614852409,
+      -1.1681456248293425,
+      -0.6292858253572464
+    ],
+    "kernel_sigma": 0.08048661506540629,
+    "target_physical_lengthscale": 0.06,
+    "half_correlation_distance": 0.05813964518879791,
+    "matching_rule": "axis normalized vector-kernel correlation = 1/2",
+    "box_policy": "full scan bounds plus .1; symmetric outward rounding to isotropic cells",
+    "grid_points": 36288,
+    "one_dense_covariance_bytes": 10534551552,
+    "subspace_dim": 0
+  },
+  "original_parameter_control": {
+    "kernel_peak": 568.2706594045475,
+    "covariance_scale": 4.399312121128305e-06,
+    "sigma": 0.0020974537232388,
+    "sigma_n": 2.383842820750872,
+    "target_vector_variance": 0.0025,
+    "target_vector_noise_variance": 2.5e-05,
+    "native_noise_variance": 5.682706594045475,
+    "scalar_variance_floor": 2.6000000000000002e-05,
+    "convention": "scaled density-lumped prior/noise; fixed scalar variance floor; distinct from published defaults"
+  },
+  "failure": "MemoryError: Unable to allocate 9.81 GiB for an array with shape (36288, 36288) and data type float64",
+  "peak_host_rss_bytes": 3076284416
+}

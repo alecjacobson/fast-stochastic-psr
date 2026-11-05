@@ -57,7 +57,7 @@ error exceeds tolerance. Unresolved leaves remain in the aggregate bounds.
 The output retains the subdivision path to the worst leaf. The comparison CLI
 also evaluates both fields on a 3x3x3 grid in that leaf, providing
 targets for follow-up checks. These point observations are reported separately; they
-does not change an inconclusive interval result into a formal failure bound.
+do not change an inconclusive interval result into a formal failure bound.
 
 Every bound-producing sum, difference, product, division and square root uses
 outward binary64 rounding via `nextafter`; reductions round at every pairwise

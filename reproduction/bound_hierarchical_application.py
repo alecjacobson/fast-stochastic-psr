@@ -3,7 +3,7 @@
 This bounds agreement between caches, not error to the exact GP. The separate
 independent audits are reported as provenance and are not promoted to uniform
 accuracy guarantees. Exit code 2 denotes an inconclusive bound, not a proven
-tolerance violation. No query generation or GPU is required.
+tolerance violation. No full-workload replay or GPU is required.
 """
 import argparse
 import hashlib

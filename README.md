@@ -204,8 +204,16 @@ setup, mean, variance and 1,048,576 probability queries take **305.04 s with H²
 versus 2,465.47 s with streamed locality (8.08×)**. The smaller 196,608-point
 comparison is **1.86×**, while locality wins at 32k and 78k. Both large pairs pass
 sampled independent audits and full-query comparisons. These are single-run
-measurements on different hardware from the earlier L40 results. Torso's 3.49m
-input is prepared, with validated subset runs through 196,608 points.
+measurements on different hardware from the earlier L40 results.
+
+The [regional accuracy follow-up](reproduction/results/regional_accuracy/README.md)
+bounds agreement of all six selected Eagle cache pairs over the entire query
+box. These bounds concern the stored polynomials, not uniform error to the
+exact GP. Torso now has an audited **524,288-point** mean-and-variance workload
+in **196.84 s**: stronger AFN preconditioning fixes a failed variance trial and
+reduces mean iterations from 64 to 33. The report preserves both trials and
+their shared independent reference. The full **3.49m-point Torso** input is
+prepared but remains unrun; no new Torso competing-method speed ratio is claimed.
 
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in

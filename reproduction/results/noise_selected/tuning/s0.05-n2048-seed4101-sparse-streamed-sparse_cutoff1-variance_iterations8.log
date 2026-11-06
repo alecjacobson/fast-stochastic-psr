@@ -1,0 +1,33 @@
+{"elapsed_seconds": 0.07385202101431787, "phase": "system ready", "setup_seconds": 0.0738495709374547}
+{"elapsed_seconds": 0.4441228141076863, "phase": "conditioning start", "cross_rank": 19}
+Set random seed to 4101
+Change OpenMP threads to 4
+Init precond done
+Build AFN preconditioner dtype 1
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 335, in <module>
+    run(arguments)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 195, in run
+    cache = RegionalVarianceCache.from_solver(model, x, vectors, solve, [1, 0, 0],
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic.py", line 195, in from_solver
+    gram, projected_vectors = project(basis, vectors)
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 189, in project
+    result = raw_project(u, y)
+             ^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/benchmark_hierarchical_variance.py", line 156, in <lambda>
+    project = lambda u, y: system.project(u, y, variance_iterations=args.variance_iterations or 8,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic_local_gpu.py", line 160, in project
+    result = super().project(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical_gpu.py", line 262, in project
+    alpha, mean_info = batched_pcg(self.matmul, self.precondition, vectors,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical.py", line 106, in batched_pcg
+    raise np.linalg.LinAlgError('nonpositive curvature in PCG')
+numpy.linalg.LinAlgError: nonpositive curvature in PCG
+Dealloc precond done

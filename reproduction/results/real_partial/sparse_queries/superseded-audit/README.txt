@@ -1,0 +1,1 @@
+These records were replaced because GPU process isolation failed or CDF evaluation was outside the timer. Raw numerical output is retained; no primary timing credit. Reruns use exactly the same recorded arguments and current archived runners, sequentially.

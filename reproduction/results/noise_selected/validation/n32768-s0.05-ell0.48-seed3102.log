@@ -1,0 +1,30 @@
+Set random seed to 3102
+Change OpenMP threads to 4
+Init KrnlMatObject done
+Build H2 Mat dtype 1
+Mat size 32768 32768
+Set random seed to 3102
+Change OpenMP threads to 4
+Init precond done
+Build AFN preconditioner dtype 1
+Free H2 matrix done
+Dealloc KrnlMatObject done
+Dealloc precond done
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/noise_selection.py", line 117, in <module>
+    p.add_argument('--output',required=True);a=p.parse_args();run_one(a.n,a.sigma,a.ell,a.seed,a.output)
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/noise_selection.py", line 94, in run_one
+    fields,alpha=build_mean_fields(solve,model,x,observations)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/noise_selection.py", line 66, in build_mean_fields
+    alpha=solve(rhs)
+          ^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/noise_selection.py", line 91, in <lambda>
+    solve=(lambda b:system.solve(b,tolerance=1e-10)) if backend.startswith('H2') else system.solve
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical_gpu.py", line 248, in solve
+    raise RuntimeError(f'GPU PCG did not converge: {info}')
+RuntimeError: GPU PCG did not converge: {'converged': False, 'iterations': [28, 28, 27, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 27, 28, 28, 28, 28, 28, 28, 27, 28, 27, 23, 23, 24], 'relative_residuals': [7.415296746689749e-11, 6.310004133676112e-11, 9.682321087321983e-11, 5.473402528308881e-11, 6.874440088820353e-11, 4.2265999715769e-11, 6.765368590998974e-11, 5.050542713345341e-11, 5.779990863569727e-11, 5.7315616597149243e-11, 6.147444015786548e-11, 5.4551075728678635e-11, 5.083840500822606e-11, 5.0369126587275154e-11, 8.305462526519993e-11, 7.181764680864708e-11, 5.604486712559101e-11, 5.886477693945359e-11, 5.677619549083806e-11, 5.696317461449552e-11, 4.7792556623105397e-11, 1.0002110845356365e-10, 5.971935145032268e-11, 8.814133441710652e-11, 6.716063921072221e-11, 6.875627481800625e-11, 4.9364656324529725e-11], 'max_iterations': 28, 'tolerance': 1e-10}

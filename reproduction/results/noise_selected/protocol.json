@@ -1,0 +1,115 @@
+{
+  "geometry": "full ellipsoid axes (1,.8,.6), Gaussian noise on normal components; positions exact",
+  "amplitude": 0.3333333333333333,
+  "noise_standard_deviations": [
+    0.05,
+    0.2
+  ],
+  "likelihood_variance": "sigma squared",
+  "halfwidth": 0.005,
+  "sizes": [
+    2048,
+    8192,
+    32768,
+    131072
+  ],
+  "lengthscale_grid": [
+    0.015,
+    0.03,
+    0.06,
+    0.12,
+    0.24,
+    0.48
+  ],
+  "upper_extensions": [
+    0.96,
+    1.92
+  ],
+  "lower_extension": 0.0075,
+  "validation_seeds": [
+    3101,
+    3102
+  ],
+  "noise_replicates_per_validation_geometry": 8,
+  "tuning_seed": 4101,
+  "test_seeds": [
+    5101,
+    5102,
+    5103
+  ],
+  "validation_point_seed": 6101,
+  "test_point_seed": 6102,
+  "tuning_point_seed": 6103,
+  "selection": "Minimum pooled squared surface-root error over validation scans; missing roots penalized by full box width",
+  "queries": 1000000,
+  "numerical_gates": {
+    "cdf": 0.001,
+    "variance_over_prior": 0.0001
+  },
+  "selection_solver": "float64 dense through8192; H2 tol1e-7 with solve1e-10 above; direct mean-cache interpolation probes",
+  "selection_is_mean_only": true,
+  "selection_and_tuning_excluded_from_production_cost": true,
+  "locality_cutoff_candidates": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    20
+  ],
+  "locality_cutoff_grid_note": "Added 1,2,3 after lengthscale validation, before solver tuning or test timings",
+  "locality_storage": "Test cached sparse if graph bytes < 0.6 device capacity; freeze faster passing storage on tuning scan",
+  "largest_n_precision_check": "Selected and runner-up, both geometry seeds; refine hierarchy until winner preserved and score change <1 percent; 1e-9 vs 1e-11 after initial 1.44 percent change",
+  "additional_mean_geometry_check": "Anchored mean error / minimum gradient on full-kernel probes <= 0.1 validation RMS; linearized diagnostic, unchanged CDF/variance gates",
+  "hierarchy_tolerance_candidates": [
+    1e-05,
+    1e-06,
+    1e-07,
+    1e-08,
+    1e-09
+  ],
+  "hierarchy_extension_note": "Added 1e-8 and 1e-9 after 32k tuning mean-error rejection, before test runs at 32k or 131k",
+  "large_n_reference_mean_bound": 1e-09,
+  "variance_iteration_candidates": [
+    8,
+    16,
+    32
+  ],
+  "largest_n_shared_precision": {
+    "cross_tolerance": 1e-10,
+    "solve_tolerance": 1e-10
+  },
+  "largest_n_precision_note": "Tightened after a mean/cross precision floor on the tuning scan, before its test runs",
+  "largest_n_test_seeds": [
+    5101
+  ],
+  "locality_stop": "After a three-scan 32k crossover, use the user-authorized competitor stopping rule; largest cases compare H2 with stronger full-kernel dense actions",
+  "dense_action_control": {
+    "seeds": [
+      5101
+    ],
+    "cells": [
+      [
+        8192,
+        0.2
+      ],
+      [
+        32768,
+        0.2
+      ],
+      [
+        131072,
+        0.05
+      ],
+      [
+        131072,
+        0.2
+      ]
+    ]
+  }
+}

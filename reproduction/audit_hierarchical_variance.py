@@ -48,12 +48,17 @@ def probability_allowance(mean, variance, mean_bound, variance_bound):
     return np.max(abs(np.asarray(endpoints)-reference), axis=0)
 
 
-def audit(path, reference_path, random_queries=32, reference_preconditioner='native', queries=None, result_path=None):
+def audit(path, reference_path, random_queries=32, reference_preconditioner='native', queries=None, result_path=None,
+          reference_mean_bound=None):
     record = json.loads(Path(path).read_text())
     a = record['arguments']
     contract = {k: a[k] for k in ['n', 'seed', 'geometry', 'lengthscale', 'amplitude',
                                  'relative_noise', 'halfwidth']}
     contract['random_queries'] = random_queries
+    if reference_mean_bound is not None:
+        if not np.isfinite(reference_mean_bound) or reference_mean_bound <= 0:
+            raise ValueError('reference mean bound must be finite and positive')
+        contract['reference_mean_bound'] = reference_mean_bound
     if queries is not None:
         queries=np.asarray(queries,dtype=float)
         if queries.ndim!=2 or queries.shape[1]!=3 or not len(queries) or not np.isfinite(queries).all() or not np.array_equal(queries[-1],[1,0,0]):
@@ -116,7 +121,8 @@ def audit(path, reference_path, random_queries=32, reference_preconditioner='nat
                                 max_variance_bound_over_prior=float(variance_bound.max()/model.prior_variance)))
             print(json.dumps(dict(reference_step=step, elapsed_seconds=perf_counter()-start, **history[-1])),
                   file=sys.stderr, flush=True)
-            if allowance.max() <= 1e-5 and variance_bound.max()/model.prior_variance <= 1e-7:
+            if (allowance.max() <= 1e-5 and variance_bound.max()/model.prior_variance <= 1e-7 and
+                (reference_mean_bound is None or mean_bound.max() <= reference_mean_bound)):
                 break
             if step == 5:
                 raise RuntimeError('full-kernel reference output bounds failed')
@@ -172,6 +178,9 @@ if __name__ == '__main__':
     parser.add_argument('--reference-preconditioner', choices=['native', 'prefix-kd'], default='native')
     parser.add_argument('--query-json',help='Optional explicit query list ending with contact (1,0,0)')
     parser.add_argument('--result',help='Write a separate audit without modifying the production record')
+    parser.add_argument('--reference-mean-bound', type=float,
+                        help='Optional absolute mean-error bound required of the offline reference')
     args = parser.parse_args()
     queries=json.loads(Path(args.query_json).read_text()) if args.query_json else None
-    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner,queries,args.result)
+    audit(args.record, args.reference, args.random_queries, args.reference_preconditioner,queries,args.result,
+          args.reference_mean_bound)

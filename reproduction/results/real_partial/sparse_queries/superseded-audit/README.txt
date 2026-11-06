@@ -1,0 +1,2 @@
+These records were replaced because GPU process isolation failed or CDF evaluation was outside the timer. Raw numerical output is retained; no primary timing credit. Reruns use exactly the same recorded arguments and current archived runners, sequentially.
+Original launcher-status/comparison records accompany the superseded measurements. Primary reruns record their arguments, timings, isolation and checksums directly in the main JSON; they do not reuse old launcher wall-clock measurements.

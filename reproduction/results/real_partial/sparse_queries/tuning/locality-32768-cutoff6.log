@@ -1,0 +1,26 @@
+setup 1.5148333399556577
+Set random seed to 9101
+Change OpenMP threads to 4
+Init precond done
+Build AFN preconditioner dtype 1
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_sparse_queries.py", line 39, in <module>
+    direct.run(args)
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_direct_gpu.py", line 146, in run
+    posterior = DirectContactQueries(model, x, vectors, contacts, system,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_direct_gpu.py", line 58, in __init__
+    self.alpha = cp.asarray(solve(vectors))
+                            ^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_direct_gpu.py", line 57, in <lambda>
+    solve = system.solve if dense else lambda b: system.solve(b, tolerance=solve_tolerance)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical_gpu.py", line 244, in solve
+    x, info = batched_pcg(self.matmul, self.precondition, rhs, tolerance=tolerance,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/hierarchical.py", line 106, in batched_pcg
+    raise np.linalg.LinAlgError('nonpositive curvature in PCG')
+numpy.linalg.LinAlgError: nonpositive curvature in PCG
+Dealloc precond done

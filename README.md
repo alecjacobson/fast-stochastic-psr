@@ -245,6 +245,17 @@ reduces mean iterations from 64 to 33. The report preserves both trials and
 their shared independent reference. The full **3.49m-point Torso** input is
 prepared but remains unrun; no new Torso competing-method speed ratio is claimed.
 
+The [real partial-scan occupancy study](reproduction/results/real_partial/README.md)
+uses actual noisy Stanford Armadillo range scans and coherent scalar surface
+observations. At **49,152 normal observations and 128 new mean-and-variance
+queries**, including preparation, H² takes **25.31 s** versus **108.39 s** for
+matched dense Cholesky and **123.15 s** for dense-matrix CG, passing the same
+probability/variance gates. Peak GPU memory is **3.65 / 18.73 / 19.98 GiB**.
+The win applies to a fresh scan and a modest query batch. Probability quality
+improves over calibrated mean-only prediction, but a cheap contact-only variance
+control captures most of the benefit; full variance's application necessity and
+a whole-object million-query cache remain open.
+
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
 [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).

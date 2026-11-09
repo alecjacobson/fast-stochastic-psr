@@ -262,6 +262,11 @@ queries, with unchanged accuracy gates. Both fit in GPU memory (**5.67/21.38 GiB
 the measured log–log timing slopes over 32k–70k are **0.93/2.16**. This establishes
 a modest runtime win before memory exhaustion; mixed-locality and comparisons
 across original/periodic models remain open.
+The [visual companion](reproduction/results/partial_renderings/README.md) shows
+the actual partial scan, mean surface, variance and inside-probability slices.
+It also exposes substantial smoothing and errors in unseen geometry; the
+[quality follow-up](https://github.com/alecjacobson/fast-stochastic-psr/issues/124)
+will test whether the crossover survives stronger reconstruction-quality controls.
 Probability quality improves over calibrated mean-only prediction, but a cheap contact-only variance
 control captures most of the benefit; full variance's application necessity and
 a whole-object million-query cache remain open.

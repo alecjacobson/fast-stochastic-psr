@@ -4,8 +4,14 @@ This study replaces the synthetic full ellipsoids of [#114](../noise_selected/RE
 with **actual Stanford Armadillo laser range scans**, and evaluates pointwise
 inside probabilities across observed and occluded parts of an object.
 
-**H² now wins on a fresh large scan with a modest batch of new inside-probability
-queries.** At 49,152 normal observations plus 32 scalar surface observations,
+**Follow-up: this crossover is against float64 Cholesky.** The
+[precision-tuned and SDD controls](../partial_competitors/README.md) find an
+accuracy-passing mixed-precision Cholesky implementation faster than H² on
+this workload. The original measurements below remain valid for their stated
+baselines; they do not establish a win over the strongest dense alternative.
+
+**Original PR118 result, retained for comparison:** At 49,152 normal
+observations plus 32 scalar surface observations,
 preparation and 128 mean-and-variance queries take **25.31 s with H²**, versus
 **108.39 s with dense Cholesky** and **123.15 s with dense-matrix CG**: 4.28× and
 4.87× faster, respectively. Sampled peak GPU memory is **3.65 GiB**, versus

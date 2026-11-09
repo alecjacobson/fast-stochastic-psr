@@ -249,10 +249,12 @@ The [real partial-scan occupancy study](reproduction/results/real_partial/README
 uses actual noisy Stanford Armadillo range scans and coherent scalar surface
 observations. At **49,152 normal observations and 128 new mean-and-variance
 queries**, including preparation, H² takes **25.31 s** versus **108.39 s** for
-matched dense Cholesky and **123.15 s** for dense-matrix CG, passing the same
+matched **float64** dense Cholesky and **123.15 s** for dense-matrix CG, passing the same
 probability/variance gates. Peak GPU memory is **3.65 / 18.73 / 19.98 GiB**.
-The win applies to a fresh scan and a modest query batch. Probability quality
-improves over calibrated mean-only prediction, but a cheap contact-only variance
+The [stronger-baseline follow-up](reproduction/results/partial_competitors/README.md)
+finds an accuracy-passing mixed-precision Cholesky method faster than H² here,
+so the earlier result is not a win over the best tested dense alternative.
+Probability quality improves over calibrated mean-only prediction, but a cheap contact-only variance
 control captures most of the benefit; full variance's application necessity and
 a whole-object million-query cache remain open.
 

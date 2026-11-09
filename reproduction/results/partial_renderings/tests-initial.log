@@ -1,0 +1,44 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_folded_mean_matches_independent_augmented_posterior ___________
+
+    def test_folded_mean_matches_independent_augmented_posterior():
+        pytest.importorskip('cupy')
+        from geospsr.nonperiodic import FreeSpacePoissonMatern, DenseFreeSpacePosterior
+        from geospsr.nonperiodic_dense_gpu import GPUDenseMaternSystem
+        from geospsr.scalar_contacts import ContactConditionedDensePosterior
+        from reproduction.partial_direct_gpu import DirectContactQueries
+        from reproduction.compute_partial_figures import mean_coefficients, mean_field
+        rng = np.random.default_rng(2026)
+        x = rng.normal(size=(96, 3))*.3
+        y = rng.normal(size=x.shape)
+        q = np.vstack((x[:5], rng.normal(size=(33, 3))*.5))
+        model = FreeSpacePoissonMatern(.48, 1/3)
+        system = GPUDenseMaternSystem(model, x, .04)
+        posterior = DirectContactQueries(model, x, y, x[:5], system, dense=True)
+        exact = ContactConditionedDensePosterior(DenseFreeSpacePosterior(model,x,y,.04),x[:5],np.zeros(5),.0001)
+        mean = mean_field(posterior,q,mean_coefficients(posterior),batch_size=7)
+>       np.testing.assert_allclose(mean,exact.predict(q)[0],rtol=1e-10,atol=2e-11)
+E       AssertionError:
+E       Not equal to tolerance rtol=1e-10, atol=2e-11
+E
+E       Mismatched elements: 38 / 38 (100%)
+E       First 5 mismatches are at indices:
+E        [0]: -0.0018077244928152436 (ACTUAL), -0.0018076968803315135 (DESIRED)
+E        [1]: -0.002184475767579075 (ACTUAL), -0.0021844534366177726 (DESIRED)
+E        [2]: 0.004775792819131319 (ACTUAL), 0.004775808592485928 (DESIRED)
+E        [3]: -0.005623472202943097 (ACTUAL), -0.005623418271089392 (DESIRED)
+E        [4]: 0.004751447901390149 (ACTUAL), 0.004751453854188037 (DESIRED)
+E       Max absolute difference among violations: 1.09591607e-06
+E       Max relative difference among violations: 0.00134152
+E        ACTUAL: array([-0.001808, -0.002184,  0.004776, -0.005623,  0.004751, -0.051874,
+E               0.082065, -0.003031,  0.027368,  0.168128,  0.079509, -0.181414,
+E              -0.093027, -0.044049, -0.153266,  0.078241, -0.000813,  0.054806,...
+E        DESIRED: array([-0.001808, -0.002184,  0.004776, -0.005623,  0.004751, -0.051874,
+E               0.082065, -0.003031,  0.027368,  0.168128,  0.079509, -0.181413,
+E              -0.093027, -0.044048, -0.153266,  0.07824 , -0.000812,  0.054805,...
+
+tests/test_partial_figures.py:22: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_partial_figures.py::test_folded_mean_matches_independent_augmented_posterior
+1 failed in 0.54s

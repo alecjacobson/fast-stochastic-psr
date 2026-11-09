@@ -1,0 +1,11 @@
+# Visual companion to the real partial-scan crossover
+
+Use all 70,652 test_side observations and the 32 fixed scalar contacts from PR122, unchanged ell=.48, component amplitude 1/3, normal variance .04, scalar variance .0001. Preserve the 128 timed query positions. New visualization work is outside every existing benchmark time and does not alter the crossover records.
+
+Follow the composition of GeoSPR Figures 1/6: a shaded observed point cloud, identifiable embedded cross-sections, separate mean/variance/inside-probability panels, and aligned 3D geometry views. All geometry/colors come from measured inputs or computed posterior fields; no generated imagery or independently sampled marginal values masquerading as coherent surfaces. The complete Stanford reconstructed mesh is labeled reference context, with its same-acquisition/registration limitations.
+
+Evaluate two 72x72 x-z slices at y=.30 and y=-.25, on the complete reference bounding rectangle plus .10 padding. H2 uses the benchmark's mixed cached recipe, hierarchy tolerance 1e-6 and ten variance iterations initially. Retain failures and document any increased visualization solve budget. Check all 128 benchmark queries and a deterministic 8x8 lattice on each slice against independently refined full-kernel dense moments, preserving the original CDF<=1e-3 and variance/prior<=1e-4 gates. This subset is not a uniform accuracy bound.
+
+Sample the mean only on an 80x96x80 display grid over the reference bounding box plus .10 padding, and extract the zero level set without capping/repair. This is a display discretization, not a periodic GP domain. Record boundary intersections if present. Render mean geometry as the posterior mean, not a joint sample or confidence cage. Posterior variance and inside probability remain marginal quantities. Fixed shared colorbars, numerical values, and geometry context prevent visual normalization from hiding variation or model limitations.
+
+Reuse the PR122 timing/accuracy records for the finite-query comparison; new illustration evaluation costs are reported separately. Retain fields, validation subsets, provenance, rendering parameters and PNG/PDF artifacts. Both NUFFT and existing H2 implementations stay available.

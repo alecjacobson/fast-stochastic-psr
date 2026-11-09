@@ -84,8 +84,11 @@ class DirectContactQueries:
                     w = solve_triangular(self.system.factor, c, lower=True, check_finite=False)
                     correction = cp.sum(w*w, axis=0)
                 else:
-                    z, info, residual = batched_pcg(self.system.matmul, self.system.precondition,
-                        c, tolerance=1e-10, max_iterations=self.iterations, xp=cp, return_residual=True)
+                    if hasattr(self.system, 'variance_solve'):
+                        z, info, residual = self.system.variance_solve(c, self.iterations)
+                    else:
+                        z, info, residual = batched_pcg(self.system.matmul, self.system.precondition,
+                            c, tolerance=1e-10, max_iterations=self.iterations, xp=cp, return_residual=True)
                     correction = cp.sum(c*z+z*residual, axis=0)
                     self.solve_iterations.append(info['max_iterations'])
                 base_var = self.model.prior_variance-cp.asnumpy(correction.reshape(3, m).sum(axis=0))

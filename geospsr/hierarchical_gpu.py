@@ -35,19 +35,22 @@ extern "C" __global__ void fill(
 
 
 class GPUAFNPreconditioner:
-    def __init__(self, native):
+    def __init__(self, native, dtype='float64'):
         import cupy as cp
         from cupyx.scipy.sparse import csr_matrix as gpu_csr
         from scipy.linalg import cho_solve
+        self.dtype = np.dtype(dtype)
+        if self.dtype not in (np.dtype('float32'), np.dtype('float64')):
+            raise ValueError('preconditioner dtype must be float32 or float64')
         snapshot = native.snapshot()
         factor = snapshot['L11_transpose'].T
-        self.coarse_inverse = cp.asarray(cho_solve((factor, True), np.eye(len(factor))))
-        self.coupling = cp.asarray(snapshot['K12_transpose'].T)
+        self.coarse_inverse = cp.asarray(cho_solve((factor, True), np.eye(len(factor))), dtype=self.dtype)
+        self.coupling = cp.asarray(snapshot['K12_transpose'].T, dtype=self.dtype)
         permutation = snapshot['permutation'].ravel()
         self.permutation = cp.asarray(permutation)
         self.inverse_permutation = cp.asarray(np.argsort(permutation))
         n2 = len(permutation)-len(factor)
-        self.fsai = gpu_csr((cp.asarray(snapshot['G_data'].ravel()),
+        self.fsai = gpu_csr((cp.asarray(snapshot['G_data'].ravel(), dtype=self.dtype),
                              cp.asarray(snapshot['G_columns'].ravel()),
                              cp.asarray(snapshot['G_indptr'].ravel())), shape=(n2, n2))
         self.transpose = self.fsai.T.tocsr()
@@ -56,7 +59,7 @@ class GPUAFNPreconditioner:
 
     def __call__(self, rhs):
         import cupy as cp
-        b = cp.asarray(rhs, dtype=cp.float64)
+        b = cp.asarray(rhs, dtype=self.dtype)
         vector = b.ndim == 1
         if vector:
             b = b[:, None]
@@ -68,16 +71,28 @@ class GPUAFNPreconditioner:
         c2 = self.transpose @ (self.fsai @ t2)
         c1 = self.coarse_inverse @ (b1-self.coupling @ c2)
         result = cp.concatenate((c1, c2))[self.inverse_permutation]
+        result = result.astype(cp.float64, copy=False)
         return result[:, 0] if vector else result
 
 
 class GPUHierarchicalSystem:
+    """GPU hierarchy with optional float32 actions and float64 refinement.
+
+    ``dtype='float32'`` retains a streamed float64 hierarchy action for solve
+    refinement and corrected variance. This controls arithmetic error within
+    the hierarchy; its approximation to the full kernel needs separate checks.
+    """
     rhs_block_size = None
+    mixed_actions = False
 
     def __init__(self, native_system, interaction_budget_bytes=None, rhs_block_size=None,
-                 release_native=False):
+                 release_native=False, dtype='float64'):
         import cupy as cp
         from cupyx.scipy.sparse import csr_matrix as gpu_csr
+        self.dtype = np.dtype(dtype)
+        if self.dtype not in (np.dtype('float32'), np.dtype('float64')):
+            raise ValueError('hierarchy dtype must be float32 or float64')
+        self.mixed_actions = self.dtype == np.float32
         self.native = native_system
         self.model = native_system.model
         self.points = native_system.points
@@ -131,7 +146,9 @@ class GPUHierarchicalSystem:
             transfer = gpu_csr(csr_matrix((data, cols, indptr),
                                          shape=(self.augmented_size, self.augmented_size)))
             transfers.append((transfer, transfer.T.tocsr()))
-        self.transfers = transfers
+        self.precise_transfers = transfers
+        self.transfers = ([(a.astype(self.dtype), b.astype(self.dtype)) for a, b in transfers]
+                          if self.dtype == np.float32 else transfers)
         # Interaction blocks target either leaf points or node skeletons.
         groups = {}
 
@@ -177,9 +194,10 @@ class GPUHierarchicalSystem:
         metadata = np.asarray(metadata, dtype=np.int64)
         tiles = np.r_[0, np.cumsum((metadata[:, 2]*metadata[:, 3]+255)//256)]
         if interaction_budget_bytes is None:
-            values = cp.empty(self.interaction_nnz, dtype=cp.float64)
+            values = cp.empty(self.interaction_nnz, dtype=self.dtype)
             columns = cp.empty(self.interaction_nnz, dtype=cp.int32)
-            kernel = cp.RawKernel(_FILL, 'fill')
+            typ = 'float' if self.dtype == np.float32 else 'double'
+            kernel = cp.RawKernel(_FILL.replace('double* values', typ+'* values'), 'fill')
             kernel((int(tiles[-1]),), (256,),
                    (cp.asarray(coordinates), cp.asarray(indptr), cp.asarray(tiles),
                     cp.asarray(metadata), len(metadata), self.model.kappa, values, columns))
@@ -191,58 +209,131 @@ class GPUHierarchicalSystem:
         else:
             from .hierarchical_interactions import StreamedInteractions
             self.interactions = StreamedInteractions(coordinates, indptr, metadata,
-                                                     self.model.kappa, interaction_budget_bytes)
+                                                     self.model.kappa, interaction_budget_bytes, dtype=self.dtype)
             interaction_bytes = self.interactions.nbytes
             self.interaction_workspace_bytes = self.interactions.workspace_bytes
-        self.preconditioner_gpu = GPUAFNPreconditioner(native_system.preconditioner)
+        self.reference_matrix_bytes = self.reference_workspace_bytes = 0
+        self.precise_interactions = self.interactions
+        if self.dtype == np.float32:
+            # An independent float64 action of the same exported hierarchy is
+            # used for refinement and corrected variance. Never duplicate a
+            # full cached interaction matrix just to verify reduced precision.
+            from .hierarchical_interactions import StreamedInteractions
+            self.precise_interactions = StreamedInteractions(coordinates, indptr, metadata,
+                self.model.kappa, interaction_budget_bytes or 256*2**20)
+            matrices = [m for pair in self.precise_transfers for m in pair]
+            self.reference_matrix_bytes = self.precise_interactions.nbytes + sum(
+                m.data.nbytes+m.indices.nbytes+m.indptr.nbytes for m in matrices)
+            self.reference_workspace_bytes = self.precise_interactions.workspace_bytes
+        self.preconditioner_gpu = GPUAFNPreconditioner(native_system.preconditioner, dtype=self.dtype)
         if release_native:
             native_system.preconditioner = None
         matrices = [t for pair in self.transfers for t in pair]
         self.device_matrix_bytes = interaction_bytes+sum(m.data.nbytes+m.indices.nbytes+m.indptr.nbytes for m in matrices)
         self.device_matrix_bytes += self.preconditioner_gpu.nbytes
+        self.device_matrix_bytes += self.reference_matrix_bytes
         self.last_solve = None
         cp.cuda.get_current_stream().synchronize()
 
     def matmul(self, rhs):
+        return self._matmul(rhs, self.dtype, self.transfers, self.interactions)
+
+    def accurate_matmul(self, rhs):
+        """Float64 action of the represented hierarchy, not the full kernel.
+
+        Hierarchy approximation error still needs a separate full-kernel check.
+        """
+        if not hasattr(self, 'precise_transfers'):
+            # Existing float64 locality subclasses override matmul and share
+            # the solve helpers without constructing a hierarchical snapshot.
+            return self.matmul(rhs)
+        return self._matmul(rhs, np.dtype('float64'), self.precise_transfers, self.precise_interactions)
+
+    def _matmul(self, rhs, dtype, transfers, interactions):
         import cupy as cp
-        b = cp.asarray(rhs, dtype=cp.float64)
+        b = cp.asarray(rhs, dtype=dtype)
         vector = b.ndim == 1
         if vector:
             b = b[:, None]
         if b.ndim != 2 or b.shape[0] != len(self.points):
             raise ValueError('RHS must have shape (n,) or (n,k)')
         if not b.shape[1]:
-            return cp.empty_like(b)
-        work = cp.zeros((self.augmented_size, b.shape[1]), dtype=cp.float64)
+            return cp.empty(b.shape, dtype=cp.float64)
+        work = cp.zeros((self.augmented_size, b.shape[1]), dtype=dtype)
         work[:len(b)] = b[self.permutation]
-        for transfer, _ in self.transfers:
+        for transfer, _ in transfers:
             work += transfer @ work
-        result = self.interactions @ work
-        for _, transpose in reversed(self.transfers):
+        result = interactions @ work
+        for _, transpose in reversed(transfers):
             result += transpose @ result
         output = self.model.amplitude*result[:len(b)][self.inverse_permutation] + self.noise_variance*b
+        output = output.astype(cp.float64, copy=False)
         return output[:, 0] if vector else output
 
     def precondition(self, rhs):
         return self.preconditioner_gpu(rhs)
+
+    def _solve_block(self, rhs, tolerance, max_iterations):
+        import cupy as cp
+        if not 0 < tolerance < 1 or max_iterations < 1:
+            raise ValueError('invalid PCG stopping parameters')
+        if not self.mixed_actions:
+            return batched_pcg(self.matmul, self.precondition, rhs, tolerance=tolerance,
+                               max_iterations=max_iterations, xp=cp)
+        b = cp.asarray(rhs, dtype=cp.float64)
+        x, residual = cp.zeros_like(b), b.copy()
+        norm = cp.linalg.norm(b, axis=0)
+        stages = []; used = 0
+        for _ in range(5):
+            delta, info = batched_pcg(self.matmul, self.precondition, residual,
+                tolerance=1e-3, max_iterations=min(max_iterations-used, 100), xp=cp)
+            x += delta
+            residual = b-self.accurate_matmul(x)
+            relative = cp.linalg.norm(residual, axis=0)/cp.where(norm > 0, norm, 1.)
+            stages.append(info)
+            used += info['max_iterations']
+            if bool(cp.all(relative <= tolerance)) or used >= max_iterations:
+                break
+        counts = np.sum([s['iterations'] for s in stages], axis=0)
+        info = dict(converged=bool(cp.all(relative <= tolerance)),
+            iterations=counts.tolist(), max_iterations=int(counts.max(initial=0)),
+            relative_residuals=np.atleast_1d(cp.asnumpy(relative)).tolist(), tolerance=tolerance,
+            refinement_stages=stages, residual_operator_dtype='float64', action_dtype='float32')
+        return x, info
+
+    def variance_solve(self, rhs, iterations):
+        """Fixed work solve with a fresh float64 hierarchy residual."""
+        import cupy as cp
+        z, info, residual = batched_pcg(self.matmul, self.precondition, rhs,
+            tolerance=1e-10, max_iterations=iterations, xp=cp, return_residual=True)
+        if self.mixed_actions:
+            b = cp.asarray(rhs, dtype=cp.float64)
+            residual = b-self.accurate_matmul(z)
+            norm = cp.linalg.norm(b, axis=0)
+            relative = cp.linalg.norm(residual, axis=0)/cp.where(norm > 0, norm, 1.)
+            info['low_precision_relative_residuals'] = info['relative_residuals']
+            info['relative_residuals'] = np.atleast_1d(cp.asnumpy(relative)).tolist()
+            info['converged'] = bool(cp.all(relative <= info['tolerance']))
+            info['residual_operator_dtype'] = 'float64'
+        return z, info, residual
 
     def solve(self, rhs, tolerance=1e-6, max_iterations=500):
         import cupy as cp
         if self.rhs_block_size and np.ndim(rhs) == 2 and rhs.shape[1] > self.rhs_block_size:
             outputs, infos = [], []
             for first in range(0, rhs.shape[1], self.rhs_block_size):
-                x, info = batched_pcg(self.matmul, self.precondition, rhs[:, first:first+self.rhs_block_size],
-                                     tolerance=tolerance, max_iterations=max_iterations, xp=cp)
+                x, info = self._solve_block(rhs[:, first:first+self.rhs_block_size], tolerance, max_iterations)
                 outputs.append(cp.asnumpy(x)); infos.append(info)
             self.last_solve = dict(converged=all(i['converged'] for i in infos),
                 iterations=sum([i['iterations'] for i in infos], []),
                 relative_residuals=sum([i['relative_residuals'] for i in infos], []),
                 max_iterations=max(i['max_iterations'] for i in infos), tolerance=tolerance)
+            if self.mixed_actions:
+                self.last_solve['blocks'] = infos
             if not self.last_solve['converged']:
                 raise RuntimeError('blocked GPU PCG did not converge')
             return np.column_stack(outputs)
-        x, info = batched_pcg(self.matmul, self.precondition, rhs, tolerance=tolerance,
-                             max_iterations=max_iterations, xp=cp)
+        x, info = self._solve_block(rhs, tolerance, max_iterations)
         self.last_solve = info
         if not info['converged']:
             raise RuntimeError(f'GPU PCG did not converge: {info}')
@@ -258,9 +349,8 @@ class GPUHierarchicalSystem:
         An optional progress callback receives completed mean/variance stages.
         """
         import cupy as cp
-        u = cp.asarray(basis)
-        alpha, mean_info = batched_pcg(self.matmul, self.precondition, vectors,
-                                       tolerance=mean_tolerance, xp=cp)
+        u = cp.asarray(basis, dtype=cp.float64)
+        alpha, mean_info = self._solve_block(vectors, mean_tolerance, 500)
         if not mean_info['converged']:
             raise RuntimeError('mean conditioning did not converge')
         if progress:
@@ -270,9 +360,7 @@ class GPUHierarchicalSystem:
             infos = []
             for first in range(0, u.shape[1], self.rhs_block_size):
                 stop = min(first+self.rhs_block_size, u.shape[1])
-                z[:, first:stop], info, residual[:, first:stop] = batched_pcg(
-                    self.matmul, self.precondition, u[:, first:stop], tolerance=1e-10,
-                    max_iterations=variance_iterations, xp=cp, return_residual=True)
+                z[:, first:stop], info, residual[:, first:stop] = self.variance_solve(u[:, first:stop], variance_iterations)
                 infos.append(info)
                 if progress:
                     progress(dict(phase='variance block complete', first=first, stop=stop,
@@ -283,9 +371,7 @@ class GPUHierarchicalSystem:
                                  max_iterations=max(i['max_iterations'] for i in infos), tolerance=1e-10,
                                  rhs_block_size=self.rhs_block_size)
         else:
-            z, variance_info, residual = batched_pcg(
-                self.matmul, self.precondition, u, tolerance=1e-10,
-                max_iterations=variance_iterations, xp=cp, return_residual=True)
+            z, variance_info, residual = self.variance_solve(u, variance_iterations)
             if progress:
                 progress(dict(phase='variance complete', iterations=variance_info['max_iterations']))
         gram = u.T@z+z.T@residual

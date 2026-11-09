@@ -1,0 +1,18 @@
+..F..                                                                    [100%]
+=================================== FAILURES ===================================
+______________ test_refined_full_kernel_against_float64_posterior ______________
+
+    def test_refined_full_kernel_against_float64_posterior():
+        cp = pytest.importorskip('cupy')
+        if cp.cuda.runtime.getDeviceCount() == 0:
+            pytest.skip('GPU required')
+>       from reproduction.partial_quality_large import RefinedDenseSystem
+E         File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_quality_large.py", line 31
+E           residual=b-cp.asarray(full_kernel_matmul(self.model,self.points,self.noise,cp.asnumpy(z),workspace_bytes=256*2**20)))
+E                                                                                                                               ^
+E       SyntaxError: unmatched ')'
+
+tests/test_partial_quality.py:53: SyntaxError
+=========================== short test summary info ============================
+FAILED tests/test_partial_quality.py::test_refined_full_kernel_against_float64_posterior
+1 failed, 4 passed in 0.64s

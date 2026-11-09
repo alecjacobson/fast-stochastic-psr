@@ -70,7 +70,7 @@ def full_kernel_matmul(model, points, noise_variance, rhs, block_size=2048,
 
 
 class GPUDenseMaternSystem:
-    def __init__(self, model, points, noise_variance, dtype='float32'):
+    def __init__(self, model, points, noise_variance, dtype='float32', kernel_dtype=None):
         import cupy as cp
         from cupy.cuda import cusolver, cublas, device
         self.points = _points(points).copy()
@@ -81,13 +81,19 @@ class GPUDenseMaternSystem:
             raise ValueError('dtype must be float32 or float64')
         if not len(self.points) or not np.isfinite(noise_variance) or noise_variance <= 0:
             raise ValueError('nonempty observations and positive noise variance required')
-        self.coordinates = cp.asarray(self.points, dtype=self.dtype)
+        # Separate coordinate/kernel arithmetic from factor storage precision.
+        self.kernel_dtype = self.dtype if kernel_dtype is None else np.dtype(kernel_dtype)
+        if self.kernel_dtype not in (np.dtype('float32'), np.dtype('float64')):
+            raise ValueError('kernel_dtype must be float32 or float64')
+        self.coordinates = cp.asarray(self.points, dtype=self.kernel_dtype)
         n = len(self.points)
         # Fortran order lets triangular solves reuse this allocation.
         self.factor = cp.empty((n, n), dtype=self.dtype, order='F')
         typ = 'float' if self.dtype == np.float32 else 'double'
-        self.kernel = cp.RawKernel(_KERNEL.replace('TYPE', typ), 'covariance')
-        scalar = self.dtype.type
+        # Keep the shared TYPE-only template compatible with the dense-CG backend.
+        arithmetic = 'float' if self.kernel_dtype == np.float32 else 'double'
+        self.kernel = cp.RawKernel(_KERNEL.replace('TYPE* a', 'STORAGE* a').replace('TYPE', arithmetic).replace('STORAGE', typ), 'covariance')
+        scalar = self.kernel_dtype.type
         self.kernel(((n*n+255)//256,), (256,),
                     (self.coordinates, self.factor, n, 0, n, scalar(model.kappa),
                      scalar(model.amplitude), scalar(noise_variance)))

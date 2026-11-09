@@ -92,8 +92,8 @@ def run(args):
     elif args.kind=='mean':
         mesh=np.load(OUT/'mean-mesh.npz');triangle_mesh('Posterior mean zero level set',mesh['vertices'],mesh['faces'],blue)
     elif args.kind=='input':
-        cloud('All 70652 actual range observations',data['points'],.0033,gold)
-        cloud('32 scalar surface contacts',data['contacts'],.011,red)
+        cloud(f"All {len(data['points'])} actual range observations",data['points'],.0033,gold)
+        cloud(f"{len(data['contacts'])} scalar surface contacts",data['contacts'],.011,red)
     else:
         ghost=material('Reference context',(.65,.69,.72),opacity=.12)
         triangle_mesh('Reference context',data['vertices'],data['faces'],ghost)

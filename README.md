@@ -254,6 +254,14 @@ probability/variance gates. Peak GPU memory is **3.65 / 18.73 / 19.98 GiB**.
 The [stronger-baseline follow-up](reproduction/results/partial_competitors/README.md)
 finds an accuracy-passing mixed-precision Cholesky method faster than H² here,
 so the earlier result is not a win over the best tested dense alternative.
+The [mixed-H² continuation](reproduction/results/mixed_h2/README.md) now finds a
+runtime crossover against that stronger baseline between **49,152 and 65,536**
+observations. At **70,652 observations**, three-run medians are **17.82 s H²
+versus 22.46 s mixed Cholesky**, including setup and all 128 mean/variance/CDF
+queries, with unchanged accuracy gates. Both fit in GPU memory (**5.67/21.38 GiB**);
+the measured log–log timing slopes over 32k–70k are **0.93/2.16**. This establishes
+a modest runtime win before memory exhaustion; mixed-locality and comparisons
+across original/periodic models remain open.
 Probability quality improves over calibrated mean-only prediction, but a cheap contact-only variance
 control captures most of the benefit; full variance's application necessity and
 a whole-object million-query cache remain open.

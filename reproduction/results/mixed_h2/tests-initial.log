@@ -1,0 +1,112 @@
+......F.                                                                 [100%]
+=================================== FAILURES ===================================
+__________ test_streamed_radius_action_against_full_and_cached_kernel __________
+
+    def test_streamed_radius_action_against_full_and_cached_kernel():
+        pytest.importorskip('psr_higp_kd_cext')
+        cp = pytest.importorskip('cupy')
+        from geospsr.nonperiodic_local_gpu import GPUStreamedLocalSystem
+        from geospsr.nonperiodic_sparse import GPUSparseMaternSystem
+        from scipy.spatial.distance import cdist
+        x = np.random.default_rng(17).normal(size=(384, 3))*.2
+        model = FreeSpacePoissonMatern(.1, .7)
+        for cutoff in [6., 100.]:
+            local = GPUStreamedLocalSystem(model, x, .05, cutoff=cutoff, budget_bytes=48*1024,
+                                           preconditioner_backend='prefix-kd', threads=2, rhs_block_size=3)
+            cached = GPUSparseMaternSystem(model, x, .05, cutoff=cutoff,
+                                           preconditioner_backend='prefix-kd', threads=2)
+            assert len(local.chunks) > 1
+            assert local.interaction_workspace_bytes <= 48*1024
+            a = model.vector_covariance(x, x)*(cdist(x, x)<=cutoff/model.kappa)+.05*np.eye(len(x))
+            b = np.random.default_rng(18).normal(size=(len(x), 7))
+            np.testing.assert_allclose(cp.asnumpy(local.matmul(b)), a@b, atol=1e-13)
+            np.testing.assert_allclose(cp.asnumpy(local.matmul(b[:, 0])), a@b[:, 0], atol=1e-13)
+            np.testing.assert_allclose(cp.asnumpy(local.matmul(b)), cp.asnumpy(cached.matmul(b)), atol=1e-13)
+>           z = local.solve(b, tolerance=1e-9)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_hierarchical_streamed.py:74:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+geospsr/hierarchical_gpu.py:304: in solve
+    x, info = self._solve_block(rhs[:, first:first+self.rhs_block_size], tolerance, max_iterations)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <geospsr.nonperiodic_local_gpu.GPUStreamedLocalSystem object at 0x7b1def17f050>
+rhs = array([[-4.32340006e-01, -1.13009677e+00,  6.73843658e-01],
+       [ 5.70515731e-01,  1.61158909e+00,  2.83396941e+00]..., -7.11136410e-01, -1.45075529e-01],
+       [-2.06201959e+00, -2.33829700e+00, -3.09770054e-04]],
+      shape=(384, 3))
+tolerance = 1e-09, max_iterations = 500
+
+    def _solve_block(self, rhs, tolerance, max_iterations):
+        import cupy as cp
+>       if self.dtype == np.float64:
+           ^^^^^^^^^^
+E       AttributeError: 'GPUStreamedLocalSystem' object has no attribute 'dtype'
+
+geospsr/hierarchical_gpu.py:266: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_hierarchical_streamed.py::test_streamed_radius_action_against_full_and_cached_kernel
+1 failed, 7 passed in 9.00s
+Set random seed to 12
+Change OpenMP threads to 2
+Init KrnlMatObject done
+Build H2 Mat dtype 1
+Mat size 384 384
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Free H2 matrix done
+Dealloc KrnlMatObject done
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init KrnlMatObject done
+Build H2 Mat dtype 1
+Mat size 384 384
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Free H2 matrix done
+Dealloc KrnlMatObject done
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init KrnlMatObject done
+Build H2 Mat dtype 1
+Mat size 512 512
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Free H2 matrix done
+Dealloc KrnlMatObject done
+Dealloc precond done
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Set random seed to 12
+Change OpenMP threads to 2
+Init precond done
+Build AFN preconditioner dtype 1
+Dealloc precond done
+Dealloc precond done

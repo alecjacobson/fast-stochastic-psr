@@ -33,17 +33,23 @@ class StreamedInteractions:
     The persistent hierarchy is unchanged. Trading repeated kernel evaluation
     for memory removes the global CSR entry-count and value-storage ceilings.
     """
-    def __init__(self, coordinates, indptr, metadata, kappa, budget_bytes):
+    def __init__(self, coordinates, indptr, metadata, kappa, budget_bytes, dtype='float64'):
         import cupy as cp
-        self.coordinates = cp.asarray(coordinates)
+        self.dtype = np.dtype(dtype)
+        if self.dtype not in (np.dtype('float32'), np.dtype('float64')):
+            raise ValueError('interaction dtype must be float32 or float64')
+        entry_bytes = self.dtype.itemsize+4
+        self.coordinates = cp.asarray(coordinates, dtype=cp.float64)
         self.kappa = float(kappa)
         self.size = len(indptr)-1
-        if self.size >= 2**31 or budget_bytes < 12:
+        if self.size >= 2**31 or budget_bytes < entry_bytes:
             raise ValueError('invalid streamed interaction dimensions or budget')
-        self.kernel = cp.RawKernel(_FILL, 'fill_streamed')
+        # Evaluate geometry/kernel entries in float64, then round their storage.
+        typ = 'float' if self.dtype == np.float32 else 'double'
+        self.kernel = cp.RawKernel(_FILL.replace('double* values', typ+'* values'), 'fill_streamed')
         self.kernel.compile()
         self.chunks = []
-        cap = min(int(budget_bytes)//12, 2**31-1)
+        cap = min(int(budget_bytes)//entry_bytes, 2**31-1)
         first = 0
         while first < self.size:
             last = min(self.size, int(np.searchsorted(indptr, indptr[first]+cap, side='right')-1))
@@ -62,8 +68,8 @@ class StreamedInteractions:
             first = last
         self.nbytes = self.coordinates.nbytes+sum(sum(a.nbytes for a in c[3:6]) for c in self.chunks)
         max_nnz = max((c[2] for c in self.chunks), default=0)
-        self.workspace_bytes = max_nnz*12
-        self.values = cp.empty(max_nnz)
+        self.workspace_bytes = max_nnz*entry_bytes
+        self.values = cp.empty(max_nnz, dtype=self.dtype)
         self.columns = cp.empty(max_nnz, dtype=cp.int32)
 
     def __matmul__(self, work):

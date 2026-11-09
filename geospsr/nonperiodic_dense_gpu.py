@@ -9,7 +9,7 @@ from .nonperiodic import _points
 
 
 _KERNEL = r'''
-extern "C" __global__ void covariance(const TYPE* x, STORAGE* a, long long n,
+extern "C" __global__ void covariance(const TYPE* x, TYPE* a, long long n,
     long long begin, long long nr, TYPE kappa, TYPE amplitude, TYPE noise) {
     long long t=(long long)blockIdx.x*blockDim.x+threadIdx.x;
     if(t>=nr*n)return;
@@ -90,8 +90,9 @@ class GPUDenseMaternSystem:
         # Fortran order lets triangular solves reuse this allocation.
         self.factor = cp.empty((n, n), dtype=self.dtype, order='F')
         typ = 'float' if self.dtype == np.float32 else 'double'
+        # Keep the shared TYPE-only template compatible with the dense-CG backend.
         arithmetic = 'float' if self.kernel_dtype == np.float32 else 'double'
-        self.kernel = cp.RawKernel(_KERNEL.replace('TYPE', arithmetic).replace('STORAGE', typ), 'covariance')
+        self.kernel = cp.RawKernel(_KERNEL.replace('TYPE* a', 'STORAGE* a').replace('TYPE', arithmetic).replace('STORAGE', typ), 'covariance')
         scalar = self.kernel_dtype.type
         self.kernel(((n*n+255)//256,), (256,),
                     (self.coordinates, self.factor, n, 0, n, scalar(model.kappa),

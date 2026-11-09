@@ -265,11 +265,16 @@ across original/periodic models remain open.
 The [visual companion](reproduction/results/partial_renderings/README.md) shows
 the actual partial scan, mean surface, variance and inside-probability slices.
 It also exposes substantial smoothing and errors in unseen geometry; the
-[quality follow-up](https://github.com/alecjacobson/fast-stochastic-psr/issues/124)
-will test whether the crossover survives stronger reconstruction-quality controls.
-Probability quality improves over calibrated mean-only prediction, but a cheap contact-only variance
-control captures most of the benefit; full variance's application necessity and
-a whole-object million-query cache remain open.
+[quality-controlled follow-up](reproduction/results/quality_controls/README.md)
+selects 512 contacts and higher effective normal noise on validation views, then
+improves geometry and probability scores on all three held-out view groups.
+Correcting contact and query moments together recovers a **1.30× H² win** at
+70,652 points: **49.25 versus 64.27 s**, including setup and all 128 mean/variance
+queries, with **7.39 versus 23.16 GiB** sampled GPU peaks. The empirical log–log
+slopes over 32k–70k are **0.94/2.02**; the old H² contact-solve recipe loses on this
+larger contact set. Cheap contact-only variance remains competitive on Brier
+score, so full variance's application necessity and a whole-object million-query
+cache remain open.
 
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in

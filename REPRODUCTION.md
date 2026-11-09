@@ -793,6 +793,15 @@ Other limits matter when interpreting the figures:
 
 ## FMM direction
 
+The [partial-scan quality/crossover study](reproduction/results/quality_controls/README.md)
+retains a validation-only model search, independent full-kernel references,
+held-out geometry/probability controls, and repeated H²/Cholesky timings.
+`reproduction.benchmark_partial_quality --method h2-joint` uses shared
+residual-corrected contact/query moments; the original `h2` route remains
+available. Its report supplies commands, raw artifacts, matched renderings,
+and limits of the application claim. This work leaves the NUFFT route available.
+
+
 [FMM assessment results](reproduction/results/fmm_assessment.json) measure
 far-field block ranks at controlled error. They show compression potential, but
 **there is no FMM backend or measured FMM speedup in this repository yet**.

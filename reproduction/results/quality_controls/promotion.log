@@ -1,0 +1,42 @@
+CONTACTS reference validation 70652 32 38.3351964619942
+DONE validation reference 423.9793163759168 0.18677502993305045 {'all': {'count': 512, 'mae': 0.061398220122383246, 'median': 0.04054490015118081, 'p90': 0.15, 'missing_fraction': 0.203125}, 'observed': {'count': 295, 'mae': 0.03237499218573438, 'median': 0.02437335264792951, 'p90': 0.0667435960132131, 'missing_fraction': 0.020338983050847456}, 'occluded': {'count': 142, 'mae': 0.11369681433159834, 'median': 0.15, 'p90': 0.15, 'missing_fraction': 0.5633802816901409}}
+CONTACTS reference validation 70652 512 184.20969903212972
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_quality_large.py", line 124, in <module>
+    p.add_argument('--iterations',type=int,default=10);p.add_argument('--tolerance',type=float,default=1e-6)
+                                             ^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_quality_large.py", line 93, in run
+    print('CONTACTS',args.method,args.group,args.n,args.contacts,perf_counter()-start,flush=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_direct_gpu.py", line 88, in predict
+    z, info, residual = self.system.variance_solve(c, self.iterations)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_quality_large.py", line 54, in variance_solve
+    z,r,h=self._solve(b[:,first:first+self.block]);zs.append(z);rs.append(r);hs.append(h)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/reproduction/partial_quality_large.py", line 31, in _solve
+    residual=b-cp.asarray(full_kernel_matmul(self.model,self.points,self.noise,cp.asnumpy(z)))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horde/Repos/fast-stochastic-psr/geospsr/nonperiodic_dense_gpu.py", line 64, in full_kernel_matmul
+    a = cp.empty((nr, nc), dtype=cp.float64)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/geospsr-runtime/venv/lib/python3.11/site-packages/cupy/_creation/basic.py", line 34, in empty
+    return cupy.ndarray(shape, dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 176, in cupy._core.core.ndarray.__new__
+  File "cupy/_core/core.pyx", line 282, in cupy._core.core._ndarray_base._init
+  File "cupy/cuda/memory.pyx", line 904, in cupy.cuda.memory.alloc
+  File "cupy/cuda/memory.pyx", line 1614, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1635, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1350, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1376, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+  File "cupy/cuda/memory.pyx", line 1560, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 536,870,912 bytes (allocated so far: 24,717,322,752 bytes).
+Traceback (most recent call last):
+  File "/tmp/quality-promote.py", line 3, in <module>
+    subprocess.run(['./reproduction/run_env.sh','-m','reproduction.partial_quality_large','--method','reference','--ell','.48','--sigma',str(sigma),'--contacts',str(contacts),'--output',f'reproduction/results/quality_controls/validation-{tag}-70652-reference.json'],check=True)
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['./reproduction/run_env.sh', '-m', 'reproduction.partial_quality_large', '--method', 'reference', '--ell', '.48', '--sigma', '0.5', '--contacts', '512', '--output', 'reproduction/results/quality_controls/validation-candidate1-70652-reference.json']' returned non-zero exit status 1.

@@ -91,6 +91,9 @@ class DirectContactQueries:
                             c, tolerance=1e-10, max_iterations=self.iterations, xp=cp, return_residual=True)
                     correction = cp.sum(c*z+z*residual, axis=0)
                     self.solve_iterations.append(info['max_iterations'])
+                    # Do not retain the previous batch's two N-by-RHS arrays
+                    # while allocating the next solve and its workspace.
+                    del z, residual
                 base_var = self.model.prior_variance-cp.asnumpy(correction.reshape(3, m).sum(axis=0))
                 mm, vv = self.update.apply(cp.asnumpy(base_mean), base_var, contact_cross)
             else:

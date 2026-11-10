@@ -807,6 +807,13 @@ noise/prior ratio, a streamed full-kernel reference, and finer matched displays.
 It prioritizes fidelity to the dense observed scan over completion of the unseen
 side. Its reference and display costs are not competitive task timings.
 
+The [uncertainty revision](reproduction/results/epistemic_revision/README.md)
+preserves those model parameters and numerical artifacts, adds full-kernel
+marginal variance queries around the unseen mean protrusion, and distinguishes
+uncertain mean extrapolation from confident occupancy errors. Its cross-section,
+observed/rim profiles and retained-panel scores are post-hoc diagnostics, not a
+new selection experiment or evidence of population calibration.
+
 
 [FMM assessment results](reproduction/results/fmm_assessment.json) measure
 far-field block ranks at controlled error. They show compression potential, but

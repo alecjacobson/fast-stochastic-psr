@@ -4,7 +4,7 @@ The previous [quality/crossover setting](../quality_controls/README.md) remains 
 
 The validation-selected replacement is **ℓ=.015, normal σ=.02, 2,048 scalar contacts**, with scalar noise variance **7.5e−9**. On the primary **70,652-point** scan, median input crossing displacement improves **80.5%**, from **.00553 to .00108**; median gradient/input-normal error falls from **16.09° to 5.35°**. The new setting passes every declared observed-fidelity gate on both large validation and primary test views. No noise is added to the input, and no surface repair or post-extraction smoothing is applied.
 
-**This improves observed geometry, not every application metric.** Missing-side completion is less accurate, and primary raw inside-probability Brier worsens from **.04090 to .09070**. The earlier H²/Cholesky crossover does not transfer to this model without new measurements. Keep #124 open for probability/completion quality and competitive timings under credible observed fidelity.
+**This improves observed geometry, not every application metric.** The unseen mean surface is less accurate against the reference, and primary raw inside-probability Brier worsens from **.04090 to .09070**. However, an inaccurate mean surface in an uncertain region does not establish a failure of the posterior. The [uncertainty revision](../epistemic_revision/README.md) corrects that interpretation using this unchanged model and new full-kernel marginal evaluations. The earlier H²/Cholesky crossover still requires fresh measurements for this model; #124 remains open for those comparisons and application-quality evidence.
 
 ![Matched reference, input, previous mean, and observed-fidelity mean](geometry-comparison.png)
 
@@ -28,7 +28,7 @@ The gates are median displacement ≤ one median spacing; p95 ≤ two spacings; 
 
 The previous p95 is at the censoring limit, not an exact measurement of its tail. The two means are evaluated on identical input probes. Displacement and normal agreement are both checked so that merely placing some zero surface near the points cannot pass by itself.
 
-The renderings recover visible shell, hand and leg detail where observations support it. The tube-like protrusion on the unseen side is a completion artifact, not observed anatomy. It remains visible in the figure and reaches the extraction-box boundary; it has not been removed or capped.
+The renderings recover visible shell, hand and leg detail where observations support it. The tube-like protrusion on the unseen side is a feature of the mean zero level set, unsupported by observed anatomy. It remains visible and reaches the extraction-box boundary; it has not been removed or capped. This surface is also the marginal P(inside)=.5 contour. Calling its shape a posterior failure without checking uncertainty was too strong; see the [probability/variance revision](../epistemic_revision/README.md).
 
 ![Input fidelity and separate probability quality](fit-and-probability.png)
 
@@ -64,7 +64,7 @@ For the new mean, all-input-to-mesh median/p95 distances change from **.001142/.
 
 These figures show the zero level set of the full-kernel posterior mean, not posterior samples or directly rendered H² fields. Reference construction, geometry screening and display time are excluded from every earlier performance claim. All numerical/display GPU runs retain sampled process-isolation audits; no external job was stopped.
 
-## Probability quality remains a separate problem
+## Probability scores and uncertainty need separate interpretation
 
 | Primary probability score | Previous full variance | New full variance | New contact-only variance |
 |---|---:|---:|---:|
@@ -74,9 +74,11 @@ These figures show the zero level set of the full-kernel posterior mean, not pos
 
 The primary query panel and labels are unchanged. The cheap control uses the same full-posterior mean, with scalar-contact-only variance at the **new** contact count and scalar noise. It remains competitive on Brier; this experiment does not establish the practical necessity of the expensive full variance. Better geometric fit is not a probability-calibration result.
 
-The next application comparison must preserve the observed-fidelity requirements while addressing completion and uncertainty. New H², locality, dense, SDD and other-model timings require the new contact/noise/bandwidth contract and independent accuracy checks; the earlier 1.30× speedup is evidence for the previous smoother setting only. Both NUFFT and H² implementations remain available.
+The unchanged panel's 159 queries in unobserved reference regions retain median **96.01% of prior variance**. Its 22 incorrect classifications assign the true label probabilities **.388–.490**; none is a 95%-confident mistake. This supports retained epistemic uncertainty under the fixed model, without establishing calibration. The worse Brier scores above remain a predictive-score disadvantage on this specific panel. A single object's correlated spatial queries cannot establish population calibration.
 
-The existing [exterior-level issue #117](https://github.com/alecjacobson/fast-stochastic-psr/issues/117) is relevant here: this zero-mean scalar prior returns to probability .5 far from all observations. Declared exterior information or an appropriate prior mean deserves testing while preserving the new observed-fidelity gates. Sensor-ray free-space signs must not be silently converted into exact signed-distance observations. The increased number of needed scalar constraints also motivates accelerating the coupled scalar/vector conditioning operator itself, rather than assuming its scalar Schur complement will always remain small.
+The next computational comparison must preserve the observed-fidelity requirements and check probabilistic numerical accuracy. It need not require an accurate unseen mean completion before measuring runtime. New H², locality, dense, SDD and other-model timings require the new contact/noise/bandwidth contract and independent accuracy checks; the earlier 1.30× speedup is evidence for the previous smoother setting only. Both NUFFT and H² implementations remain available.
+
+The existing [exterior-level issue #117](https://github.com/alecjacobson/fast-stochastic-psr/issues/117) asks a separate physical modeling question: this zero-mean scalar prior returns to probability .5 far from all observations. Declared exterior information or an appropriate prior mean deserves testing where the application supplies that knowledge. The unseen mean protrusion alone is not evidence that such a change is required. Sensor-ray free-space signs must not be silently converted into exact signed-distance observations. The increased number of needed scalar constraints independently motivates accelerating the coupled scalar/vector conditioning operator itself, rather than assuming its scalar Schur complement will always remain small.
 
 ## Reproduction
 

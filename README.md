@@ -246,7 +246,7 @@ their shared independent reference. The full **3.49m-point Torso** input is
 prepared but remains unrun; no new Torso competing-method speed ratio is claimed.
 
 The [real partial-scan occupancy study](reproduction/results/real_partial/README.md)
-uses actual noisy Stanford Armadillo range scans and coherent scalar surface
+uses actual Stanford Armadillo range scans, without synthetic noise, and coherent scalar surface
 observations. At **49,152 normal observations and 128 new mean-and-variance
 queries**, including preparation, H² takes **25.31 s** versus **108.39 s** for
 matched **float64** dense Cholesky and **123.15 s** for dense-matrix CG, passing the same
@@ -275,6 +275,14 @@ slopes over 32k–70k are **0.94/2.02**; the old H² contact-solve recipe loses 
 larger contact set. Cheap contact-only variance remains competitive on Brier
 score, so full variance's application necessity and a whole-object million-query
 cache remain open.
+
+The [observed-fidelity follow-up](reproduction/results/observed_fidelity/README.md)
+replaces the completion-weighted selector with explicit sample-resolution
+requirements on the observed surface. Shorter length scales, smaller normal
+regularizers, and stronger, denser scalar constraints recover observed detail.
+The old smooth setting fails these fidelity gates. Missing-region completion
+and probability scores are separate diagnostics; the earlier H² speedup does
+not transfer to the new model without new matched-accuracy timings.
 
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in

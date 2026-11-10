@@ -65,7 +65,7 @@ def gates(mean, variance, reference, model, fit):
 
 
 def conditioned_moments(model, contacts, queries, cross, values, xp, *, whitened=False,
-                        residual=None):
+                        residual=None, scalar_variance=.01**2):
     """Project only needed scalar moments, then condition the scalar contacts.
 
     Columns are the three components of [contacts, queries], followed by
@@ -95,7 +95,7 @@ def conditioned_moments(model, contacts, queries, cross, values, xp, *, whitened
     host = np.asarray if xp is np else xp.asnumpy
     mean, correction, cc, qc = map(host, (mean, correction, cc, qc))
     update = ScalarContactUpdate(mean[:nc], model.scalar_covariance(contacts, contacts)-.5*(cc+cc.T),
-                                 np.zeros(nc), .01**2)
+                                 np.zeros(nc), scalar_variance)
     return update.apply(mean[nc:], model.prior_variance-correction[nc:],
                         model.scalar_covariance(queries, contacts)-qc)
 
@@ -108,7 +108,7 @@ def store_result(path, record, mean=None, variance=None):
     path.write_text(json.dumps(record, indent=2, allow_nan=False)+'\n')
 
 
-def projected_moments(model, contacts, queries, coefficients, gram, projected_mean):
+def projected_moments(model, contacts, queries, coefficients, gram, projected_mean, *, scalar_variance=.01**2):
     """Scalar contact/query moments from a shared compressed cross basis.
 
     This evaluates the requested discrete locations directly, with no spatial
@@ -119,6 +119,6 @@ def projected_moments(model, contacts, queries, coefficients, gram, projected_me
     mean = sum(b.T@projected_mean[:, d] for d, b in enumerate(blocks))
     correction = sum(b.T@gram@b for b in blocks)
     update = ScalarContactUpdate(mean[:nc], model.scalar_covariance(contacts, contacts)-correction[:nc,:nc],
-                                 np.zeros(nc), .01**2)
+                                 np.zeros(nc), scalar_variance)
     return update.apply(mean[nc:], model.prior_variance-np.diag(correction)[nc:],
                         model.scalar_covariance(queries, contacts)-correction[nc:,:nc])

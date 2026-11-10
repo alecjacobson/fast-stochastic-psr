@@ -16,7 +16,8 @@ from reproduction.partial_competitor_common import (
     problem, source_snapshot, conditioned_moments, gates, store_result)
 
 
-def run(args):
+def run(args, *, problem_factory=problem, scalar_variance=.01**2, snapshot_factory=source_snapshot,
+        record_metadata=None):
     import cupy as cp
     import jax
     import jax.numpy as jnp
@@ -26,8 +27,8 @@ def run(args):
     from reproduction.partial_direct_gpu import cross_rhs
     output = Path(args.output)
     if output.exists(): raise FileExistsError(output)
-    x, y, contacts, panel, model, noise, truth, fit, contract = problem(args.n)
-    sources = source_snapshot([__file__, 'reproduction/partial_competitor_common.py',
+    x, y, contacts, panel, model, noise, truth, fit, contract = problem_factory(args.n)
+    sources = snapshot_factory([__file__, 'reproduction/partial_competitor_common.py',
         'reproduction/partial_direct_gpu.py', 'geospsr/iterative.py',
         'geospsr/nonperiodic_dense_gpu.py', 'geospsr/scalar_contacts.py', 'geospsr/nonperiodic.py'])
     jax.devices(); cross_rhs(model, contacts[:2], x[:2]); cp.cuda.Device().synchronize()
@@ -36,6 +37,8 @@ def run(args):
     start = perf_counter()
     cross = cross_rhs(model, np.concatenate((contacts, panel['queries'])), x)
     rhs = cp.column_stack((cross, cp.asarray(y)))
+    del cross
+    cp.get_default_memory_pool().free_all_blocks()
     host_rhs = cp.asnumpy(rhs).astype(np.float32)
     cross_seconds = perf_counter()-start
     def kernel(a, b):
@@ -48,17 +51,21 @@ def run(args):
         sampling=args.sampling)
     solver.compile()
     compile_seconds = perf_counter()-start
+    rhs_count=host_rhs.shape[1]
+    del host_rhs
     record = dict(arguments=vars(args), contract=contract, source_sha256=sources,
         cross_seconds=cross_seconds, compile_and_state_seconds=compile_seconds,
-        rhs_count=host_rhs.shape[1], history=[],
+        rhs_count=rhs_count, history=[],
         stopping_scope='First observed passing output checkpoint; earlier checks excluded from selected total, favoring SDD. Wall time also retained.',
         operator='Unit-amplitude isotropic Matern32 with noise/amplitude; final solutions divided by amplitude')
+    record.update(record_metadata or {})
     elapsed = 0.; accepted = False; selected_mean = selected_variance = None
 
     def evaluate(z, residual=None):
         start = perf_counter()
         try:
-            m, v = conditioned_moments(model, contacts, panel['queries'], rhs, z, cp, residual=residual)
+            m, v = conditioned_moments(model, contacts, panel['queries'], rhs, z, cp, residual=residual,
+                                       scalar_variance=scalar_variance)
             valid = bool(np.isfinite(m).all() and np.isfinite(v).all() and np.all(v > 0))
             checksum = float(ndtr(-m/np.sqrt(v)).sum()) if valid else None
             cp.cuda.Device().synchronize()

@@ -37,12 +37,16 @@ extern "C" __global__ void cross_rhs(const double* q, const double* x,
 '''
 
 
-def cross_rhs(model, queries, points):
+def cross_rhs(model, queries, points, *, component=None):
     import cupy as cp
     q, x = cp.asarray(queries, dtype=cp.float64), cp.asarray(points, dtype=cp.float64)
     source = _KERNEL.replace('COEFFICIENTS', ','.join(format(v, '.17g') for v in _CROSS)).replace('DEGREE', str(len(_CROSS)-1))
+    if component is not None:
+        if component not in (0,1,2):raise ValueError('component must be 0, 1 or 2')
+        source=source.replace('(long long)n*3*m','(long long)n*m').replace(
+            'int i=t/(3*m), d=(t/m)%3, j=t%m;',f'int i=t/m, d={int(component)}, j=t%m;')
     kernel = cp.RawKernel(source, 'cross_rhs')
-    out = cp.empty((len(x), 3*len(q)), dtype=cp.float64)
+    out = cp.empty((len(x), (3 if component is None else 1)*len(q)), dtype=cp.float64)
     if out.size:
         kernel(((out.size+255)//256,), (256,), (q, x, out, len(q), len(x), model.kappa, model.amplitude))
     return out

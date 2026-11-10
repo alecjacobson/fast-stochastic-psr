@@ -12,11 +12,13 @@ from .nonperiodic_dense_gpu import _KERNEL
 
 class GPUDenseCGSystem(GPUHierarchicalSystem):
     def __init__(self, model, points, noise_variance, dtype='float32', rank=50,
-                 neighbors=40, threads=4, seed=12, block_size=1024, cache=True):
+                 neighbors=40, threads=4, seed=12, block_size=1024, cache=True,
+                 preconditioner_backend='native'):
         import cupy as cp
         self.native = HierarchicalMaternSystem(model, points, noise_variance,
                                                preconditioner_rank=rank, neighbors=neighbors,
-                                               threads=threads, seed=seed, build_hierarchy=False)
+                                               threads=threads, seed=seed, build_hierarchy=False,
+                                               preconditioner_backend=preconditioner_backend)
         self.model, self.points = model, self.native.points
         self.noise_variance = noise_variance
         self.preconditioner_gpu = GPUAFNPreconditioner(self.native.preconditioner)

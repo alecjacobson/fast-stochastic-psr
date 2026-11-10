@@ -291,6 +291,15 @@ poor unseen geometry alone does not show a confidently wrong posterior.
 Probability scores, confidence diagnostics and numerical accuracy remain
 separate checks, with no population-calibration claim from one object.
 
+The [fresh sharp-model timings](reproduction/results/sharp_performance/README.md)
+recover a **1.34× H²-over-Cholesky win**: **11.76 versus 15.78 s**, including
+setup, all 2,048 contacts and 128 marginal mean/variance queries. A coupled
+scalar/vector solve avoids the old contact-Schur preparation bottleneck.
+Both methods pass a separate 512-query accuracy audit. **Cached mixed-precision
+locality is faster at 9.91 s**, so this is not an all-alternative H² flagship.
+The measured H²/Cholesky timing slopes are 0.91/1.56 over 32k–70k observations;
+the report retains streamed locality, dense CG, failures and repeated timings.
+
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
 [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).

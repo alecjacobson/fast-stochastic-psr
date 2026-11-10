@@ -801,6 +801,12 @@ residual-corrected contact/query moments; the original `h2` route remains
 available. Its report supplies commands, raw artifacts, matched renderings,
 and limits of the application claim. This work leaves the NUFFT route available.
 
+The [observed-fidelity study](reproduction/results/observed_fidelity/README.md)
+adds input-resolution displacement and normal-angle gates, an explicit scalar
+noise/prior ratio, a streamed full-kernel reference, and finer matched displays.
+It prioritizes fidelity to the dense observed scan over completion of the unseen
+side. Its reference and display costs are not competitive task timings.
+
 
 [FMM assessment results](reproduction/results/fmm_assessment.json) measure
 far-field block ranks at controlled error. They show compression potential, but

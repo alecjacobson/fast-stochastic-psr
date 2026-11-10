@@ -119,18 +119,14 @@ def test_double_assembly_preserves_small_separations_with_float_factor():
 
 
 @pytest.mark.parametrize('cached', [True, False])
-def test_dense_cg_shared_kernel_compatibility(monkeypatch,cached):
+def test_dense_cg_shared_kernel_compatibility(cached):
     pytest.importorskip('psr_higp_kd_cext')
     cp=pytest.importorskip('cupy')
     import geospsr.nonperiodic_dense_cg as dense_cg
-    from geospsr.hierarchical import HierarchicalMaternSystem
-    def prefix(*args,**kwargs):
-        return HierarchicalMaternSystem(*args,preconditioner_backend='prefix-kd',**kwargs)
-    monkeypatch.setattr(dense_cg,'HierarchicalMaternSystem',prefix)
     rng=np.random.default_rng(391)
     x,b=rng.normal(size=(48,3)),rng.normal(size=(48,3))
     model=FreeSpacePoissonMatern(.48,1/3)
     system=dense_cg.GPUDenseCGSystem(model,x,.25,dtype='float64',rank=10,neighbors=8,
-        threads=2,cache=cached,block_size=11)
+        threads=2,cache=cached,block_size=11,preconditioner_backend='prefix-kd')
     expected=(model.vector_covariance(x,x)+.25*np.eye(len(x)))@b
     np.testing.assert_allclose(cp.asnumpy(system.matmul(b)),expected,atol=1e-13,rtol=0)

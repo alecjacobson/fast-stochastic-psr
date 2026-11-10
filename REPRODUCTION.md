@@ -814,10 +814,20 @@ uncertain mean extrapolation from confident occupancy errors. Its cross-section,
 observed/rim profiles and retained-panel scores are post-hoc diagnostics, not a
 new selection experiment or evidence of population calibration.
 
+The [sharp-model performance study](reproduction/results/sharp_performance/README.md)
+keeps that model fixed and compares fresh setup plus all contacts and marginal
+mean/variance queries. Coupled scalar/vector inverse actions recover an H²
+crossover against a strong plain float32 factor, but cached mixed locality
+remains faster. The report includes log-log timing/memory plots, three primary
+repeats, independent full-kernel references, a separate 512-query audit and
+all failed or slower trials. The coupled prototype still stores O(NC) cross
+entries and factors a dense scalar prior; it does not establish C~N scaling.
 
 [FMM assessment results](reproduction/results/fmm_assessment.json) measure
-far-field block ranks at controlled error. They show compression potential, but
-**there is no FMM backend or measured FMM speedup in this repository yet**.
+far-field block ranks at controlled error. That early assessment predates the
+non-periodic H² implementation and measured comparisons linked above. A
+periodic FMM backend for the original product-Matérn covariance remains future
+work.
 
 Next experiments are a periodic kernel-independent FMM for the full analytic
 covariance, spatial preconditioning, and controlled near-field/spectral

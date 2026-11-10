@@ -284,6 +284,13 @@ The old smooth setting fails these fidelity gates. Missing-region completion
 and probability scores are separate diagnostics; the earlier H² speedup does
 not transfer to the new model without new matched-accuracy timings.
 
+The [uncertainty revision](reproduction/results/epistemic_revision/README.md)
+keeps that model fixed and measures the unseen mean protrusion's posterior
+uncertainty. The mean zero surface is a marginal probability-.5 contour;
+poor unseen geometry alone does not show a confidently wrong posterior.
+Probability scores, confidence diagnostics and numerical accuracy remain
+separate checks, with no population-calibration claim from one object.
+
 This is a controlled numerical demonstration, not a ContactFusion reproduction
 or evidence of calibrated real-world uncertainty. Broader modeling and scaling work remains open in
 [#68](https://github.com/alecjacobson/fast-stochastic-psr/issues/68).
